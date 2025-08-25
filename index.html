@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExpoRad - Calculadora Radiológica</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="app-title">
+                <div class="logo-container">
+                    <img src="logo.jpeg" alt="ExpoRad Logo" class="logo">
+                    <h1>ExpoRad</h1>
+                </div>
+                <p>Calculadora Radiológica - KV, mAs e Tempo para Diferentes Faixas Etárias e Tipos Físicos</p>
+            </div>
+            <div class="radiation-symbol">
+                <i class="fas fa-atom"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Container Principal -->
+    <div class="main-container">
+        <!-- Seção da Calculadora -->
+        <div class="calculator-section">
+            <h2 class="section-title">🎯 Seleção do Paciente</h2>
+            
+            <!-- Seleção de Idade -->
+            <div class="age-selection">
+                <h3>Faixa Etária</h3>
+                <div class="age-grid">
+                    <button class="age-btn active" data-age="newborn">
+                        <i class="fas fa-baby"></i>
+                        <span>Recém-nascido</span>
+                    </button>
+                    <button class="age-btn" data-age="1year">
+                        <i class="fas fa-child"></i>
+                        <span>1 ano</span>
+                    </button>
+                    <button class="age-btn" data-age="5years">
+                        <i class="fas fa-child"></i>
+                        <span>5 anos</span>
+                    </button>
+                    <button class="age-btn" data-age="10years">
+                        <i class="fas fa-child"></i>
+                        <span>10 anos</span>
+                    </button>
+                    <button class="age-btn" data-age="adult">
+                        <i class="fas fa-user"></i>
+                        <span>Adulto</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Seleção de Tipo Físico (apenas para adultos) -->
+            <div class="body-type-section" id="body-type-section">
+                <h3>Tipo Físico</h3>
+                <div class="body-grid">
+                    <button class="body-btn active" data-body="very-thin">
+                        <i class="fas fa-user"></i>
+                        <span>Muito Magro</span>
+                        <small>45-55kg</small>
+                    </button>
+                    <button class="body-btn" data-body="thin">
+                        <i class="fas fa-user"></i>
+                        <span>Magro</span>
+                        <small>55-65kg</small>
+                    </button>
+                    <button class="body-btn" data-body="thin-medium">
+                        <i class="fas fa-user"></i>
+                        <span>Magro-Médio</span>
+                        <small>65-75kg</small>
+                    </button>
+                    <button class="body-btn" data-body="medium">
+                        <i class="fas fa-user"></i>
+                        <span>Médio</span>
+                        <small>70-80kg</small>
+                    </button>
+                    <button class="body-btn" data-body="medium-heavy">
+                        <i class="fas fa-user"></i>
+                        <span>Médio-Forte</span>
+                        <small>80-90kg</small>
+                    </button>
+                    <button class="body-btn" data-body="heavy">
+                        <i class="fas fa-user"></i>
+                        <span>Forte</span>
+                        <small>90-100kg</small>
+                    </button>
+                    <button class="body-btn" data-body="obese">
+                        <i class="fas fa-user"></i>
+                        <span>Obeso</span>
+                        <small>100-120kg</small>
+                    </button>
+                    <button class="body-btn" data-body="very-obese">
+                        <i class="fas fa-user"></i>
+                        <span>Muito Obeso</span>
+                        <small>120kg+</small>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Seleção de Região Corporal -->
+            <div class="bodypart-section">
+                <!-- Regiões Gerais -->
+                <div class="selection-group" id="general-regions">
+                    <h3>Região Corporal</h3>
+                    <div class="button-grid">
+                        <button class="bodypart-general-btn" data-region="skull">
+                            <i class="fas fa-user"></i>
+                            <span>Crânio</span>
+                        </button>
+                        <button class="bodypart-general-btn" data-region="face">
+                            <i class="fas fa-user"></i>
+                            <span>Face</span>
+                        </button>
+                        <button class="bodypart-general-btn" data-region="cavum">
+                            <i class="fas fa-user"></i>
+                            <span>Cavum</span>
+                        </button>
+                        <button class="bodypart-general-btn" data-region="ribs">
+                            <i class="fas fa-user"></i>
+                            <span>Costelas</span>
+                        </button>
+                        <button class="bodypart-general-btn" data-region="chest">
+                            <i class="fas fa-lungs"></i>
+                            <span>Tórax</span>
+                        </button>
+                        <button class="bodypart-general-btn" data-region="humerus">
+                            <i class="fas fa-user"></i>
+                            <span>Úmero</span>
+                        </button>
+                        <button class="bodypart-general-btn" data-region="forearm">
+                            <i class="fas fa-user"></i>
+                            <span>Antebraço</span>
+                        </button>
+                        <button class="bodypart-general-btn" data-region="shoulder">
+                            <i class="fas fa-user"></i>
+                            <span>Ombro</span>
+                        </button>
+                        <button class="bodypart-general-btn" data-region="hand">
+                            <i class="fas fa-hand-paper"></i>
+                            <span>Mão</span>
+                        </button>
+                        <button class="bodypart-general-btn" data-region="wrist">
+                            <i class="fas fa-user"></i>
+                            <span>Punho</span>
+                        </button>
+                        <button class="bodypart-general-btn" data-region="abdomen">
+                            <i class="fas fa-user"></i>
+                            <span>Abdômen</span>
+                        </button>
+                        <button class="bodypart-general-btn" data-region="pelvis">
+                            <i class="fas fa-user"></i>
+                            <span>Pelve/Bacia</span>
+                        </button>
+                        <button class="bodypart-general-btn" data-region="femur">
+                            <i class="fas fa-user"></i>
+                            <span>Fêmur</span>
+                        </button>
+                        <button class="bodypart-general-btn" data-region="leg">
+                            <i class="fas fa-shoe-prints"></i>
+                            <span>Perna</span>
+                        </button>
+                        <button class="bodypart-general-btn" data-region="foot">
+                            <i class="fas fa-shoe-prints"></i>
+                            <span>Pé</span>
+                        </button>
+                        <button class="bodypart-general-btn" data-region="ankle">
+                            <i class="fas fa-shoe-prints"></i>
+                            <span>Tornozelo</span>
+                        </button>
+                        <button class="bodypart-general-btn" data-region="other">
+                            <i class="fas fa-user"></i>
+                            <span>Outras</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Regiões Corporais Específicas -->
+                <div id="skull-specific" class="specific-regions" style="display: none;">
+                    <div class="specific-header">
+                        <h4>Crânio</h4>
+                        <button id="backToGeneral" class="back-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                    </div>
+                    <div class="button-grid">
+                        <button class="bodypart-btn" data-bodypart="skull-ap">
+                            <i class="fas fa-user"></i>
+                            <span>AP</span>
+                            <small>70kV, 0.25s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="skull-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Perfil</span>
+                            <small>67kV, 0.25s</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="face-specific" class="specific-regions" style="display: none;">
+                    <div class="specific-header">
+                        <h4>Face</h4>
+                        <button id="backToGeneral" class="back-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                    </div>
+                    <div class="button-grid">
+                        <button class="bodypart-btn" data-bodypart="face-sinuses">
+                            <i class="fas fa-user"></i>
+                            <span>Seios da Face</span>
+                            <small>73kV, 0.20s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="face-nose-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Nariz Perfil</span>
+                            <small>50kV, 0.05s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="face-orbits">
+                            <i class="fas fa-user"></i>
+                            <span>Órbitas</span>
+                            <small>71kV, 0.20s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="face-mandible">
+                            <i class="fas fa-user"></i>
+                            <span>Mandíbula</span>
+                            <small>69kV, 0.25s</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="cavum-specific" class="specific-regions" style="display: none;">
+                    <div class="specific-header">
+                        <h4>Cavum</h4>
+                        <button id="backToGeneral" class="back-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                    </div>
+                    <div class="button-grid">
+                        <button class="bodypart-btn" data-bodypart="cavum">
+                            <i class="fas fa-user"></i>
+                            <span>Cavum</span>
+                            <small>70kV, 0.25s</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="ribs-specific" class="specific-regions" style="display: none;">
+                    <div class="specific-header">
+                        <h4>Costelas</h4>
+                        <button id="backToGeneral" class="back-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                    </div>
+                    <div class="button-grid">
+                        <button class="bodypart-btn" data-bodypart="ribs-ap">
+                            <i class="fas fa-user"></i>
+                            <span>AP</span>
+                            <small>90kV, 0.30s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="ribs-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Lateral</span>
+                            <small>100kV, 0.40s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="ribs-oblique">
+                            <i class="fas fa-user"></i>
+                            <span>Oblíqua</span>
+                            <small>95kV, 0.35s</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="chest-specific" class="specific-regions" style="display: none;">
+                    <div class="specific-header">
+                        <h4>Tórax</h4>
+                        <button id="backToGeneral" class="back-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                    </div>
+                    <div class="button-grid">
+                        <button class="bodypart-btn" data-bodypart="chest">
+                            <i class="fas fa-lungs"></i>
+                            <span>PA</span>
+                            <small>95kV, 0.025s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="chest-lat">
+                            <i class="fas fa-lungs"></i>
+                            <span>Lateral</span>
+                            <small>115kV, 0.05s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="chest-ap">
+                            <i class="fas fa-lungs"></i>
+                            <span>AP</span>
+                            <small>100kV, 0.03s</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="humerus-specific" class="specific-regions" style="display: none;">
+                    <div class="specific-header">
+                        <h4>Úmero</h4>
+                        <button id="backToGeneral" class="back-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                    </div>
+                    <div class="button-grid">
+                        <button class="bodypart-btn" data-bodypart="humerus-ap">
+                            <i class="fas fa-user"></i>
+                            <span>AP</span>
+                            <small>60kV, 0.06s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="humerus-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Lateral</span>
+                            <small>60kV, 0.06s</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="forearm-specific" class="specific-regions" style="display: none;">
+                    <div class="specific-header">
+                        <h4>Antebraço</h4>
+                        <button id="backToGeneral" class="back-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                    </div>
+                    <div class="button-grid">
+                        <button class="bodypart-btn" data-bodypart="forearm-ap">
+                            <i class="fas fa-user"></i>
+                            <span>AP</span>
+                            <small>52kV, 0.05s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="forearm-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Lateral</span>
+                            <small>52kV, 0.05s</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="shoulder-specific" class="specific-regions" style="display: none;">
+                    <div class="specific-header">
+                        <h4>Ombro</h4>
+                        <button id="backToGeneral" class="back-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                    </div>
+                    <div class="button-grid">
+                        <button class="bodypart-btn" data-bodypart="shoulder-ap">
+                            <i class="fas fa-user"></i>
+                            <span>AP</span>
+                            <small>52kV, 0.20s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="shoulder-ax">
+                            <i class="fas fa-user"></i>
+                            <span>Axilar</span>
+                            <small>50kV, 0.25s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="shoulder-y">
+                            <i class="fas fa-user"></i>
+                            <span>Perfil (Y)</span>
+                            <small>63kV, 0.25s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="shoulder-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Lateral</span>
+                            <small>55kV, 0.20s</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="hand-specific" class="specific-regions" style="display: none;">
+                    <div class="specific-header">
+                        <h4>Mão</h4>
+                        <button id="backToGeneral" class="back-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                    </div>
+                    <div class="button-grid">
+                        <button class="bodypart-btn" data-bodypart="hand-pa">
+                            <i class="fas fa-user"></i>
+                            <span>PA</span>
+                            <small>44kV, 0.04s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="hand-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Lateral</span>
+                            <small>44kV, 0.04s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="hand-oblique">
+                            <i class="fas fa-user"></i>
+                            <span>Oblíqua</span>
+                            <small>44kV, 0.04s</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="wrist-specific" class="specific-regions" style="display: none;">
+                    <div class="specific-header">
+                        <h4>Punho</h4>
+                        <button id="backToGeneral" class="back-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                    </div>
+                    <div class="button-grid">
+                        <button class="bodypart-btn" data-bodypart="wrist-pa">
+                            <i class="fas fa-user"></i>
+                            <span>PA</span>
+                            <small>44kV, 0.04s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="wrist-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Lateral</span>
+                            <small>44kV, 0.04s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="wrist-oblique">
+                            <i class="fas fa-user"></i>
+                            <span>Oblíqua</span>
+                            <small>45kV, 0.04s</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="abdomen-specific" class="specific-regions" style="display: none;">
+                    <div class="specific-header">
+                        <h4>Abdômen</h4>
+                        <button id="backToGeneral" class="back-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                    </div>
+                    <div class="button-grid">
+                        <button class="bodypart-btn" data-bodypart="abdomen-ap">
+                            <i class="fas fa-user"></i>
+                            <span>AP</span>
+                            <small>67kV, 0.32s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="abdomen-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Lateral</span>
+                            <small>67kV, 0.32s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="abdomen-oblique">
+                            <i class="fas fa-user"></i>
+                            <span>Oblíqua</span>
+                            <small>69kV, 0.30s</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="pelvis-specific" class="specific-regions" style="display: none;">
+                    <div class="specific-header">
+                        <h4>Pelve/Bacia</h4>
+                        <button id="backToGeneral" class="back-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                    </div>
+                    <div class="button-grid">
+                        <button class="bodypart-btn" data-bodypart="pelvis-ap">
+                            <i class="fas fa-user"></i>
+                            <span>AP</span>
+                            <small>75kV, 0.32s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="pelvis-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Lateral</span>
+                            <small>80kV, 0.35s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="pelvis-oblique">
+                            <i class="fas fa-user"></i>
+                            <span>Oblíqua</span>
+                            <small>77kV, 0.33s</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="femur-specific" class="specific-regions" style="display: none;">
+                    <div class="specific-header">
+                        <h4>Fêmur</h4>
+                        <button id="backToGeneral" class="back-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                    </div>
+                    <div class="button-grid">
+                        <button class="bodypart-btn" data-bodypart="femur-ap">
+                            <i class="fas fa-user"></i>
+                            <span>AP</span>
+                            <small>70kV, 0.06s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="femur-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Lateral</span>
+                            <small>70kV, 0.06s</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="leg-specific" class="specific-regions" style="display: none;">
+                    <div class="specific-header">
+                        <h4>Perna</h4>
+                        <button id="backToGeneral" class="back-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                    </div>
+                    <div class="button-grid">
+                        <button class="bodypart-btn" data-bodypart="leg-ap">
+                            <i class="fas fa-user"></i>
+                            <span>AP</span>
+                            <small>58kV, 0.05s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="leg-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Lateral</span>
+                            <small>58kV, 0.05s</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="foot-specific" class="specific-regions" style="display: none;">
+                    <div class="specific-header">
+                        <h4>Pé</h4>
+                        <button id="backToGeneral" class="back-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                    </div>
+                    <div class="button-grid">
+                        <button class="bodypart-btn" data-bodypart="foot-ap">
+                            <i class="fas fa-user"></i>
+                            <span>AP</span>
+                            <small>44kV, 0.05s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="foot-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Lateral</span>
+                            <small>44kV, 0.05s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="foot-oblique">
+                            <i class="fas fa-user"></i>
+                            <span>Oblíqua</span>
+                            <small>44kV, 0.05s</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="ankle-specific" class="specific-regions" style="display: none;">
+                    <div class="specific-header">
+                        <h4>Tornozelo</h4>
+                        <button id="backToGeneral" class="back-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                    </div>
+                    <div class="button-grid">
+                        <button class="bodypart-btn" data-bodypart="ankle-ap">
+                            <i class="fas fa-user"></i>
+                            <span>AP</span>
+                            <small>47kV, 0.04s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="ankle-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Lateral</span>
+                            <small>45kV, 0.04s</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="other-specific" class="specific-regions" style="display: none;">
+                    <div class="specific-header">
+                        <h4>Outras Regiões</h4>
+                        <button id="backToGeneral" class="back-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                    </div>
+                    <div class="button-grid">
+                        <button class="bodypart-btn" data-bodypart="elbow-ap">
+                            <i class="fas fa-user"></i>
+                            <span>Cotovelo AP</span>
+                            <small>52kV, 0.05s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="elbow-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Cotovelo Lat</span>
+                            <small>52kV, 0.05s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="knee-ap">
+                            <i class="fas fa-user"></i>
+                            <span>Joelho AP</span>
+                            <small>60kV, 0.06s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="knee-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Joelho Lat</span>
+                            <small>58kV, 0.06s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="hip-ap">
+                            <i class="fas fa-user"></i>
+                            <span>Quadril AP</span>
+                            <small>75kV, 0.25s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="hip-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Quadril Lat</span>
+                            <small>78kV, 0.30s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="finger-ap">
+                            <i class="fas fa-user"></i>
+                            <span>Dedo AP</span>
+                            <small>40kV, 0.04s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="finger-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Dedo Lat</span>
+                            <small>40kV, 0.04s</small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="calcaneus">
+                            <i class="fas fa-user"></i>
+                            <span>Calcâneo Axial</span>
+                            <small>48kV, 0.04s</small>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botão Calcular -->
+            <button id="calculateBtn" class="calculate-btn">
+                <i class="fas fa-calculator"></i>
+                CALCULAR PARÂMETROS
+            </button>
+        </div>
+
+        <!-- Seção de Resultados -->
+        <div class="results-section">
+            <h2 class="section-title">📊 Resultados</h2>
+            <div class="results-grid">
+                <div class="result-item">
+                    <div class="result-label">
+                        <i class="fas fa-bolt"></i>
+                        <span>KV</span>
+                    </div>
+                    <div class="result-value" id="kvValue">--</div>
+                </div>
+                
+                <div class="result-item">
+                    <div class="result-label">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>mA</span>
+                    </div>
+                    <div class="result-value" id="maValue">--</div>
+                </div>
+                
+                <div class="result-item">
+                    <div class="result-label">
+                        <i class="fas fa-calculator"></i>
+                        <span>mAs</span>
+                    </div>
+                    <div class="result-value" id="mAsValue">--</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p><span class="highlight">ExpoRad</span> - Calculadora Radiológica desenvolvida para técnicos de radiologia</p>
+            <p>🚀 Acertar a técnica usando a calculadora fica muito fácil!</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
