@@ -2,7 +2,7 @@
 class RadiologicalCalculator {
     constructor() {
         this.currentAge = 'newborn';
-        this.currentBodyType = 'medium';
+        this.currentBodyType = 'm';
         this.currentBodyPart = 'chest';
         
         this.initializeEventListeners();
@@ -48,13 +48,6 @@ class RadiologicalCalculator {
             });
         });
 
-        // Botão voltar
-        document.querySelectorAll('#backToGeneral').forEach(btn => {
-            btn.addEventListener('click', () => {
-                this.showGeneralRegions();
-            });
-        });
-
         // Botão calcular
         document.getElementById('calculateBtn').addEventListener('click', () => {
             this.calculate();
@@ -76,7 +69,7 @@ class RadiologicalCalculator {
             bodyTypeSection.style.display = 'block';
         } else {
             bodyTypeSection.style.display = 'none';
-            this.currentBodyType = 'medium'; // Reset para padrão
+            this.currentBodyType = 'm'; // Reset para padrão
         }
     }
 
@@ -237,24 +230,21 @@ class RadiologicalCalculator {
         return bodyPartParams[this.currentBodyPart] || bodyPartParams.chest;
     }
 
-    // Modificadores por tipo físico (apenas adultos)
+    // Modificadores por tipo físico (apenas adultos) - Novo sistema P, M, G, GG, XL
     getBodyTypeModifiers() {
         if (this.currentAge !== 'adult') {
             return { kvModifier: 0.0, timeModifier: 1.0000 };
         }
         
         const bodyModifiers = {
-            'very-thin': { kvModifier: -8.0, timeModifier: 0.7000, weight: '45-55kg' },
-            'thin': { kvModifier: -5.0, timeModifier: 0.8000, weight: '55-65kg' },
-            'thin-medium': { kvModifier: -3.0, timeModifier: 0.8500, weight: '65-75kg' },
-            'medium': { kvModifier: 0.0, timeModifier: 1.0000, weight: '70-80kg' },
-            'medium-heavy': { kvModifier: 3.0, timeModifier: 1.1000, weight: '80-90kg' },
-            'heavy': { kvModifier: 6.0, timeModifier: 1.2000, weight: '90-100kg' },
-            'obese': { kvModifier: 10.0, timeModifier: 1.3000, weight: '100-120kg' },
-            'very-obese': { kvModifier: 15.0, timeModifier: 1.5000, weight: '120kg+' }
+            'p': { kvModifier: -8.0, timeModifier: 0.7000, weight: 'Pequeno' },
+            'm': { kvModifier: 0.0, timeModifier: 1.0000, weight: 'Médio' },
+            'g': { kvModifier: 5.0, timeModifier: 1.1500, weight: 'Grande' },
+            'gg': { kvModifier: 12.0, timeModifier: 1.3000, weight: 'Muito Grande' },
+            'xl': { kvModifier: 18.0, timeModifier: 1.5000, weight: 'Extra Grande' }
         };
         
-        return bodyModifiers[this.currentBodyType] || bodyModifiers.medium;
+        return bodyModifiers[this.currentBodyType] || bodyModifiers.m;
     }
 
     // Exibir resultados
@@ -324,17 +314,14 @@ class RadiologicalCalculator {
     getBodyTypeDescription() {
         const bodyModifiers = this.getBodyTypeModifiers();
         const descriptions = {
-            'very-thin': 'Muito Magro (45-55kg)',
-            'thin': 'Magro (55-65kg)',
-            'thin-medium': 'Magro-Médio (65-75kg)',
-            'medium': 'Médio (70-80kg)',
-            'medium-heavy': 'Médio-Forte (80-90kg)',
-            'heavy': 'Forte (90-100kg)',
-            'obese': 'Obeso (100-120kg)',
-            'very-obese': 'Muito Obeso (120kg+)'
+            'p': 'Pequeno',
+            'm': 'Médio',
+            'g': 'Grande',
+            'gg': 'Muito Grande',
+            'xl': 'Extra Grande'
         };
         
-        return descriptions[this.currentBodyType] || descriptions.medium;
+        return descriptions[this.currentBodyType] || descriptions.m;
     }
 
     // Obter informações da técnica
@@ -459,93 +446,67 @@ class RadiologicalCalculator {
         
         // Determinar região geral baseada na região específica atual
         const regionMapping = {
-            // Crânio
-            'skull-ap': 'skull',
-            'skull-lat': 'skull',
+            // Cabeça
+            'skull-ap': 'head',
+            'skull-lat': 'head',
+            'face-sinuses': 'head',
+            'face-nose-lat': 'head',
+            'face-orbits': 'head',
+            'face-mandible': 'head',
+            'cavum': 'head',
             
-            // Face
-            'face-sinuses': 'face',
-            'face-nose-lat': 'face',
-            'face-orbits': 'face',
-            'face-mandible': 'face',
+            // Tronco
+            'chest': 'torso',
+            'chest-lat': 'torso',
+            'chest-ap': 'torso',
+            'ribs-ap': 'torso',
+            'ribs-lat': 'torso',
+            'ribs-oblique': 'torso',
+            'abdomen-ap': 'torso',
+            'abdomen-lat': 'torso',
+            'abdomen-oblique': 'torso',
+            'pelvis-ap': 'torso',
+            'pelvis-lat': 'torso',
+            'pelvis-oblique': 'torso',
             
-            // Cavum
-            'cavum': 'cavum',
+            // Membros Superiores
+            'shoulder-ap': 'upper-limbs',
+            'shoulder-ax': 'upper-limbs',
+            'shoulder-y': 'upper-limbs',
+            'shoulder-lat': 'upper-limbs',
+            'humerus-ap': 'upper-limbs',
+            'humerus-lat': 'upper-limbs',
+            'elbow-ap': 'upper-limbs',
+            'elbow-lat': 'upper-limbs',
+            'forearm-ap': 'upper-limbs',
+            'forearm-lat': 'upper-limbs',
+            'wrist-pa': 'upper-limbs',
+            'wrist-lat': 'upper-limbs',
+            'wrist-oblique': 'upper-limbs',
+            'hand-pa': 'upper-limbs',
+            'hand-lat': 'upper-limbs',
+            'hand-oblique': 'upper-limbs',
+            'finger-ap': 'upper-limbs',
+            'finger-lat': 'upper-limbs',
             
-            // Costelas
-            'ribs-ap': 'ribs',
-            'ribs-lat': 'ribs',
-            'ribs-oblique': 'ribs',
-            
-            // Tórax
-            'chest': 'chest',
-            'chest-lat': 'chest',
-            'chest-ap': 'chest',
-            
-            // Úmero
-            'humerus-ap': 'humerus',
-            'humerus-lat': 'humerus',
-            
-            // Antebraço
-            'forearm-ap': 'forearm',
-            'forearm-lat': 'forearm',
-            
-            // Ombro
-            'shoulder-ap': 'shoulder',
-            'shoulder-ax': 'shoulder',
-            'shoulder-y': 'shoulder',
-            'shoulder-lat': 'shoulder',
-            
-            // Mão
-            'hand-pa': 'hand',
-            'hand-lat': 'hand',
-            'hand-oblique': 'hand',
-            
-            // Punho
-            'wrist-pa': 'wrist',
-            'wrist-lat': 'wrist',
-            'wrist-oblique': 'wrist',
-            
-            // Abdômen
-            'abdomen-ap': 'abdomen',
-            'abdomen-lat': 'abdomen',
-            'abdomen-oblique': 'abdomen',
-            
-            // Pelve/Bacia
-            'pelvis-ap': 'pelvis',
-            'pelvis-lat': 'pelvis',
-            'pelvis-oblique': 'pelvis',
-            
-            // Fêmur
-            'femur-ap': 'femur',
-            'femur-lat': 'femur',
-            
-            // Perna
-            'leg-ap': 'leg',
-            'leg-lat': 'leg',
-            
-            // Pé
-            'foot-ap': 'foot',
-            'foot-lat': 'foot',
-            'foot-oblique': 'foot',
-            
-            // Tornozelo
-            'ankle-ap': 'ankle',
-            'ankle-lat': 'ankle',
-            
-            // Outras regiões
-            'elbow-ap': 'other',
-            'elbow-lat': 'other',
-            'knee-ap': 'other',
-            'knee-lat': 'other',
-            'hip-ap': 'other',
-            'hip-lat': 'other',
-            'finger-ap': 'other',
-            'finger-lat': 'other',
-            'calcaneus': 'other'
+            // Membros Inferiores
+            'hip-ap': 'lower-limbs',
+            'hip-lat': 'lower-limbs',
+            'femur-ap': 'lower-limbs',
+            'femur-lat': 'lower-limbs',
+            'knee-ap': 'lower-limbs',
+            'knee-lat': 'lower-limbs',
+            'leg-ap': 'lower-limbs',
+            'leg-lat': 'lower-limbs',
+            'ankle-ap': 'lower-limbs',
+            'ankle-lat': 'lower-limbs',
+            'foot-ap': 'lower-limbs',
+            'foot-lat': 'lower-limbs',
+            'foot-oblique': 'lower-limbs',
+            'calcaneus': 'lower-limbs'
         };
         
-        const generalRegion = regionMapping[this.currentBodyPart] || 'chest';
+        const generalRegion = regionMapping[this.currentBodyPart] || 'torso';
         
         // Atualizar região geral
         document.querySelector(`[data-region="${generalRegion}"]`).classList.add('active');
@@ -596,7 +557,7 @@ class RadiologicalCalculator {
         
         // Resetar seleção para tórax (padrão)
         this.currentBodyPart = 'chest';
-        this.selectButton('[data-region]', document.querySelector('[data-region="chest"]'));
+        this.selectButton('[data-region]', document.querySelector('[data-region="torso"]'));
         this.calculate();
     }
 
@@ -632,6 +593,690 @@ class RadiologicalCalculator {
                 }
             }, 300);
         }, 3000);
+    }
+
+    // Mostrar seção de posicionamentos
+    showPositioning() {
+        // Ocultar calculadora
+        document.querySelector('.main-container').style.display = 'none';
+        
+        // Mostrar seção de posicionamentos
+        document.getElementById('positioning-section').style.display = 'block';
+        
+        // Inicializar categorias de posicionamentos
+        this.initializePositioningCategories();
+        
+        // Adicionar event listeners para os botões de posicionamento
+        this.initializePositioningButtons();
+    }
+
+    // Mostrar calculadora
+    showCalculator() {
+        // Ocultar seção de posicionamentos
+        document.getElementById('positioning-section').style.display = 'none';
+        
+        // Mostrar calculadora
+        document.querySelector('.main-container').style.display = 'grid';
+    }
+
+    // Inicializar categorias de posicionamentos
+    initializePositioningCategories() {
+        const categoryTabs = document.querySelectorAll('.category-tab');
+        const categoryContents = document.querySelectorAll('.position-category');
+
+        categoryTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetCategory = tab.dataset.category;
+                
+                // Atualizar tabs ativas
+                categoryTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Atualizar conteúdo ativo
+                categoryContents.forEach(content => {
+                    content.classList.remove('active');
+                    if (content.id === targetCategory) {
+                        content.classList.add('active');
+                    }
+                });
+            });
+        });
+    }
+
+    // Inicializar botões de posicionamento
+    initializePositioningButtons() {
+        const viewPositionBtns = document.querySelectorAll('.view-position-btn');
+        
+        viewPositionBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const positionCard = btn.closest('.position-card');
+                const position = positionCard.dataset.position;
+                this.showPositionModal(position);
+            });
+        });
+
+        // Também permitir clicar no card inteiro
+        const positionCards = document.querySelectorAll('.position-card');
+        positionCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const position = card.dataset.position;
+                this.showPositionModal(position);
+            });
+        });
+    }
+
+    // Mostrar modal de posicionamento
+    showPositionModal(position) {
+        const modal = document.getElementById('position-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalIcon = document.getElementById('modal-icon');
+        const modalInstructions = document.getElementById('modal-instructions');
+        const modalParameters = document.getElementById('modal-parameters');
+        const modalEquipment = document.getElementById('modal-equipment');
+
+        // Obter dados do posicionamento
+        const positionData = this.getPositionData(position);
+        
+        // Preencher modal
+        modalTitle.textContent = positionData.title;
+        modalIcon.className = positionData.icon;
+        modalInstructions.innerHTML = positionData.instructions;
+        modalParameters.innerHTML = positionData.parameters;
+        modalEquipment.innerHTML = positionData.equipment;
+        
+        // Mostrar modal
+        modal.style.display = 'flex';
+        
+        // Fechar modal ao clicar fora
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                this.closePositionModal();
+            }
+        });
+    }
+
+    // Fechar modal de posicionamento
+    closePositionModal() {
+        const modal = document.getElementById('position-modal');
+        modal.style.display = 'none';
+    }
+
+    // Obter dados do posicionamento
+    getPositionData(position) {
+        const positionDatabase = {
+            // Cabeça
+            'skull-ap': {
+                title: 'Crânio AP',
+                icon: 'fas fa-brain',
+                instructions: `
+                    <ul>
+                        <li>Paciente em decúbito dorsal</li>
+                        <li>Cabeça centralizada no filme</li>
+                        <li>Linha infraorbitomeatal perpendicular ao filme</li>
+                        <li>Braços ao longo do corpo</li>
+                        <li>Inspiração suave e prender a respiração</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 70-80</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.25s</li>
+                        <li><strong>Distância:</strong> 100cm</li>
+                        <li><strong>Grade:</strong> Sim</li>
+                    </ul>
+                `,
+                equipment: 'MURAL-BUCKY'
+            },
+            'skull-lateral': {
+                title: 'Crânio Lateral',
+                icon: 'fas fa-brain',
+                instructions: `
+                    <ul>
+                        <li>Paciente em decúbito lateral</li>
+                        <li>Cabeça em perfil perfeito</li>
+                        <li>Linha infraorbitomeatal paralela ao filme</li>
+                        <li>Braços elevados</li>
+                        <li>Inspiração suave e prender a respiração</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 67-75</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.25s</li>
+                        <li><strong>Distância:</strong> 100cm</li>
+                        <li><strong>Grade:</strong> Sim</li>
+                    </ul>
+                `,
+                equipment: 'MURAL-BUCKY'
+            },
+            'face-waters': {
+                title: 'Face - Waters',
+                icon: 'fas fa-user',
+                instructions: `
+                    <ul>
+                        <li>Paciente sentado</li>
+                        <li>Queixo elevado</li>
+                        <li>Boca aberta</li>
+                        <li>Linha infraorbitomeatal a 37°</li>
+                        <li>Braços para trás</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 65-75</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.20s</li>
+                        <li><strong>Distância:</strong> 100cm</li>
+                        <li><strong>Grade:</strong> Sim</li>
+                    </ul>
+                `,
+                equipment: 'MURAL-BUCKY'
+            },
+            'sinuses-caldwell': {
+                title: 'Seios - Caldwell',
+                icon: 'fas fa-user',
+                instructions: `
+                    <ul>
+                        <li>Paciente sentado</li>
+                        <li>Queixo no filme</li>
+                        <li>Linha infraorbitomeatal a 15°</li>
+                        <li>Braços para trás</li>
+                        <li>Inspiração suave</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 70-80</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.20s</li>
+                        <li><strong>Distância:</strong> 100cm</li>
+                        <li><strong>Grade:</strong> Sim</li>
+                    </ul>
+                `,
+                equipment: 'MURAL-BUCKY'
+            },
+            
+            // Tórax
+            'chest-pa': {
+                title: 'Tórax PA',
+                icon: 'fas fa-lungs',
+                instructions: `
+                    <ul>
+                        <li>Paciente em posição ortostática</li>
+                        <li>Tórax contra o filme</li>
+                        <li>Braços para trás</li>
+                        <li>Inspiração profunda e prender</li>
+                        <li>Escápulas afastadas</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 95-120</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.025s</li>
+                        <li><strong>Distância:</strong> 180cm</li>
+                        <li><strong>Grade:</strong> Sim</li>
+                    </ul>
+                `,
+                equipment: 'MURAL-BUCKY'
+            },
+            'chest-lateral': {
+                title: 'Tórax Lateral',
+                icon: 'fas fa-lungs',
+                instructions: `
+                    <ul>
+                        <li>Paciente em posição ortostática</li>
+                        <li>Lado esquerdo contra o filme</li>
+                        <li>Braços elevados</li>
+                        <li>Inspiração profunda e prender</li>
+                        <li>Escápulas afastadas</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 115-140</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.05s</li>
+                        <li><strong>Distância:</strong> 180cm</li>
+                        <li><strong>Grade:</strong> Sim</li>
+                    </ul>
+                `,
+                equipment: 'MURAL-BUCKY'
+            },
+            'chest-ap': {
+                title: 'Tórax AP',
+                icon: 'fas fa-lungs',
+                instructions: `
+                    <ul>
+                        <li>Paciente em decúbito dorsal</li>
+                        <li>Filme atrás das costas</li>
+                        <li>Braços para os lados</li>
+                        <li>Inspiração profunda e prender</li>
+                        <li>Escápulas afastadas</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 100-125</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.03s</li>
+                        <li><strong>Distância:</strong> 100cm</li>
+                        <li><strong>Grade:</strong> Sim</li>
+                    </ul>
+                `,
+                equipment: 'MURAL-BUCKY'
+            },
+            'ribs-ap': {
+                title: 'Costelas AP',
+                icon: 'fas fa-user',
+                instructions: `
+                    <ul>
+                        <li>Paciente em decúbito dorsal</li>
+                        <li>Braços elevados</li>
+                        <li>Filme centralizado no tórax</li>
+                        <li>Inspiração profunda e prender</li>
+                        <li>Escápulas afastadas</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 90-110</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.30s</li>
+                        <li><strong>Distância:</strong> 100cm</li>
+                        <li><strong>Grade:</strong> Sim</li>
+                    </ul>
+                `,
+                equipment: 'MESA-GRADE'
+            },
+            
+            // Coluna
+            'cervical-ap': {
+                title: 'Coluna Cervical AP',
+                icon: 'fas fa-user',
+                instructions: `
+                    <ul>
+                        <li>Paciente sentado</li>
+                        <li>Queixo elevado</li>
+                        <li>Linha infraorbitomeatal a 15-20°</li>
+                        <li>Braços para trás</li>
+                        <li>Inspiração suave</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 70-80</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.25s</li>
+                        <li><strong>Distância:</strong> 100cm</li>
+                        <li><strong>Grade:</strong> Sim</li>
+                    </ul>
+                `,
+                equipment: 'MURAL-BUCKY'
+            },
+            'cervical-lateral': {
+                title: 'Coluna Cervical Lateral',
+                icon: 'fas fa-user',
+                instructions: `
+                    <ul>
+                        <li>Paciente sentado</li>
+                        <li>Perfil da cabeça</li>
+                        <li>Queixo elevado</li>
+                        <li>Braços para trás</li>
+                        <li>Inspiração suave</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 70-80</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.25s</li>
+                        <li><strong>Distância:</strong> 100cm</li>
+                        <li><strong>Grade:</strong> Sim</li>
+                    </ul>
+                `,
+                equipment: 'MURAL-BUCKY'
+            },
+            'thoracic-ap': {
+                title: 'Coluna Torácica AP',
+                icon: 'fas fa-user',
+                instructions: `
+                    <ul>
+                        <li>Paciente em decúbito dorsal</li>
+                        <li>Braços para os lados</li>
+                        <li>Joelhos flexionados</li>
+                        <li>Inspiração suave</li>
+                        <li>Escápulas afastadas</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 80-100</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.30s</li>
+                        <li><strong>Distância:</strong> 100cm</li>
+                        <li><strong>Grade:</strong> Sim</li>
+                    </ul>
+                `,
+                equipment: 'MESA-GRADE'
+            },
+            'lumbar-ap': {
+                title: 'Coluna Lombar AP',
+                icon: 'fas fa-user',
+                instructions: `
+                    <ul>
+                        <li>Paciente em decúbito dorsal</li>
+                        <li>Braços para os lados</li>
+                        <li>Joelhos flexionados</li>
+                        <li>Inspiração suave</li>
+                        <li>Pelve centralizada</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 80-100</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.30s</li>
+                        <li><strong>Distância:</strong> 100cm</li>
+                        <li><strong>Grade:</strong> Sim</li>
+                    </ul>
+                `,
+                equipment: 'MESA-GRADE'
+            },
+            
+            // Membros Superiores
+            'shoulder-ap': {
+                title: 'Ombro AP',
+                icon: 'fas fa-user',
+                instructions: `
+                    <ul>
+                        <li>Paciente sentado</li>
+                        <li>Braço em rotação neutra</li>
+                        <li>Cotovelo flexionado a 90°</li>
+                        <li>Ombro centralizado no filme</li>
+                        <li>Braço oposto para trás</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 52-65</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.20s</li>
+                        <li><strong>Distância:</strong> 100cm</li>
+                        <li><strong>Grade:</strong> Sim</li>
+                    </ul>
+                `,
+                equipment: 'MURAL-BUCKY'
+            },
+            'shoulder-y': {
+                title: 'Ombro Y',
+                icon: 'fas fa-user',
+                instructions: `
+                    <ul>
+                        <li>Paciente sentado</li>
+                        <li>Braço em rotação externa</li>
+                        <li>Cotovelo flexionado a 90°</li>
+                        <li>Ombro centralizado no filme</li>
+                        <li>Braço oposto para trás</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 63-75</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.25s</li>
+                        <li><strong>Distância:</strong> 100cm</li>
+                        <li><strong>Grade:</strong> Sim</li>
+                    </ul>
+                `,
+                equipment: 'MURAL-BUCKY'
+            },
+            'elbow-ap': {
+                title: 'Cotovelo AP',
+                icon: 'fas fa-user',
+                instructions: `
+                    <ul>
+                        <li>Paciente sentado</li>
+                        <li>Braço estendido</li>
+                        <li>Palma para cima</li>
+                        <li>Cotovelo centralizado no filme</li>
+                        <li>Braço oposto para trás</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 52-65</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.05s</li>
+                        <li><strong>Distância:</strong> 100cm</li>
+                        <li><strong>Grade:</strong> Sim</li>
+                    </ul>
+                `,
+                equipment: 'MESA'
+            },
+            'hand-pa': {
+                title: 'Mão PA',
+                icon: 'fas fa-hand-paper',
+                instructions: `
+                    <ul>
+                        <li>Paciente sentado</li>
+                        <li>Mão apoiada no filme</li>
+                        <li>Dedos estendidos e separados</li>
+                        <li>Punho em posição neutra</li>
+                        <li>Braço oposto para trás</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 44-55</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.04s</li>
+                        <li><strong>Distância:</strong> 100cm</li>
+                        <li><strong>Grade:</strong> Não</li>
+                    </ul>
+                `,
+                equipment: 'MESA'
+            },
+            
+            // Membros Inferiores
+            'hip-ap': {
+                title: 'Quadril AP',
+                icon: 'fas fa-user',
+                instructions: `
+                    <ul>
+                        <li>Paciente em decúbito dorsal</li>
+                        <li>Pernas estendidas</li>
+                        <li>Pés em rotação interna</li>
+                        <li>Pelve centralizada no filme</li>
+                        <li>Braços para os lados</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 75-90</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.25s</li>
+                        <li><strong>Distância:</strong> 100cm</li>
+                        <li><strong>Grade:</strong> Sim</li>
+                    </ul>
+                `,
+                equipment: 'MESA-GRADE'
+            },
+            'knee-ap': {
+                title: 'Joelho AP',
+                icon: 'fas fa-user',
+                instructions: `
+                    <ul>
+                        <li>Paciente em decúbito dorsal</li>
+                        <li>Perna estendida</li>
+                        <li>Patela centralizada no filme</li>
+                        <li>Pé em posição neutra</li>
+                        <li>Braços para os lados</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 60-75</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.06s</li>
+                        <li><strong>Distância:</strong> 100cm</li>
+                        <li><strong>Grade:</strong> Sim</li>
+                    </ul>
+                `,
+                equipment: 'MESA-GRADE'
+            },
+            'ankle-ap': {
+                title: 'Tornozelo AP',
+                icon: 'fas fa-shoe-prints',
+                instructions: `
+                    <ul>
+                        <li>Paciente em decúbito dorsal</li>
+                        <li>Pé em flexão dorsal</li>
+                        <li>Maléolos centralizados no filme</li>
+                        <li>Perna estendida</li>
+                        <li>Braços para os lados</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 47-60</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.04s</li>
+                        <li><strong>Distância:</strong> 100cm</li>
+                        <li><strong>Grade:</strong> Não</li>
+                    </ul>
+                `,
+                equipment: 'MESA'
+            },
+            'foot-ap': {
+                title: 'Pé AP',
+                icon: 'fas fa-shoe-prints',
+                instructions: `
+                    <ul>
+                        <li>Paciente sentado</li>
+                        <li>Pé apoiado no filme</li>
+                        <li>Dedos estendidos</li>
+                        <li>Pé em posição neutra</li>
+                        <li>Braço oposto para trás</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 44-55</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.05s</li>
+                        <li><strong>Distância:</strong> 100cm</li>
+                        <li><strong>Grade:</strong> Não</li>
+                    </ul>
+                `,
+                equipment: 'MESA'
+            },
+            
+            // Abdômen
+            'abdomen-ap': {
+                title: 'Abdômen AP',
+                icon: 'fas fa-user',
+                instructions: `
+                    <ul>
+                        <li>Paciente em decúbito dorsal</li>
+                        <li>Braços para os lados</li>
+                        <li>Joelhos flexionados</li>
+                        <li>Abdômen centralizado no filme</li>
+                        <li>Inspiração suave</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 67-80</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.32s</li>
+                        <li><strong>Distância:</strong> 100cm</li>
+                        <li><strong>Grade:</strong> Sim</li>
+                    </ul>
+                `,
+                equipment: 'MESA-GRADE'
+            },
+            'abdomen-lateral': {
+                title: 'Abdômen Lateral',
+                icon: 'fas fa-user',
+                instructions: `
+                    <ul>
+                        <li>Paciente em decúbito lateral</li>
+                        <li>Braços elevados</li>
+                        <li>Joelhos flexionados</li>
+                        <li>Abdômen centralizado no filme</li>
+                        <li>Inspiração suave</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 67-80</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.32s</li>
+                        <li><strong>Distância:</strong> 100cm</li>
+                        <li><strong>Grade:</strong> Sim</li>
+                    </ul>
+                `,
+                equipment: 'MURAL-BUCKY'
+            },
+            'pelvis-ap': {
+                title: 'Pelve AP',
+                icon: 'fas fa-user',
+                instructions: `
+                    <ul>
+                        <li>Paciente em decúbito dorsal</li>
+                        <li>Pernas estendidas</li>
+                        <li>Pés em rotação interna</li>
+                        <li>Pelve centralizada no filme</li>
+                        <li>Braços para os lados</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 75-90</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.32s</li>
+                        <li><strong>Distância:</strong> 100cm</li>
+                        <li><strong>Grade:</strong> Sim</li>
+                    </ul>
+                `,
+                equipment: 'MESA-GRADE'
+            },
+            'pelvis-lateral': {
+                title: 'Pelve Lateral',
+                icon: 'fas fa-user',
+                instructions: `
+                    <ul>
+                        <li>Paciente em decúbito lateral</li>
+                        <li>Braços elevados</li>
+                        <li>Joelhos flexionados</li>
+                        <li>Pelve centralizada no filme</li>
+                        <li>Inspiração suave</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 80-95</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.35s</li>
+                        <li><strong>Distância:</strong> 100cm</li>
+                        <li><strong>Grade:</strong> Sim</li>
+                    </ul>
+                `,
+                equipment: 'MESA-GRADE'
+            }
+        };
+        
+        return positionDatabase[position] || {
+            title: 'Posicionamento',
+            icon: 'fas fa-user',
+            instructions: '<p>Instruções não disponíveis para este posicionamento.</p>',
+            parameters: '<p>Parâmetros não disponíveis para este posicionamento.</p>',
+            equipment: 'Não especificado'
+        };
     }
 }
 
