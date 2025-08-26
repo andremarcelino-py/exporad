@@ -35,7 +35,7 @@ class RadiologicalCalculator {
             btn.addEventListener('click', (e) => {
                 this.selectButton('[data-region]', e.target.closest('[data-region]'));
                 const region = e.target.closest('[data-region]').dataset.region;
-                this.showSpecificRegions(region);
+                this.showSpecificRegionsInline(region);
             });
         });
 
@@ -512,7 +512,7 @@ class RadiologicalCalculator {
         document.querySelector(`[data-region="${generalRegion}"]`).classList.add('active');
         
         // Mostrar regiões específicas se necessário
-        this.showSpecificRegions(generalRegion);
+        this.showSpecificRegionsInline(generalRegion);
         
         // Atualizar região específica
         document.querySelector(`[data-bodypart="${this.currentBodyPart}"]`).classList.add('active');
@@ -520,8 +520,8 @@ class RadiologicalCalculator {
         this.updateBodyTypeSection();
     }
 
-    // Mostrar regiões específicas
-    showSpecificRegions(region) {
+    // Mostrar regiões específicas inline (na mesma seção)
+    showSpecificRegionsInline(region) {
         // Ocultar regiões gerais
         document.getElementById('general-regions').style.display = 'none';
         
@@ -534,6 +534,9 @@ class RadiologicalCalculator {
         const specificRegion = document.getElementById(`${region}-specific`);
         if (specificRegion) {
             specificRegion.style.display = 'block';
+            
+            // Adicionar animação de entrada
+            specificRegion.style.animation = 'fadeIn 0.5s ease-out';
         }
         
         // Selecionar primeira opção específica por padrão
