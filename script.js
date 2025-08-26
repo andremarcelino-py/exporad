@@ -128,103 +128,103 @@ class RadiologicalCalculator {
     // Parâmetros base por idade
     getAgeParameters() {
         const ageParams = {
-            newborn: { kv: 45.0, ma: 25.0, weight: 3.5 },
-            '1year': { kv: 50.0, ma: 40.0, weight: 10.0 },
-            '5years': { kv: 55.0, ma: 60.0, weight: 20.0 },
-            '10years': { kv: 60.0, ma: 80.0, weight: 35.0 },
-            adult: { kv: 65.0, ma: 200.0, weight: 70.0 }
+            newborn: { kv: 40.0, ma: 25.0, weight: 3.5 },
+            '1year': { kv: 45.0, ma: 40.0, weight: 10.0 },
+            '5years': { kv: 50.0, ma: 60.0, weight: 20.0 },
+            '10years': { kv: 55.0, ma: 80.0, weight: 35.0 },
+            adult: { kv: 60.0, ma: 200.0, weight: 70.0 }
         };
         
         return ageParams[this.currentAge] || ageParams.adult;
     }
 
-    // Parâmetros base por região corporal (valores realistas e corretos)
+    // Parâmetros base por região corporal (valores realistas e atualizados)
     getBodyPartParameters() {
         const bodyPartParams = {
             // Crânio
-            'skull-ap': { kvModifier: 5.0, baseTime: 0.2500, description: 'Crânio AP', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            'skull-lat': { kvModifier: 2.0, baseTime: 0.2500, description: 'Crânio Perfil', dff: 1.0, equipment: 'MURAL-BUCKY' },
+            'skull-ap': { kvModifier: 8.0, baseTime: 0.2000, description: 'Crânio AP', dff: 1.0, equipment: 'MURAL-BUCKY' },
+            'skull-lat': { kvModifier: 5.0, baseTime: 0.2000, description: 'Crânio Perfil', dff: 1.0, equipment: 'MURAL-BUCKY' },
             
             // Face
-            'face-sinuses': { kvModifier: 8.0, baseTime: 0.2000, description: 'Seios da Face', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            'face-nose-lat': { kvModifier: -15.0, baseTime: 0.0500, description: 'Nariz Perfil', dff: 1.0, equipment: 'MESA' },
-            'face-orbits': { kvModifier: 6.0, baseTime: 0.2000, description: 'Órbitas', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            'face-mandible': { kvModifier: 4.0, baseTime: 0.2500, description: 'Mandíbula', dff: 1.0, equipment: 'MURAL-BUCKY' },
+            'face-sinuses': { kvModifier: 10.0, baseTime: 0.1600, description: 'Seios da Face', dff: 1.0, equipment: 'MURAL-BUCKY' },
+            'face-nose-lat': { kvModifier: -18.0, baseTime: 0.0400, description: 'Nariz Perfil', dff: 1.0, equipment: 'MESA' },
+            'face-orbits': { kvModifier: 8.0, baseTime: 0.1600, description: 'Órbitas', dff: 1.0, equipment: 'MURAL-BUCKY' },
+            'face-mandible': { kvModifier: 6.0, baseTime: 0.2000, description: 'Mandíbula', dff: 1.0, equipment: 'MURAL-BUCKY' },
             
             // Cavum
-            'cavum': { kvModifier: 5.0, baseTime: 0.2500, description: 'Cavum', dff: 1.0, equipment: 'MURAL-BUCKY' },
+            'cavum': { kvModifier: 8.0, baseTime: 0.2000, description: 'Cavum', dff: 1.0, equipment: 'MURAL-BUCKY' },
             
             // Costelas
-            'ribs-ap': { kvModifier: 25.0, baseTime: 0.3000, description: 'Costelas AP', dff: 1.0, equipment: 'MESA-GRADE' },
-            'ribs-lat': { kvModifier: 35.0, baseTime: 0.4000, description: 'Costelas Lat', dff: 1.0, equipment: 'MESA-GRADE' },
-            'ribs-oblique': { kvModifier: 30.0, baseTime: 0.3500, description: 'Costelas Oblíqua', dff: 1.0, equipment: 'MESA-GRADE' },
+            'ribs-ap': { kvModifier: 28.0, baseTime: 0.2500, description: 'Costelas AP', dff: 1.0, equipment: 'MESA-GRADE' },
+            'ribs-lat': { kvModifier: 38.0, baseTime: 0.3500, description: 'Costelas Lat', dff: 1.0, equipment: 'MESA-GRADE' },
+            'ribs-oblique': { kvModifier: 33.0, baseTime: 0.3000, description: 'Costelas Oblíqua', dff: 1.0, equipment: 'MESA-GRADE' },
             
             // Tórax
-            'chest': { kvModifier: 30.0, baseTime: 0.0250, description: 'Tórax PA', dff: 1.8, equipment: 'MURAL-BUCKY' },
-            'chest-lat': { kvModifier: 50.0, baseTime: 0.0500, description: 'Tórax Lat', dff: 1.8, equipment: 'MURAL-BUCKY' },
-            'chest-ap': { kvModifier: 35.0, baseTime: 0.0300, description: 'Tórax AP', dff: 1.0, equipment: 'MURAL-BUCKY' },
+            'chest': { kvModifier: 32.0, baseTime: 0.0200, description: 'Tórax PA', dff: 1.8, equipment: 'MURAL-BUCKY' },
+            'chest-lat': { kvModifier: 52.0, baseTime: 0.0400, description: 'Tórax Lat', dff: 1.8, equipment: 'MURAL-BUCKY' },
+            'chest-ap': { kvModifier: 37.0, baseTime: 0.0250, description: 'Tórax AP', dff: 1.0, equipment: 'MURAL-BUCKY' },
             
             // Úmero
-            'humerus-ap': { kvModifier: -5.0, baseTime: 0.0600, description: 'Úmero AP', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            'humerus-lat': { kvModifier: -5.0, baseTime: 0.0600, description: 'Úmero Lat', dff: 1.0, equipment: 'MURAL-BUCKY' },
+            'humerus-ap': { kvModifier: -3.0, baseTime: 0.0500, description: 'Úmero AP', dff: 1.0, equipment: 'MURAL-BUCKY' },
+            'humerus-lat': { kvModifier: -3.0, baseTime: 0.0500, description: 'Úmero Lat', dff: 1.0, equipment: 'MURAL-BUCKY' },
             
             // Antebraço
-            'forearm-ap': { kvModifier: -13.0, baseTime: 0.0500, description: 'Antebraço AP', dff: 1.0, equipment: 'MESA' },
-            'forearm-lat': { kvModifier: -13.0, baseTime: 0.0500, description: 'Antebraço Lat', dff: 1.0, equipment: 'MESA' },
+            'forearm-ap': { kvModifier: -12.0, baseTime: 0.0400, description: 'Antebraço AP', dff: 1.0, equipment: 'MESA' },
+            'forearm-lat': { kvModifier: -12.0, baseTime: 0.0400, description: 'Antebraço Lat', dff: 1.0, equipment: 'MESA' },
             
             // Ombro
-            'shoulder-ap': { kvModifier: -13.0, baseTime: 0.2000, description: 'Ombro AP', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            'shoulder-ax': { kvModifier: -15.0, baseTime: 0.2500, description: 'Ombro Axilar', dff: 1.0, equipment: 'MESA' },
-            'shoulder-y': { kvModifier: -2.0, baseTime: 0.2500, description: 'Ombro Perfil (Y)', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            'shoulder-lat': { kvModifier: -10.0, baseTime: 0.2000, description: 'Ombro Lat', dff: 1.0, equipment: 'MURAL-BUCKY' },
+            'shoulder-ap': { kvModifier: -10.0, baseTime: 0.1600, description: 'Ombro AP', dff: 1.0, equipment: 'MURAL-BUCKY' },
+            'shoulder-ax': { kvModifier: -12.0, baseTime: 0.2000, description: 'Ombro Axilar', dff: 1.0, equipment: 'MESA' },
+            'shoulder-y': { kvModifier: 0.0, baseTime: 0.2000, description: 'Ombro Perfil (Y)', dff: 1.0, equipment: 'MURAL-BUCKY' },
+            'shoulder-lat': { kvModifier: -8.0, baseTime: 0.1600, description: 'Ombro Lat', dff: 1.0, equipment: 'MURAL-BUCKY' },
             
             // Mão
-            'hand-pa': { kvModifier: -21.0, baseTime: 0.0400, description: 'Mão PA', dff: 1.0, equipment: 'MESA' },
-            'hand-lat': { kvModifier: -21.0, baseTime: 0.0400, description: 'Mão Lat', dff: 1.0, equipment: 'MESA' },
-            'hand-oblique': { kvModifier: -21.0, baseTime: 0.0400, description: 'Mão Oblíqua', dff: 1.0, equipment: 'MESA' },
+            'hand-pa': { kvModifier: -22.0, baseTime: 0.0320, description: 'Mão PA', dff: 1.0, equipment: 'MESA' },
+            'hand-lat': { kvModifier: -22.0, baseTime: 0.0320, description: 'Mão Lat', dff: 1.0, equipment: 'MESA' },
+            'hand-oblique': { kvModifier: -22.0, baseTime: 0.0320, description: 'Mão Oblíqua', dff: 1.0, equipment: 'MESA' },
             
             // Punho
-            'wrist-pa': { kvModifier: -21.0, baseTime: 0.0400, description: 'Punho PA', dff: 1.0, equipment: 'MESA' },
-            'wrist-lat': { kvModifier: -21.0, baseTime: 0.0400, description: 'Punho Lat', dff: 1.0, equipment: 'MESA' },
-            'wrist-oblique': { kvModifier: -20.0, baseTime: 0.0400, description: 'Punho Oblíqua', dff: 1.0, equipment: 'MESA' },
+            'wrist-pa': { kvModifier: -22.0, baseTime: 0.0320, description: 'Punho PA', dff: 1.0, equipment: 'MESA' },
+            'wrist-lat': { kvModifier: -22.0, baseTime: 0.0320, description: 'Punho Lat', dff: 1.0, equipment: 'MESA' },
+            'wrist-oblique': { kvModifier: -21.0, baseTime: 0.0320, description: 'Punho Oblíqua', dff: 1.0, equipment: 'MESA' },
             
             // Abdômen
-            'abdomen-ap': { kvModifier: 2.0, baseTime: 0.3200, description: 'Abdômen AP', dff: 1.0, equipment: 'MESA-GRADE' },
-            'abdomen-lat': { kvModifier: 2.0, baseTime: 0.3200, description: 'Abdômen Lat', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            'abdomen-oblique': { kvModifier: 4.0, baseTime: 0.3000, description: 'Abdômen Oblíqua', dff: 1.0, equipment: 'MESA-GRADE' },
+            'abdomen-ap': { kvModifier: 5.0, baseTime: 0.2800, description: 'Abdômen AP', dff: 1.0, equipment: 'MESA-GRADE' },
+            'abdomen-lat': { kvModifier: 5.0, baseTime: 0.2800, description: 'Abdômen Lat', dff: 1.0, equipment: 'MURAL-BUCKY' },
+            'abdomen-oblique': { kvModifier: 7.0, baseTime: 0.2600, description: 'Abdômen Oblíqua', dff: 1.0, equipment: 'MESA-GRADE' },
             
             // Pelve/Bacia
-            'pelvis-ap': { kvModifier: 10.0, baseTime: 0.3200, description: 'Bacia AP', dff: 1.0, equipment: 'MESA-GRADE' },
-            'pelvis-lat': { kvModifier: 15.0, baseTime: 0.3500, description: 'Bacia Lat', dff: 1.0, equipment: 'MESA-GRADE' },
-            'pelvis-oblique': { kvModifier: 12.0, baseTime: 0.3300, description: 'Bacia Oblíqua', dff: 1.0, equipment: 'MESA-GRADE' },
+            'pelvis-ap': { kvModifier: 12.0, baseTime: 0.2800, description: 'Bacia AP', dff: 1.0, equipment: 'MESA-GRADE' },
+            'pelvis-lat': { kvModifier: 17.0, baseTime: 0.3000, description: 'Bacia Lat', dff: 1.0, equipment: 'MESA-GRADE' },
+            'pelvis-oblique': { kvModifier: 14.0, baseTime: 0.2800, description: 'Bacia Oblíqua', dff: 1.0, equipment: 'MESA-GRADE' },
             
             // Fêmur
-            'femur-ap': { kvModifier: 10.0, baseTime: 0.0600, description: 'Fêmur AP', dff: 1.0, equipment: 'MESA-GRADE' },
-            'femur-lat': { kvModifier: 10.0, baseTime: 0.0600, description: 'Fêmur Lat', dff: 1.0, equipment: 'MESA-GRADE' },
+            'femur-ap': { kvModifier: 12.0, baseTime: 0.0500, description: 'Fêmur AP', dff: 1.0, equipment: 'MESA-GRADE' },
+            'femur-lat': { kvModifier: 12.0, baseTime: 0.0500, description: 'Fêmur Lat', dff: 1.0, equipment: 'MESA-GRADE' },
             
             // Perna
-            'leg-ap': { kvModifier: -7.0, baseTime: 0.0500, description: 'Perna AP', dff: 1.0, equipment: 'MESA' },
-            'leg-lat': { kvModifier: -7.0, baseTime: 0.0500, description: 'Perna Lat', dff: 1.0, equipment: 'MESA' },
+            'leg-ap': { kvModifier: -5.0, baseTime: 0.0400, description: 'Perna AP', dff: 1.0, equipment: 'MESA' },
+            'leg-lat': { kvModifier: -5.0, baseTime: 0.0400, description: 'Perna Lat', dff: 1.0, equipment: 'MESA' },
             
             // Pé
-            'foot-ap': { kvModifier: -21.0, baseTime: 0.0500, description: 'Pé AP', dff: 1.0, equipment: 'MESA' },
-            'foot-lat': { kvModifier: -21.0, baseTime: 0.0500, description: 'Pé Lat', dff: 1.0, equipment: 'MESA' },
-            'foot-oblique': { kvModifier: -21.0, baseTime: 0.0500, description: 'Pé Oblíqua', dff: 1.0, equipment: 'MESA' },
+            'foot-ap': { kvModifier: -22.0, baseTime: 0.0400, description: 'Pé AP', dff: 1.0, equipment: 'MESA' },
+            'foot-lat': { kvModifier: -22.0, baseTime: 0.0400, description: 'Pé Lat', dff: 1.0, equipment: 'MESA' },
+            'foot-oblique': { kvModifier: -22.0, baseTime: 0.0400, description: 'Pé Oblíqua', dff: 1.0, equipment: 'MESA' },
             
             // Tornozelo
-            'ankle-ap': { kvModifier: -18.0, baseTime: 0.0400, description: 'Tornozelo AP', dff: 1.0, equipment: 'MESA' },
-            'ankle-lat': { kvModifier: -20.0, baseTime: 0.0400, description: 'Tornozelo Lat', dff: 1.0, equipment: 'MESA' },
+            'ankle-ap': { kvModifier: -18.0, baseTime: 0.0320, description: 'Tornozelo AP', dff: 1.0, equipment: 'MESA' },
+            'ankle-lat': { kvModifier: -20.0, baseTime: 0.0320, description: 'Tornozelo Lat', dff: 1.0, equipment: 'MESA' },
             
             // Outras regiões importantes
-            'elbow-ap': { kvModifier: -13.0, baseTime: 0.0500, description: 'Cotovelo AP', dff: 1.0, equipment: 'MESA' },
-            'elbow-lat': { kvModifier: -13.0, baseTime: 0.0500, description: 'Cotovelo Lat', dff: 1.0, equipment: 'MESA' },
-            'knee-ap': { kvModifier: -5.0, baseTime: 0.0600, description: 'Joelho AP', dff: 1.0, equipment: 'MESA-GRADE' },
-            'knee-lat': { kvModifier: -7.0, baseTime: 0.0600, description: 'Joelho Lat', dff: 1.0, equipment: 'MESA-GRADE' },
-            'hip-ap': { kvModifier: 15.0, baseTime: 0.2500, description: 'Quadril AP', dff: 1.0, equipment: 'MESA-GRADE' },
-            'hip-lat': { kvModifier: 18.0, baseTime: 0.3000, description: 'Quadril Lat', dff: 1.0, equipment: 'MESA-GRADE' },
-            'finger-ap': { kvModifier: -25.0, baseTime: 0.0400, description: 'Dedo AP', dff: 1.0, equipment: 'MESA' },
-            'finger-lat': { kvModifier: -25.0, baseTime: 0.0400, description: 'Dedo Lat', dff: 1.0, equipment: 'MESA' },
-            'calcaneus': { kvModifier: -17.0, baseTime: 0.0400, description: 'Calcâneo Axial', dff: 1.0, equipment: 'MESA' }
+            'elbow-ap': { kvModifier: -12.0, baseTime: 0.0400, description: 'Cotovelo AP', dff: 1.0, equipment: 'MESA' },
+            'elbow-lat': { kvModifier: -12.0, baseTime: 0.0400, description: 'Cotovelo Lat', dff: 1.0, equipment: 'MESA' },
+            'knee-ap': { kvModifier: -3.0, baseTime: 0.0500, description: 'Joelho AP', dff: 1.0, equipment: 'MESA-GRADE' },
+            'knee-lat': { kvModifier: -5.0, baseTime: 0.0500, description: 'Joelho Lat', dff: 1.0, equipment: 'MESA-GRADE' },
+            'hip-ap': { kvModifier: 17.0, baseTime: 0.2000, description: 'Quadril AP', dff: 1.0, equipment: 'MESA-GRADE' },
+            'hip-lat': { kvModifier: 20.0, baseTime: 0.2500, description: 'Quadril Lat', dff: 1.0, equipment: 'MESA-GRADE' },
+            'finger-ap': { kvModifier: -26.0, baseTime: 0.0320, description: 'Dedo AP', dff: 1.0, equipment: 'MESA' },
+            'finger-lat': { kvModifier: -26.0, baseTime: 0.0320, description: 'Dedo Lat', dff: 1.0, equipment: 'MESA' },
+            'calcaneus': { kvModifier: -18.0, baseTime: 0.0320, description: 'Calcâneo Axial', dff: 1.0, equipment: 'MESA' }
         };
         
         return bodyPartParams[this.currentBodyPart] || bodyPartParams.chest;
@@ -237,11 +237,11 @@ class RadiologicalCalculator {
         }
         
         const bodyModifiers = {
-            'p': { kvModifier: -8.0, timeModifier: 0.7000, weight: 'Pequeno' },
+            'p': { kvModifier: -10.0, timeModifier: 0.6500, weight: 'Pequeno' },
             'm': { kvModifier: 0.0, timeModifier: 1.0000, weight: 'Médio' },
-            'g': { kvModifier: 5.0, timeModifier: 1.1500, weight: 'Grande' },
-            'gg': { kvModifier: 12.0, timeModifier: 1.3000, weight: 'Muito Grande' },
-            'xl': { kvModifier: 18.0, timeModifier: 1.5000, weight: 'Extra Grande' }
+            'g': { kvModifier: 8.0, timeModifier: 1.2000, weight: 'Grande' },
+            'gg': { kvModifier: 15.0, timeModifier: 1.4000, weight: 'Muito Grande' },
+            'xl': { kvModifier: 22.0, timeModifier: 1.6000, weight: 'Extra Grande' }
         };
         
         return bodyModifiers[this.currentBodyType] || bodyModifiers.m;
