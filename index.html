@@ -19,7 +19,7 @@
                 </div>
                 <p>Calculadora Radiológica - KV, mAs e Tempo para Diferentes Faixas Etárias e Tipos Físicos</p>
             </div>
-            <div class="radiation-symbol">
+            <div class="radiation-symbol" onclick="window.calculator.openKvMasModal()">
                 <i class="fas fa-atom"></i>
             </div>
         </div>
@@ -772,10 +772,10 @@
                         <h4>Instruções de Posicionamento:</h4>
                         <div id="modal-instructions"></div>
                         
-                        <h4>Parâmetros Técnicos:</h4>
+                                                <h4>Parâmetros Técnicos:</h4>
                         <div id="modal-parameters"></div>
-                        
-                        <!-- Removido: Distância e Grade -->
+
+                        <!-- Parâmetros técnicos específicos por projeção -->
                         
                         <h4>Equipamento:</h4>
                         <div id="modal-equipment"></div>
@@ -784,6 +784,78 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Calculadora KV/mAs -->
+    <div id="kvmas-modal" class="kvmas-modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Calculadora de KV e mAs</h3>
+                <button class="close-modal-btn" onclick="window.calculator.closeKvMasModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="kvmas-form" onsubmit="window.calculator.calculateKvMas(event)">
+                    <div class="form-row">
+                        <label>
+                            <span>Espessura da Parte (cm):</span>
+                            <input type="number" id="input-thickness" required min="1" max="50" step="0.5" placeholder="Ex: 15">
+                        </label>
+                        <label>
+                            <span>Tipo de Feixe:</span>
+                            <select id="input-beam-type" required>
+                                <option value="">Selecione...</option>
+                                <option value="narrow">Feixe Fino</option>
+                                <option value="medium">Feixe Médio</option>
+                                <option value="wide">Feixe Largo</option>
+                                <option value="cone">Feixe Cônico</option>
+                            </select>
+                        </label>
+                    </div>
+                    
+                    <div class="form-row">
+                        <label>
+                            <span>Filtro Adicional:</span>
+                            <select id="input-filter" required>
+                                <option value="none">Sem Filtro</option>
+                                <option value="aluminum">Alumínio (2.5mm)</option>
+                                <option value="copper">Cobre (0.1mm)</option>
+                                <option value="rare-earth">Terra Rara</option>
+                            </select>
+                        </label>
+                        <label>
+                            <span>Distância Foco-Filme (cm):</span>
+                            <input type="number" id="input-distance" required min="50" max="200" step="5" placeholder="Ex: 100">
+                        </label>
+                    </div>
+                    
+                    <div class="form-row">
+                        <label>
+                            <span>KV Base:</span>
+                            <input type="number" id="input-kv-base" required min="40" max="150" step="1" placeholder="Ex: 70">
+                        </label>
+                        <label>
+                            <span>mA Base:</span>
+                            <input type="number" id="input-ma-base" required min="25" max="800" step="25" placeholder="Ex: 200">
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="calculate-btn">
+                        <i class="fas fa-calculator"></i>
+                        Calcular Parâmetros Otimizados
+                    </button>
+                </form>
+                <div class="formula-section">
+                    <h4>Fórmulas Utilizadas:</h4>
+                    <p><strong>KV = KV_base + (Espessura × 2) + Modificadores</strong></p>
+                    <p><strong>mAs = mA_base × Tempo × Fatores de Correção</strong></p>
+                    <p><strong>Tempo = mAs_desejado ÷ mA</strong></p>
+                </div>
+                <div id="kvmas-result" class="kvmas-result"></div>
+            </div>
+        </div>
+    </div>
+    <!-- Fim Modal Calculadora KV/mAs -->
 
     <!-- Footer -->
     <footer class="footer">

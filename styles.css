@@ -89,6 +89,10 @@ body {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+.logo img {
+    border: none !important;
+}
+
 .logo:hover {
     transform: scale(1.05);
     box-shadow: 0 12px 40px rgba(0, 212, 255, 0.25);
@@ -1322,53 +1326,19 @@ body {
 }
 
 .modal-content {
-    background: var(--secondary-bg);
-    border-radius: 24px;
-    border: 1px solid var(--border-primary);
-    box-shadow: var(--shadow-primary);
-    max-width: 800px;
-    width: 90%;
-    max-height: 90vh;
-    overflow-y: auto;
-    animation: slideIn 0.3s ease-out;
+    background: #fff;
+    padding: 24px 32px;
+    border-radius: 10px;
+    min-width: 320px;
+    position: relative;
 }
 
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 2rem 2rem 1rem;
-    border-bottom: 1px solid var(--border-primary);
-}
-
-.modal-header h3 {
-    color: var(--accent-primary);
-    font-size: 1.5rem;
-    font-weight: 600;
-}
-
-.close-modal-btn {
-    background: var(--gradient-secondary);
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    color: var(--primary-bg);
-    font-size: 1.2rem;
+.close {
+    position: absolute;
+    top: 10px;
+    right: 16px;
+    font-size: 24px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.close-modal-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
-}
-
-.modal-body {
-    padding: 2rem;
 }
 
 .position-details {
@@ -1414,6 +1384,243 @@ body {
     background: rgba(0, 212, 255, 0.05);
     border-radius: 12px;
     border: 1px solid var(--border-primary);
+}
+
+/* Modal KV/mAs */
+.kvmas-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(20px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.kvmas-modal .modal-content {
+    background: var(--secondary-bg);
+    backdrop-filter: blur(20px);
+    padding: 2.5rem;
+    border-radius: 24px;
+    width: 450px;
+    max-width: 90vw;
+    border: 2px solid var(--border-primary);
+    box-shadow: var(--shadow-primary);
+    position: relative;
+    animation: slideIn 0.3s ease-out;
+}
+
+.kvmas-modal .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.kvmas-modal .modal-header h3 {
+    color: var(--accent-primary);
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.kvmas-modal .close-modal-btn {
+    background: var(--gradient-secondary);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: var(--primary-bg);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+}
+
+.kvmas-modal .close-modal-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+}
+
+.kvmas-modal .modal-body {
+    color: var(--text-primary);
+}
+
+.kvmas-modal form {
+    margin-bottom: 2rem;
+}
+
+.kvmas-modal label {
+    display: block;
+    margin-bottom: 1.5rem;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.kvmas-modal label span {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--accent-primary);
+    font-weight: 600;
+}
+
+.kvmas-modal input {
+    width: 100%;
+    padding: 1rem;
+    background: rgba(0, 212, 255, 0.05);
+    border: 2px solid var(--border-primary);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.kvmas-modal input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+    background: rgba(0, 212, 255, 0.08);
+}
+
+.kvmas-modal input::placeholder {
+    color: var(--text-muted);
+}
+
+.kvmas-modal .calculate-btn {
+    background: var(--gradient-primary);
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 16px;
+    color: var(--primary-bg);
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: 1rem;
+    box-shadow: var(--shadow-primary);
+    position: relative;
+    overflow: hidden;
+}
+
+.kvmas-modal .calculate-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #0099cc 0%, #00d4ff 100%);
+    transition: left 0.3s ease;
+    z-index: -1;
+}
+
+.kvmas-modal .calculate-btn:hover::before {
+    left: 0;
+}
+
+.kvmas-modal .calculate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0, 212, 255, 0.4);
+}
+
+.kvmas-modal .formula-section {
+    background: rgba(0, 212, 255, 0.05);
+    border: 1px solid var(--border-primary);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.kvmas-modal .formula-section h4 {
+    color: var(--accent-primary);
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.kvmas-modal .formula-section p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+.kvmas-modal .kvmas-result {
+    background: rgba(16, 185, 129, 0.1);
+    border: 2px solid rgba(16, 185, 129, 0.3);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.kvmas-modal .kvmas-result p {
+    color: var(--text-primary);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.kvmas-modal .kvmas-result p:last-child {
+    margin-bottom: 0;
+}
+
+.kvmas-modal .kvmas-result b {
+    color: var(--accent-primary);
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+/* Responsividade do Modal KV/mAs */
+@media (max-width: 768px) {
+    .kvmas-modal .modal-content {
+        width: 95%;
+        padding: 2rem;
+        margin: 1rem;
+    }
+    
+    .kvmas-modal .modal-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .kvmas-modal .modal-header h3 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .kvmas-modal .modal-content {
+        padding: 1.5rem;
+    }
+    
+    .kvmas-modal .modal-header h3 {
+        font-size: 1.3rem;
+    }
+    
+    .kvmas-modal input {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+    }
+    
+    .kvmas-modal .calculate-btn {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+    }
 }
 
 /* Responsividade para Posicionamentos */

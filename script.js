@@ -81,46 +81,53 @@ class RadiologicalCalculator {
 
     // Calcular parâmetros baseados na seleção
     calculateParameters() {
-        let baseKV, baseMA, baseTime, baseDFF;
-        
-        // Parâmetros base por idade e tipo físico
-        const ageParams = this.getAgeParameters();
+        // 1) Base por região/projeção
         const bodyPartParams = this.getBodyPartParameters();
         
-        // KV base
-        baseKV = ageParams.kv + bodyPartParams.kvModifier;
-        
-        // mA base
-        baseMA = ageParams.ma;
-        
-        // Tempo base (em segundos)
-        baseTime = bodyPartParams.baseTime;
-        
-        // DFF específico da região (ou padrão 1.0m)
-        baseDFF = bodyPartParams.dff || 1.0;
-        
-        // Ajustes por tipo físico (apenas para adultos)
-        if (this.currentAge === 'adult') {
-            const bodyModifiers = this.getBodyTypeModifiers();
-            baseKV += bodyModifiers.kvModifier;
-            baseTime *= bodyModifiers.timeModifier;
+        // 2) Verificar se é tórax AP ou PA para aplicar valores específicos por biotipo
+        if (this.currentAge === 'adult' && (this.currentBodyPart === 'chest' || this.currentBodyPart === 'chest-ap')) {
+            const chestParams = this.getChestSpecificParams();
+            return {
+                kv: chestParams.kv,
+                ma: chestParams.ma,
+                mAs: chestParams.mAs,
+                time: chestParams.time,
+                equipment: bodyPartParams.equipment || 'MURAL-BUCKY'
+            };
         }
         
-        // Calcular mAs com maior precisão
-        const mAs = (baseMA * baseTime);
+        // 3) Cálculo padrão para outras projeções
+        const kvBase = 60.0 + (bodyPartParams.kvModifier || 0.0);
+        const maBase = 200.0;
+        const timeBase = bodyPartParams.baseTime;
         
-        // Garantir valores mínimos e máximos seguros com maior precisão
-        const finalKV = Math.max(40, Math.min(150, Math.round(baseKV * 10) / 10));
-        const finalMA = Math.max(25, Math.min(800, Math.round(baseMA * 10) / 10));
-        const finalTime = Math.max(0.001, Math.min(5.0, Math.round(baseTime * 10000) / 10000));
-        const finalDFF = Math.max(0.5, Math.min(3.0, Math.round(baseDFF * 100) / 100));
+        // 4) Correções por idade
+        const ageParams = this.getAgeParameters();
+        const kvAgeDelta = (ageParams.kv - 60.0);
+        let kvCorrected = kvBase + kvAgeDelta;
+        let maCorrected = ageParams.ma;
+        let timeCorrected = timeBase;
+        
+        // 5) Correções por biotipo (apenas adultos)
+        if (this.currentAge === 'adult') {
+            const bodyModifiers = this.getBodyTypeModifiers();
+            kvCorrected += bodyModifiers.kvModifier;
+            timeCorrected *= bodyModifiers.timeModifier;
+        }
+        
+        // 6) Cálculo de mAs
+        let mAs = maCorrected * timeCorrected;
+        
+        // 7) Sanitização e retorno
+        const finalKV = Math.max(40, Math.min(150, Math.round(kvCorrected * 10) / 10));
+        const finalMA = Math.max(25, Math.min(800, Math.round(maCorrected * 10) / 10));
+        const finalTime = Math.max(0.001, Math.min(5.0, Math.round(timeCorrected * 10000) / 10000));
         
         return {
             kv: finalKV,
             ma: finalMA,
-            mAs: Math.round(mAs * 1000) / 1000, // 3 casas decimais para mAs
-            time: finalTime, // 4 casas decimais para tempo
-            dff: finalDFF,
+            mAs: Math.round(mAs * 1000) / 1000,
+            time: finalTime,
             equipment: bodyPartParams.equipment || 'MESA'
         };
     }
@@ -246,6 +253,19 @@ class RadiologicalCalculator {
         return bodyModifiers[this.currentBodyType] || bodyModifiers.m;
     }
 
+    // Parâmetros específicos para tórax AP e PA por biotipo
+    getChestSpecificParams() {
+        const chestParams = {
+            'p': { kv: 77, mAs: 18, ma: 200, time: 0.09 },
+            'm': { kv: 82, mAs: 20, ma: 200, time: 0.10 },
+            'g': { kv: 88, mAs: 25, ma: 200, time: 0.125 },
+            'gg': { kv: 94, mAs: 30, ma: 200, time: 0.15 },
+            'xl': { kv: 100, mAs: 40, ma: 200, time: 0.20 }
+        };
+        
+        return chestParams[this.currentBodyType] || chestParams.m;
+    }
+
     // Exibir resultados
     displayResults(params) {
         // Formatar valores com maior precisão
@@ -256,7 +276,7 @@ class RadiologicalCalculator {
         document.getElementById('kvValue').textContent = formattedKV;
         document.getElementById('maValue').textContent = formattedMA;
         document.getElementById('mAsValue').textContent = formattedMAs;
-        
+
         // Mostrar equipamento recomendado se disponível
         if (params.equipment) {
             const equipmentInfo = document.createElement('div');
@@ -363,7 +383,6 @@ class RadiologicalCalculator {
                             <strong>Data:</strong> ${new Date().toLocaleDateString('pt-BR')}
                         </div>
                         <div>
-                            <!-- Distância e Grade removidos -->
                             <strong>Tela:</strong> Padrão
                         </div>
                     </div>
@@ -1227,6 +1246,38 @@ class RadiologicalCalculator {
             equipment: 'Não especificado'
         };
     }
+
+    // Abrir modal de KV/mAs
+    openKvMasModal() {
+        document.getElementById('kvmas-modal').style.display = 'flex';
+        document.getElementById('kvmas-result').innerHTML = '';
+        document.getElementById('kvmas-form').reset();
+    }
+
+    // Fechar modal de KV/mAs
+    closeKvMasModal() {
+        document.getElementById('kvmas-modal').style.display = 'none';
+    }
+
+    // Calcular KV/mAs
+    calculateKvMas(event) {
+        event.preventDefault();
+        const ma = parseFloat(document.getElementById('input-ma').value);
+        const time = parseFloat(document.getElementById('input-time').value);
+        const kv = parseFloat(document.getElementById('input-kv').value);
+
+        if (isNaN(ma) || isNaN(time) || isNaN(kv)) {
+            document.getElementById('kvmas-result').innerHTML = 'Preencha todos os campos corretamente.';
+            return;
+        }
+
+        const mas = ma * time;
+        document.getElementById('kvmas-result').innerHTML = `
+            <p><strong>Resultado:</strong></p>
+            <p>KV: <b>${kv}</b></p>
+            <p>mAs: <b>${mas.toFixed(2)}</b> (mA × Tempo)</p>
+        `;
+    }
 }
 
 // Adicionar estilos para notificações
@@ -1278,3 +1329,31 @@ function addActionButtons() {
     actionButtons.appendChild(printBtn);
     document.body.appendChild(actionButtons);
 }
+
+// Cálculo específico (modal)
+document.addEventListener('DOMContentLoaded', function() {
+    const openBtn = document.getElementById('openSpecificCalcBtn');
+    const modal = document.getElementById('specific-calc-modal');
+    const closeBtn = document.getElementById('closeSpecificCalcBtn');
+    const form = document.getElementById('specificCalcForm');
+    const resultDiv = document.getElementById('specificCalcResult');
+
+    if (openBtn && modal && closeBtn && form && resultDiv) {
+        openBtn.onclick = () => { modal.style.display = 'block'; };
+        closeBtn.onclick = () => { modal.style.display = 'none'; resultDiv.innerHTML = ''; };
+        window.onclick = (e) => { if (e.target == modal) { modal.style.display = 'none'; resultDiv.innerHTML = ''; } };
+
+        form.onsubmit = function(e) {
+            e.preventDefault();
+            const v1 = parseFloat(document.getElementById('valor1').value);
+            const v2 = parseFloat(document.getElementById('valor2').value);
+            const v3 = parseFloat(document.getElementById('valor3').value);
+            if (v3 === 0) {
+                resultDiv.innerHTML = '<span style="color:red;">Divisão por zero não permitida.</span>';
+                return;
+            }
+            const resultado = (v1 * v2) / v3;
+            resultDiv.innerHTML = `<strong>Resultado:</strong> ${resultado.toFixed(2)}`;
+        };
+    }
+});
