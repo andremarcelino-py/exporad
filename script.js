@@ -129,12 +129,11 @@ class RadiologicalCalculator {
     getAgeParameters() {
         const ageParams = {
             newborn: { kv: 40.0, ma: 25.0, weight: 3.5 },
-            '1year': { kv: 45.0, ma: 40.0, weight: 10.0 },
-            '5years': { kv: 50.0, ma: 60.0, weight: 20.0 },
-            '10years': { kv: 55.0, ma: 80.0, weight: 35.0 },
+            '1a5': { kv: 47.0, ma: 45.0, weight: 12.0 },
+            '5a10': { kv: 52.0, ma: 65.0, weight: 25.0 },
+            '10a18': { kv: 57.0, ma: 90.0, weight: 45.0 },
             adult: { kv: 60.0, ma: 200.0, weight: 70.0 }
         };
-        
         return ageParams[this.currentAge] || ageParams.adult;
     }
 
@@ -298,15 +297,15 @@ class RadiologicalCalculator {
     getPatientInfo() {
         const ageInfo = {
             newborn: 'Recém-nascido (0-1 mês)',
-            '1year': 'Criança (1 ano)',
-            '5years': 'Criança (5 anos)',
-            '10years': 'Criança (10 anos)',
+            '1a5': 'Criança (1 a 5 anos)',
+            '5a10': 'Criança (5 a 10 anos)',
+            '10a18': 'Criança (10 a 18 anos)',
             adult: 'Adulto'
         };
-        
+
         const bodyTypeInfo = this.currentAge === 'adult' ? 
             ` - ${this.getBodyTypeDescription()}` : '';
-        
+
         return ageInfo[this.currentAge] + bodyTypeInfo;
     }
 
@@ -336,6 +335,7 @@ class RadiologicalCalculator {
         const patientInfo = this.getPatientInfo();
         const techniqueInfo = this.getTechniqueInfo();
         
+                // ...existing code...
         printWindow.document.write(`
             <html>
                 <head>
@@ -363,8 +363,7 @@ class RadiologicalCalculator {
                             <strong>Data:</strong> ${new Date().toLocaleDateString('pt-BR')}
                         </div>
                         <div>
-                            <strong>Distância:</strong> 1.0m<br>
-                            <strong>Grade:</strong> Padrão<br>
+                            <!-- Distância e Grade removidos -->
                             <strong>Tela:</strong> Padrão
                         </div>
                     </div>
@@ -391,7 +390,7 @@ class RadiologicalCalculator {
                 </body>
             </html>
         `);
-        
+      
         printWindow.document.close();
         printWindow.print();
     }
@@ -726,8 +725,6 @@ class RadiologicalCalculator {
                         <li><strong>KV:</strong> 70-80</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.25s</li>
-                        <li><strong>Distância:</strong> 100cm</li>
-                        <li><strong>Grade:</strong> Sim</li>
                     </ul>
                 `,
                 equipment: 'MURAL-BUCKY'
@@ -749,8 +746,6 @@ class RadiologicalCalculator {
                         <li><strong>KV:</strong> 67-75</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.25s</li>
-                        <li><strong>Distância:</strong> 100cm</li>
-                        <li><strong>Grade:</strong> Sim</li>
                     </ul>
                 `,
                 equipment: 'MURAL-BUCKY'
@@ -772,8 +767,6 @@ class RadiologicalCalculator {
                         <li><strong>KV:</strong> 65-75</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.20s</li>
-                        <li><strong>Distância:</strong> 100cm</li>
-                        <li><strong>Grade:</strong> Sim</li>
                     </ul>
                 `,
                 equipment: 'MURAL-BUCKY'
@@ -795,13 +788,10 @@ class RadiologicalCalculator {
                         <li><strong>KV:</strong> 70-80</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.20s</li>
-                        <li><strong>Distância:</strong> 100cm</li>
-                        <li><strong>Grade:</strong> Sim</li>
                     </ul>
                 `,
                 equipment: 'MURAL-BUCKY'
             },
-            
             // Tórax
             'chest-pa': {
                 title: 'Tórax PA',
@@ -820,8 +810,6 @@ class RadiologicalCalculator {
                         <li><strong>KV:</strong> 95-120</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.025s</li>
-                        <li><strong>Distância:</strong> 180cm</li>
-                        <li><strong>Grade:</strong> Sim</li>
                     </ul>
                 `,
                 equipment: 'MURAL-BUCKY'
@@ -843,8 +831,6 @@ class RadiologicalCalculator {
                         <li><strong>KV:</strong> 115-140</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.05s</li>
-                        <li><strong>Distância:</strong> 180cm</li>
-                        <li><strong>Grade:</strong> Sim</li>
                     </ul>
                 `,
                 equipment: 'MURAL-BUCKY'
@@ -866,8 +852,6 @@ class RadiologicalCalculator {
                         <li><strong>KV:</strong> 100-125</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.03s</li>
-                        <li><strong>Distância:</strong> 100cm</li>
-                        <li><strong>Grade:</strong> Sim</li>
                     </ul>
                 `,
                 equipment: 'MURAL-BUCKY'
@@ -889,13 +873,10 @@ class RadiologicalCalculator {
                         <li><strong>KV:</strong> 90-110</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.30s</li>
-                        <li><strong>Distância:</strong> 100cm</li>
-                        <li><strong>Grade:</strong> Sim</li>
                     </ul>
                 `,
                 equipment: 'MESA-GRADE'
             },
-            
             // Coluna
             'cervical-ap': {
                 title: 'Coluna Cervical AP',
@@ -914,8 +895,6 @@ class RadiologicalCalculator {
                         <li><strong>KV:</strong> 70-80</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.25s</li>
-                        <li><strong>Distância:</strong> 100cm</li>
-                        <li><strong>Grade:</strong> Sim</li>
                     </ul>
                 `,
                 equipment: 'MURAL-BUCKY'
@@ -937,8 +916,6 @@ class RadiologicalCalculator {
                         <li><strong>KV:</strong> 70-80</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.25s</li>
-                        <li><strong>Distância:</strong> 100cm</li>
-                        <li><strong>Grade:</strong> Sim</li>
                     </ul>
                 `,
                 equipment: 'MURAL-BUCKY'
@@ -960,8 +937,6 @@ class RadiologicalCalculator {
                         <li><strong>KV:</strong> 80-100</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.30s</li>
-                        <li><strong>Distância:</strong> 100cm</li>
-                        <li><strong>Grade:</strong> Sim</li>
                     </ul>
                 `,
                 equipment: 'MESA-GRADE'
@@ -983,13 +958,10 @@ class RadiologicalCalculator {
                         <li><strong>KV:</strong> 80-100</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.30s</li>
-                        <li><strong>Distância:</strong> 100cm</li>
-                        <li><strong>Grade:</strong> Sim</li>
                     </ul>
                 `,
                 equipment: 'MESA-GRADE'
             },
-            
             // Membros Superiores
             'shoulder-ap': {
                 title: 'Ombro AP',
@@ -1008,8 +980,6 @@ class RadiologicalCalculator {
                         <li><strong>KV:</strong> 52-65</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.20s</li>
-                        <li><strong>Distância:</strong> 100cm</li>
-                        <li><strong>Grade:</strong> Sim</li>
                     </ul>
                 `,
                 equipment: 'MURAL-BUCKY'
@@ -1031,8 +1001,6 @@ class RadiologicalCalculator {
                         <li><strong>KV:</strong> 63-75</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.25s</li>
-                        <li><strong>Distância:</strong> 100cm</li>
-                        <li><strong>Grade:</strong> Sim</li>
                     </ul>
                 `,
                 equipment: 'MURAL-BUCKY'
@@ -1054,8 +1022,6 @@ class RadiologicalCalculator {
                         <li><strong>KV:</strong> 52-65</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.05s</li>
-                        <li><strong>Distância:</strong> 100cm</li>
-                        <li><strong>Grade:</strong> Sim</li>
                     </ul>
                 `,
                 equipment: 'MESA'
@@ -1077,13 +1043,10 @@ class RadiologicalCalculator {
                         <li><strong>KV:</strong> 44-55</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.04s</li>
-                        <li><strong>Distância:</strong> 100cm</li>
-                        <li><strong>Grade:</strong> Não</li>
                     </ul>
                 `,
                 equipment: 'MESA'
             },
-            
             // Membros Inferiores
             'hip-ap': {
                 title: 'Quadril AP',
@@ -1102,8 +1065,6 @@ class RadiologicalCalculator {
                         <li><strong>KV:</strong> 75-90</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.25s</li>
-                        <li><strong>Distância:</strong> 100cm</li>
-                        <li><strong>Grade:</strong> Sim</li>
                     </ul>
                 `,
                 equipment: 'MESA-GRADE'
@@ -1125,8 +1086,6 @@ class RadiologicalCalculator {
                         <li><strong>KV:</strong> 60-75</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.06s</li>
-                        <li><strong>Distância:</strong> 100cm</li>
-                        <li><strong>Grade:</strong> Sim</li>
                     </ul>
                 `,
                 equipment: 'MESA-GRADE'
@@ -1148,8 +1107,6 @@ class RadiologicalCalculator {
                         <li><strong>KV:</strong> 47-60</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.04s</li>
-                        <li><strong>Distância:</strong> 100cm</li>
-                        <li><strong>Grade:</strong> Não</li>
                     </ul>
                 `,
                 equipment: 'MESA'
@@ -1171,13 +1128,10 @@ class RadiologicalCalculator {
                         <li><strong>KV:</strong> 44-55</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.05s</li>
-                        <li><strong>Distância:</strong> 100cm</li>
-                        <li><strong>Grade:</strong> Não</li>
                     </ul>
                 `,
                 equipment: 'MESA'
             },
-            
             // Abdômen
             'abdomen-ap': {
                 title: 'Abdômen AP',
@@ -1196,8 +1150,6 @@ class RadiologicalCalculator {
                         <li><strong>KV:</strong> 67-80</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.32s</li>
-                        <li><strong>Distância:</strong> 100cm</li>
-                        <li><strong>Grade:</strong> Sim</li>
                     </ul>
                 `,
                 equipment: 'MESA-GRADE'
@@ -1219,8 +1171,6 @@ class RadiologicalCalculator {
                         <li><strong>KV:</strong> 67-80</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.32s</li>
-                        <li><strong>Distância:</strong> 100cm</li>
-                        <li><strong>Grade:</strong> Sim</li>
                     </ul>
                 `,
                 equipment: 'MURAL-BUCKY'
@@ -1242,8 +1192,6 @@ class RadiologicalCalculator {
                         <li><strong>KV:</strong> 75-90</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.32s</li>
-                        <li><strong>Distância:</strong> 100cm</li>
-                        <li><strong>Grade:</strong> Sim</li>
                     </ul>
                 `,
                 equipment: 'MESA-GRADE'
@@ -1265,8 +1213,6 @@ class RadiologicalCalculator {
                         <li><strong>KV:</strong> 80-95</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.35s</li>
-                        <li><strong>Distância:</strong> 100cm</li>
-                        <li><strong>Grade:</strong> Sim</li>
                     </ul>
                 `,
                 equipment: 'MESA-GRADE'
