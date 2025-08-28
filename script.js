@@ -271,7 +271,7 @@ class RadiologicalCalculator {
         // Formatar valores com maior precisão
         const formattedKV = params.kv.toFixed(1);
         const formattedMA = params.ma.toFixed(1);
-        const formattedMAs = params.mAs.toFixed(3);
+        const formattedMAs = params.mAs.toString();
         
         document.getElementById('kvValue').textContent = formattedKV;
         document.getElementById('maValue').textContent = formattedMA;
