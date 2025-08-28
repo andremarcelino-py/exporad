@@ -798,46 +798,30 @@
                 <form id="kvmas-form" onsubmit="window.calculator.calculateKvMas(event)">
                     <div class="form-row">
                         <label>
-                            <span>Espessura da Parte (cm):</span>
-                            <input type="number" id="input-thickness" required min="1" max="50" step="0.5" placeholder="Ex: 15">
+                            <span>Área de Exame:</span>
+                            <select id="input-exam-area" required>
+                                <option value="">Selecione a área...</option>
+                                <option value="cranio">Crânio</option>
+                                <option value="torax">Tórax</option>
+                                <option value="abdomen">Abdômen</option>
+                                <option value="coluna">Coluna</option>
+                                <option value="membros-superiores">Membros Superiores</option>
+                                <option value="membros-inferiores">Membros Inferiores</option>
+                                <option value="pelvis">Pelve</option>
+                            </select>
                         </label>
                         <label>
-                            <span>Tipo de Feixe:</span>
-                            <select id="input-beam-type" required>
-                                <option value="">Selecione...</option>
-                                <option value="narrow">Feixe Fino</option>
-                                <option value="medium">Feixe Médio</option>
-                                <option value="wide">Feixe Largo</option>
-                                <option value="cone">Feixe Cônico</option>
-                            </select>
+                            <span>Espessura da Parte (cm):</span>
+                            <input type="number" id="input-thickness" required min="1" max="50" step="0.5" placeholder="Ex: 15">
                         </label>
                     </div>
                     
                     <div class="form-row">
-                        <label>
-                            <span>Filtro Adicional:</span>
-                            <select id="input-filter" required>
-                                <option value="none">Sem Filtro</option>
-                                <option value="aluminum">Alumínio (2.5mm)</option>
-                                <option value="copper">Cobre (0.1mm)</option>
-                                <option value="rare-earth">Terra Rara</option>
-                            </select>
-                        </label>
                         <label>
                             <span>Distância Foco-Filme (cm):</span>
                             <input type="number" id="input-distance" required min="50" max="200" step="5" placeholder="Ex: 100">
                         </label>
-                    </div>
-                    
-                    <div class="form-row">
-                        <label>
-                            <span>KV Base:</span>
-                            <input type="number" id="input-kv-base" required min="40" max="150" step="1" placeholder="Ex: 70">
-                        </label>
-                        <label>
-                            <span>mA Base:</span>
-                            <input type="number" id="input-ma-base" required min="25" max="800" step="25" placeholder="Ex: 200">
-                        </label>
+
                     </div>
                     
                     <button type="submit" class="calculate-btn">

@@ -1262,20 +1262,65 @@ class RadiologicalCalculator {
     // Calcular KV/mAs
     calculateKvMas(event) {
         event.preventDefault();
-        const ma = parseFloat(document.getElementById('input-ma').value);
-        const time = parseFloat(document.getElementById('input-time').value);
-        const kv = parseFloat(document.getElementById('input-kv').value);
+        const examArea = document.getElementById('input-exam-area').value;
+        const thickness = parseFloat(document.getElementById('input-thickness').value);
+        const distance = parseFloat(document.getElementById('input-distance').value);
 
-        if (isNaN(ma) || isNaN(time) || isNaN(kv)) {
+        if (!examArea || isNaN(thickness) || isNaN(distance)) {
             document.getElementById('kvmas-result').innerHTML = 'Preencha todos os campos corretamente.';
             return;
         }
 
-        const mas = ma * time;
+        // Base KV por área de exame
+        const areaBaseKV = {
+            'cranio': 70,
+            'torax': 90,
+            'abdomen': 75,
+            'coluna': 80,
+            'membros-superiores': 55,
+            'membros-inferiores': 65,
+            'pelvis': 80
+        };
+
+        // Base mAs por área de exame
+        const areaBaseMAs = {
+            'cranio': 25,
+            'torax': 20,
+            'abdomen': 30,
+            'coluna': 25,
+            'membros-superiores': 15,
+            'membros-inferiores': 20,
+            'pelvis': 30
+        };
+
+        // Cálculo de KV baseado na área + espessura + distância
+        let kv = areaBaseKV[examArea] || 70;
+        kv += Math.round((thickness - 15) * 1.5); // Ajuste por espessura
+        kv += distance > 100 ? 5 : 0; // Ajuste por distância
+
+        // Cálculo de mAs baseado na área + espessura
+        let mas = areaBaseMAs[examArea] || 20;
+        mas += Math.round((thickness - 15) * 0.8); // Ajuste por espessura
+
+        // Ajuste por distância (inverso do quadrado)
+        const distanceFactor = Math.pow(distance / 100, 2);
+        mas = Math.round(mas * distanceFactor);
+
+        // Calcular mA baseado no mAs e tempo padrão
+        const timeStandard = 0.1; // tempo padrão de 0.1 segundos
+        let ma = Math.round(mas / timeStandard);
+
+        // Garantir valores mínimos e máximos seguros
+        kv = Math.max(40, Math.min(150, kv));
+        mas = Math.max(5, Math.min(100, mas));
+        ma = Math.max(25, Math.min(800, ma));
+
         document.getElementById('kvmas-result').innerHTML = `
-            <p><strong>Resultado:</strong></p>
+            <p><strong>Resultado para ${document.getElementById('input-exam-area').options[document.getElementById('input-exam-area').selectedIndex].text}:</strong></p>
             <p>KV: <b>${kv}</b></p>
-            <p>mAs: <b>${mas.toFixed(2)}</b> (mA × Tempo)</p>
+            <p>mA: <b>${ma}</b></p>
+            <p>mAs: <b>${mas}</b></p>
+            <p><small>Baseado na espessura (${thickness}cm) e distância (${distance}cm)</small></p>
         `;
     }
 }

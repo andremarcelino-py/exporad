@@ -1,3 +1,4 @@
+
 /* Reset e configurações base */
 * {
     margin: 0;
@@ -1492,6 +1493,47 @@ body {
     border-color: var(--accent-primary);
     box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
     background: rgba(0, 212, 255, 0.08);
+}
+
+.kvmas-modal select {
+    width: 100%;
+    padding: 1rem;
+    background: rgba(0, 212, 255, 0.05);
+    border: 2px solid var(--border-primary);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.kvmas-modal select:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+    background: rgba(0, 212, 255, 0.08);
+}
+
+.kvmas-modal select option {
+    background: var(--secondary-bg);
+    color: var(--text-primary);
+    padding: 0.5rem;
+}
+
+.kvmas-modal .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.kvmas-modal .form-row:last-child {
+    margin-bottom: 0;
+}
+
+.kvmas-modal .form-row label {
+    margin-bottom: 0;
 }
 
 .kvmas-modal input::placeholder {
