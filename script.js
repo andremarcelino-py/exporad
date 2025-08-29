@@ -1349,6 +1349,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Adicionar botões de ação adicionais
     addActionButtons();
+    
+    // Adicionar funcionalidade de header shrinking
+    addHeaderScrollEffect();
 });
 
 // Adicionar botões de ação adicionais
@@ -1373,6 +1376,44 @@ function addActionButtons() {
     actionButtons.appendChild(saveBtn);
     actionButtons.appendChild(printBtn);
     document.body.appendChild(actionButtons);
+}
+
+// Adicionar efeito de header shrinking no scroll
+function addHeaderScrollEffect() {
+    const header = document.querySelector('.header');
+    let lastScrollTop = 0;
+    
+    // Função para debounce do scroll
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+    
+    // Função para atualizar header
+    const updateHeader = debounce(() => {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        if (scrollTop > 50) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+        
+        lastScrollTop = scrollTop;
+    }, 10);
+    
+    // Adicionar event listener para scroll
+    window.addEventListener('scroll', updateHeader, { passive: true });
+    
+    // Adicionar event listener para touch move (mobile)
+    window.addEventListener('touchmove', updateHeader, { passive: true });
 }
 
 // Cálculo específico (modal)
