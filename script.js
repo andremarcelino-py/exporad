@@ -640,6 +640,13 @@ class RadiologicalCalculator {
                 this.closePositionModal();
             }
         });
+        
+        const imageLarge = document.querySelector('.position-image-large');
+        if (position === 'chest-pa') {
+            imageLarge.innerHTML = '<img src="txpa.jpeg" alt="Tórax PA" style="max-width:100%;max-height:180px;">';
+        } else {
+            imageLarge.innerHTML = '<i class="fas fa-user" id="modal-icon"></i>';
+        }
     }
 
     // Fechar modal de posicionamento
