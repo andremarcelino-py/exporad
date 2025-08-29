@@ -349,85 +349,10 @@ class RadiologicalCalculator {
         return bodyPartInfo.description;
     }
 
-    // Exportar dados para impressão
-    exportToPrint() {
-        const printWindow = window.open('', '_blank');
-        const patientInfo = this.getPatientInfo();
-        const techniqueInfo = this.getTechniqueInfo();
-        
-                // ...existing code...
-        printWindow.document.write(`
-            <html>
-                <head>
-                    <title>Relatório Radiológico</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; margin: 20px; }
-                        .header { text-align: center; margin-bottom: 30px; }
-                        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
-                        .parameter { background: #f5f5f5; padding: 15px; border-radius: 8px; text-align: center; }
-                        .parameter-value { font-size: 24px; font-weight: bold; color: #0f0f23; }
-                        .parameter-unit { color: #666; font-size: 14px; }
-                        .footer { margin-top: 30px; text-align: center; color: #666; }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <h1>ExpoRad</h1>
-                        <h2>Relatório de Parâmetros Radiológicos</h2>
-                    </div>
-                    
-                    <div class="info-grid">
-                        <div>
-                            <strong>Paciente:</strong> ${patientInfo}<br>
-                            <strong>Técnica:</strong> ${techniqueInfo}<br>
-                            <strong>Data:</strong> ${new Date().toLocaleDateString('pt-BR')}
-                        </div>
-                        <div>
-                            <strong>Tela:</strong> Padrão
-                        </div>
-                    </div>
-                    
-                    <div class="info-grid">
-                        <div class="parameter">
-                            <div class="parameter-value">${document.getElementById('kvValue').textContent}</div>
-                            <div class="parameter-unit">kV</div>
-                        </div>
-                        <div class="parameter">
-                            <div class="parameter-value">${document.getElementById('maValue').textContent}</div>
-                            <div class="parameter-unit">mA</div>
-                        </div>
-                        <div class="parameter">
-                            <div class="parameter-value">${document.getElementById('mAsValue').textContent}</div>
-                            <div class="parameter-unit">mAs</div>
-                        </div>
-                    </div>
-                    
-                    <div class="footer">
-                        <p>ExpoRad - Calculadora Radiológica desenvolvida para técnicos de radiologia</p>
-                        <p>🚀 Acertar a técnica usando a calculadora fica muito fácil!</p>
-                    </div>
-                </body>
-            </html>
-        `);
-      
-        printWindow.document.close();
-        printWindow.print();
-    }
 
-    // Salvar configuração atual
-    saveConfiguration() {
-        const config = {
-            age: this.currentAge,
-            bodyType: this.currentBodyType,
-            bodyPart: this.currentBodyPart,
-            timestamp: new Date().toISOString()
-        };
-        
-        localStorage.setItem('radiologicalCalculatorConfig', JSON.stringify(config));
-        
-        // Mostrar feedback
-        this.showNotification('Configuração salva com sucesso!', 'success');
-    }
+
+
+
 
     // Carregar configuração salva
     loadConfiguration() {
@@ -1347,36 +1272,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Carregar configuração salva
     window.calculator.loadConfiguration();
     
-    // Adicionar botões de ação adicionais
-    addActionButtons();
-    
     // Adicionar funcionalidade de header shrinking
     addHeaderScrollEffect();
 });
 
-// Adicionar botões de ação adicionais
-function addActionButtons() {
-    const actionButtons = document.createElement('div');
-    actionButtons.className = 'action-buttons';
-    
-    // Botão salvar configuração
-    const saveBtn = document.createElement('button');
-    saveBtn.innerHTML = '<i class="fas fa-save"></i>';
-    saveBtn.title = 'Salvar Configuração';
-    saveBtn.className = 'save-btn';
-    saveBtn.addEventListener('click', () => window.calculator.saveConfiguration());
-    
-    // Botão imprimir
-    const printBtn = document.createElement('button');
-    printBtn.innerHTML = '<i class="fas fa-print"></i>';
-    printBtn.title = 'Imprimir Relatório';
-    printBtn.className = 'print-btn';
-    printBtn.addEventListener('click', () => window.calculator.exportToPrint());
-    
-    actionButtons.appendChild(saveBtn);
-    actionButtons.appendChild(printBtn);
-    document.body.appendChild(actionButtons);
-}
+
 
 // Adicionar efeito de header shrinking no scroll
 function addHeaderScrollEffect() {
