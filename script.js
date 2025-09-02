@@ -17,6 +17,12 @@ class RadiologicalCalculator {
                 this.selectButton('.age-btn', e.target.closest('.age-btn'));
                 this.currentAge = e.target.closest('.age-btn').dataset.age;
                 this.updateBodyTypeSection();
+                // Se for adulto, mostra tipo físico, senão já avança para região
+                if (this.currentAge === 'adult') {
+                    document.getElementById('body-type-section').scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    document.getElementById('general-regions').scrollIntoView({ behavior: 'smooth' });
+                }
                 this.calculate();
             });
         });
@@ -26,6 +32,7 @@ class RadiologicalCalculator {
             btn.addEventListener('click', (e) => {
                 this.selectButton('.body-btn', e.target.closest('.body-btn'));
                 this.currentBodyType = e.target.closest('.body-btn').dataset.body;
+                document.getElementById('general-regions').scrollIntoView({ behavior: 'smooth' });
                 this.calculate();
             });
         });
@@ -36,6 +43,10 @@ class RadiologicalCalculator {
                 this.selectButton('[data-region]', e.target.closest('[data-region]'));
                 const region = e.target.closest('[data-region]').dataset.region;
                 this.showSpecificRegionsInline(region);
+                // Avança para regiões específicas
+                setTimeout(() => {
+                    document.getElementById(`${region}-specific`).scrollIntoView({ behavior: 'smooth' });
+                }, 200);
             });
         });
 
@@ -44,6 +55,8 @@ class RadiologicalCalculator {
             btn.addEventListener('click', (e) => {
                 this.selectButton('[data-bodypart]', e.target.closest('[data-bodypart]'));
                 this.currentBodyPart = e.target.closest('[data-bodypart]').dataset.bodypart;
+                // Avança para botão calcular
+                document.getElementById('calculateBtn').scrollIntoView({ behavior: 'smooth' });
                 this.calculate();
             });
         });
@@ -349,34 +362,30 @@ class RadiologicalCalculator {
         return bodyPartInfo.description;
     }
 
-
-
-
-
-
     // Carregar configuração salva
-    loadConfiguration() {
-        const savedConfig = localStorage.getItem('radiologicalCalculatorConfig');
-        if (savedConfig) {
-            try {
-                const config = JSON.parse(savedConfig);
-                
-                // Aplicar configuração
-                this.currentAge = config.age;
-                this.currentBodyType = config.bodyType;
-                this.currentBodyPart = config.bodyPart;
-                
-                // Atualizar interface
-                this.updateUI();
-                this.calculate();
-                
-                this.showNotification('Configuração carregada com sucesso!', 'success');
-            } catch (error) {
-                console.error('Erro ao carregar configuração:', error);
-                this.showNotification('Erro ao carregar configuração', 'error');
-            }
-        }
-    }
+    // Removido conforme solicitado
+    // loadConfiguration() {
+    //     const savedConfig = localStorage.getItem('radiologicalCalculatorConfig');
+    //     if (savedConfig) {
+    //         try {
+    //             const config = JSON.parse(savedConfig);
+    //             
+    //             // Aplicar configuração
+    //             this.currentAge = config.age;
+    //             this.currentBodyType = config.bodyType;
+    //             this.currentBodyPart = config.bodyPart;
+    //             
+    //             // Atualizar interface
+    //             this.updateUI();
+    //             this.calculate();
+    //             
+    //             this.showNotification('Configuração carregada com sucesso!', 'success');
+    //         } catch (error) {
+    //             console.error('Erro ao carregar configuração:', error);
+    //             this.showNotification('Erro ao carregar configuração', 'error');
+    //         }
+    //     }
+    // }
 
     // Atualizar interface baseado na configuração
     updateUI() {
@@ -1199,7 +1208,7 @@ class RadiologicalCalculator {
         const distance = parseFloat(document.getElementById('input-distance').value);
 
         if (!examArea || isNaN(thickness) || isNaN(distance)) {
-            document.getElementById('kvmas-result').innerHTML = 'Preencha todos os campos corretamente.';
+            this.showKvMasResultModal('Preencha todos os campos corretamente.');
             return;
         }
 
@@ -1247,13 +1256,28 @@ class RadiologicalCalculator {
         mas = Math.max(5, Math.min(100, mas));
         ma = Math.max(25, Math.min(800, ma));
 
-        document.getElementById('kvmas-result').innerHTML = `
+        const resultHtml = `
             <p><strong>Resultado para ${document.getElementById('input-exam-area').options[document.getElementById('input-exam-area').selectedIndex].text}:</strong></p>
             <p>KV: <b>${kv}</b></p>
             <p>mA: <b>${ma}</b></p>
             <p>mAs: <b>${mas}</b></p>
             <p><small>Baseado na espessura (${thickness}cm) e distância (${distance}cm)</small></p>
         `;
+        this.showKvMasResultModal(resultHtml);
+    }
+
+    showKvMasResultModal(content) {
+        const modal = document.getElementById('kvmas-result-modal');
+        const modalContent = document.getElementById('kvmas-result-modal-content');
+        modalContent.innerHTML = content;
+        modal.style.display = 'flex';
+        document.getElementById('closeKvMasResultModal').onclick = () => {
+            modal.style.display = 'none';
+        };
+        // Fechar ao clicar fora
+        modal.onclick = (e) => {
+            if (e.target === modal) modal.style.display = 'none';
+        };
     }
 }
 
@@ -1277,7 +1301,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.calculator = new RadiologicalCalculator();
     
     // Carregar configuração salva
-    window.calculator.loadConfiguration();
+    // window.calculator.loadConfiguration(); // Removido conforme solicitado
     
     // Adicionar funcionalidade de header shrinking
     addHeaderScrollEffect();
