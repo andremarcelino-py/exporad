@@ -133,13 +133,14 @@ class RadiologicalCalculator {
         
         // 7) Sanitização e retorno
         const finalKV = Math.max(40, Math.min(150, Math.round(kvCorrected * 10) / 10));
-        const finalMA = Math.max(25, Math.min(800, Math.round(maCorrected * 10) / 10));
+        // Corrigir mA para valores reais (100 ou 200)
+        let finalMA = maCorrected <= 100 ? 100 : 200;
         const finalTime = Math.max(0.001, Math.min(5.0, Math.round(timeCorrected * 10000) / 10000));
-        
+
         return {
             kv: finalKV,
             ma: finalMA,
-            mAs: Math.round(mAs * 1000) / 1000,
+            mAs: Math.round(finalMA * finalTime * 1000) / 1000,
             time: finalTime,
             equipment: bodyPartParams.equipment || 'MESA'
         };
@@ -1249,7 +1250,8 @@ class RadiologicalCalculator {
 
         // Calcular mA baseado no mAs e tempo padrão
         const timeStandard = 0.1; // tempo padrão de 0.1 segundos
-        let ma = Math.round(mas / timeStandard);
+        // Corrigir mA para valores reais (100 ou 200)
+        let ma = mas / timeStandard <= 100 ? 100 : 200;
 
         // Garantir valores mínimos e máximos seguros
         kv = Math.max(40, Math.min(150, kv));
