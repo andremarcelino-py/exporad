@@ -1,1378 +1,391 @@
 // Calculadora Radiológica - KV, mAs e Tempo
-class RadiologicalCalculator {
+class CalculadoraRadiologica {
     constructor() {
-        this.currentAge = 'newborn';
-        this.currentBodyType = 'm';
-        this.currentBodyPart = 'chest';
-        
-        this.initializeEventListeners();
-        this.updateBodyTypeSection();
+        this.idadeAtual = 'newborn';
+        this.tipoFisicoAtual = 'm';
+        this.regiaoAtual = 'chest';
+        this.iniciarEventos();
+        this.atualizarTipoFisico();
     }
 
-    // Inicializar event listeners
-    initializeEventListeners() {
-        // Botões de idade
+    // Inicializa todos os eventos da interface
+    iniciarEventos() {
+        // Seleção de idade
         document.querySelectorAll('.age-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                this.selectButton('.age-btn', e.target.closest('.age-btn'));
-                this.currentAge = e.target.closest('.age-btn').dataset.age;
-                this.updateBodyTypeSection();
-                // Se for adulto, mostra tipo físico, senão já avança para região
-                if (this.currentAge === 'adult') {
+                this.selecionarBotao('.age-btn', e.target.closest('.age-btn'));
+                this.idadeAtual = e.target.closest('.age-btn').dataset.age;
+                this.atualizarTipoFisico();
+                if (this.idadeAtual === 'adult') {
                     document.getElementById('body-type-section').scrollIntoView({ behavior: 'smooth' });
                 } else {
                     document.getElementById('general-regions').scrollIntoView({ behavior: 'smooth' });
                 }
-                this.calculate();
+                this.calcular();
             });
         });
 
-        // Botões de tipo físico
+        // Seleção de tipo físico
         document.querySelectorAll('.body-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                this.selectButton('.body-btn', e.target.closest('.body-btn'));
-                this.currentBodyType = e.target.closest('.body-btn').dataset.body;
+                this.selecionarBotao('.body-btn', e.target.closest('.body-btn'));
+                this.tipoFisicoAtual = e.target.closest('.body-btn').dataset.body;
                 document.getElementById('general-regions').scrollIntoView({ behavior: 'smooth' });
-                this.calculate();
+                this.calcular();
             });
         });
 
-        // Botões de região geral
+        // Seleção de região geral
         document.querySelectorAll('[data-region]').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                this.selectButton('[data-region]', e.target.closest('[data-region]'));
-                const region = e.target.closest('[data-region]').dataset.region;
-                this.showSpecificRegionsInline(region);
-                // Avança para regiões específicas
+                this.selecionarBotao('[data-region]', e.target.closest('[data-region]'));
+                const regiao = e.target.closest('[data-region]').dataset.region;
+                this.mostrarRegiaoEspecifica(regiao);
                 setTimeout(() => {
-                    document.getElementById(`${region}-specific`).scrollIntoView({ behavior: 'smooth' });
+                    document.getElementById(`${regiao}-specific`).scrollIntoView({ behavior: 'smooth' });
                 }, 200);
             });
         });
 
-        // Botões de região específica
+        // Seleção de região específica
         document.querySelectorAll('[data-bodypart]').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                this.selectButton('[data-bodypart]', e.target.closest('[data-bodypart]'));
-                this.currentBodyPart = e.target.closest('[data-bodypart]').dataset.bodypart;
-                // Avança para botão calcular
+                this.selecionarBotao('[data-bodypart]', e.target.closest('[data-bodypart]'));
+                this.regiaoAtual = e.target.closest('[data-bodypart]').dataset.bodypart;
                 document.getElementById('calculateBtn').scrollIntoView({ behavior: 'smooth' });
-                this.calculate();
+                this.calcular();
             });
         });
 
         // Botão calcular
         document.getElementById('calculateBtn').addEventListener('click', () => {
-            this.calculate();
+            this.calcular();
         });
     }
 
-    // Selecionar botão ativo
-    selectButton(selector, activeButton) {
-        document.querySelectorAll(selector).forEach(btn => {
-            btn.classList.remove('active');
-        });
-        activeButton.classList.add('active');
+    // Ativa o botão selecionado
+    selecionarBotao(seletor, botaoAtivo) {
+        document.querySelectorAll(seletor).forEach(btn => btn.classList.remove('active'));
+        botaoAtivo.classList.add('active');
     }
 
-    // Atualizar seção de tipo físico baseado na idade
-    updateBodyTypeSection() {
-        const bodyTypeSection = document.getElementById('body-type-section');
-        if (this.currentAge === 'adult') {
-            bodyTypeSection.style.display = 'block';
+    // Mostra ou oculta tipo físico conforme idade
+    atualizarTipoFisico() {
+        const secaoTipo = document.getElementById('body-type-section');
+        if (this.idadeAtual === 'adult') {
+            secaoTipo.style.display = 'block';
         } else {
-            bodyTypeSection.style.display = 'none';
-            this.currentBodyType = 'm'; // Reset para padrão
+            secaoTipo.style.display = 'none';
+            this.tipoFisicoAtual = 'm';
         }
     }
 
-    // Calcular parâmetros radiológicos
-    calculate() {
-        const params = this.calculateParameters();
-        this.displayResults(params);
+    // Calcula e exibe os parâmetros radiológicos
+    calcular() {
+        const parametros = this.obterParametros();
+        this.exibirResultados(parametros);
     }
 
-    // Calcular parâmetros baseados na seleção
-    calculateParameters() {
-        // 1) Base por região/projeção
-        const bodyPartParams = this.getBodyPartParameters();
-        
-        // 2) Verificar se é tórax AP ou PA para aplicar valores específicos por biotipo
-        if (this.currentAge === 'adult' && (this.currentBodyPart === 'chest' || this.currentBodyPart === 'chest-ap')) {
-            const chestParams = this.getChestSpecificParams();
+    // Retorna os parâmetros calculados
+    obterParametros() {
+        const dadosRegiao = this.obterDadosRegiao();
+
+        // Tórax adulto tem regra especial
+        if (this.idadeAtual === 'adult' && (this.regiaoAtual === 'chest' || this.regiaoAtual === 'chest-ap')) {
+            const torax = this.parametrosTorax();
             return {
-                kv: chestParams.kv,
-                ma: chestParams.ma,
-                mAs: chestParams.mAs,
-                time: chestParams.time,
-                equipment: bodyPartParams.equipment || 'MURAL-BUCKY'
+                kv: torax.kv,
+                ma: torax.ma,
+                mAs: torax.mAs,
+                tempo: torax.tempo,
+                equipamento: dadosRegiao.equipamento || 'MURAL-BUCKY'
             };
         }
-        
-        // 3) Cálculo padrão para outras projeções
-        const kvBase = 60.0 + (bodyPartParams.kvModifier || 0.0);
-        const maBase = 200.0;
-        const timeBase = bodyPartParams.baseTime;
-        
-        // 4) Correções por idade
-        const ageParams = this.getAgeParameters();
-        const kvAgeDelta = (ageParams.kv - 60.0);
-        let kvCorrected = kvBase + kvAgeDelta;
-        let maCorrected = ageParams.ma;
-        let timeCorrected = timeBase;
-        
-        // 5) Correções por biotipo (apenas adultos)
-        if (this.currentAge === 'adult') {
-            const bodyModifiers = this.getBodyTypeModifiers();
-            kvCorrected += bodyModifiers.kvModifier;
-            timeCorrected *= bodyModifiers.timeModifier;
+
+        // Parâmetros padrão
+        const kvBase = 60.0 + (dadosRegiao.kvMod || 0.0);
+        const maPadrao = 200.0;
+        const tempoBase = dadosRegiao.tempoBase;
+
+        // Correção por idade
+        const idade = this.parametrosIdade();
+        const kvIdade = (idade.kv - 60.0);
+        let kvFinal = kvBase + kvIdade;
+        let maFinal = idade.ma;
+        let tempoFinal = tempoBase;
+
+        // Correção por tipo físico (adulto)
+        if (this.idadeAtual === 'adult') {
+            const mod = this.modificadorTipoFisico();
+            kvFinal += mod.kvMod;
+            tempoFinal *= mod.tempoMod;
         }
-        
-        // 6) Cálculo de mAs
-        let mAs = maCorrected * timeCorrected;
-        
-        // 7) Sanitização e retorno
-        const finalKV = Math.max(40, Math.min(150, Math.round(kvCorrected * 10) / 10));
-        // Corrigir mA para valores reais (100 ou 200)
-        let finalMA = maCorrected <= 100 ? 100 : 200;
-        const finalTime = Math.max(0.001, Math.min(5.0, Math.round(timeCorrected * 10000) / 10000));
+
+        // Cálculo de mAs
+        let mAs = maFinal * tempoFinal;
+
+        // Sanitização dos valores
+        const kv = Math.max(40, Math.min(150, Math.round(kvFinal * 10) / 10));
+        let ma = maFinal <= 100 ? 100 : 200;
+        const tempo = Math.max(0.001, Math.min(5.0, Math.round(tempoFinal * 10000) / 10000));
 
         return {
-            kv: finalKV,
-            ma: finalMA,
-            mAs: Math.round(finalMA * finalTime * 1000) / 1000,
-            time: finalTime,
-            equipment: bodyPartParams.equipment || 'MESA'
+            kv,
+            ma,
+            mAs: Math.round(ma * tempo * 1000) / 1000,
+            tempo,
+            equipamento: dadosRegiao.equipamento || 'MESA'
         };
     }
 
-    // Parâmetros base por idade
-    getAgeParameters() {
-        const ageParams = {
-            newborn: { kv: 40.0, ma: 25.0, weight: 3.5 },
-            '1a5': { kv: 47.0, ma: 45.0, weight: 12.0 },
-            '5a10': { kv: 52.0, ma: 65.0, weight: 25.0 },
-            '10a18': { kv: 57.0, ma: 90.0, weight: 45.0 },
-            adult: { kv: 60.0, ma: 200.0, weight: 70.0 }
-        };
-        return ageParams[this.currentAge] || ageParams.adult;
+    // Parâmetros por idade
+    parametrosIdade() {
+        return {
+            newborn: { kv: 40.0, ma: 25.0 },
+            '1a5': { kv: 47.0, ma: 45.0 },
+            '5a10': { kv: 52.0, ma: 65.0 },
+            '10a18': { kv: 57.0, ma: 90.0 },
+            adult: { kv: 60.0, ma: 200.0 }
+        }[this.idadeAtual] || { kv: 60.0, ma: 200.0 };
     }
 
-    // Parâmetros base por região corporal (valores realistas e atualizados)
-    getBodyPartParameters() {
-        const bodyPartParams = {
-            // Crânio
-            'skull-ap': { kvModifier: 8.0, baseTime: 0.2000, description: 'Crânio AP', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            'skull-lat': { kvModifier: 5.0, baseTime: 0.2000, description: 'Crânio Perfil', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            
-            // Face
-            'face-sinuses': { kvModifier: 10.0, baseTime: 0.1600, description: 'Seios da Face', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            'face-nose-lat': { kvModifier: -18.0, baseTime: 0.0400, description: 'Nariz Perfil', dff: 1.0, equipment: 'MESA' },
-            'face-orbits': { kvModifier: 8.0, baseTime: 0.1600, description: 'Órbitas', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            'face-mandible': { kvModifier: 6.0, baseTime: 0.2000, description: 'Mandíbula', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            
-            // Cavum
-            'cavum': { kvModifier: 8.0, baseTime: 0.2000, description: 'Cavum', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            
-            // Costelas
-            'ribs-ap': { kvModifier: 28.0, baseTime: 0.2500, description: 'Costelas AP', dff: 1.0, equipment: 'MESA-GRADE' },
-            'ribs-lat': { kvModifier: 38.0, baseTime: 0.3500, description: 'Costelas Lat', dff: 1.0, equipment: 'MESA-GRADE' },
-            'ribs-oblique': { kvModifier: 33.0, baseTime: 0.3000, description: 'Costelas Oblíqua', dff: 1.0, equipment: 'MESA-GRADE' },
-            
-            // Tórax
-            'chest': { kvModifier: 32.0, baseTime: 0.0200, description: 'Tórax PA', dff: 1.8, equipment: 'MURAL-BUCKY' },
-            'chest-lat': { kvModifier: 52.0, baseTime: 0.0400, description: 'Tórax Lat', dff: 1.8, equipment: 'MURAL-BUCKY' },
-            'chest-ap': { kvModifier: 37.0, baseTime: 0.0250, description: 'Tórax AP', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            
-            // Úmero
-            'humerus-ap': { kvModifier: -3.0, baseTime: 0.0500, description: 'Úmero AP', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            'humerus-lat': { kvModifier: -3.0, baseTime: 0.0500, description: 'Úmero Lat', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            
-            // Antebraço
-            'forearm-ap': { kvModifier: -12.0, baseTime: 0.0400, description: 'Antebraço AP', dff: 1.0, equipment: 'MESA' },
-            'forearm-lat': { kvModifier: -12.0, baseTime: 0.0400, description: 'Antebraço Lat', dff: 1.0, equipment: 'MESA' },
-            
-            // Ombro
-            'shoulder-ap': { kvModifier: -10.0, baseTime: 0.1600, description: 'Ombro AP', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            'shoulder-ax': { kvModifier: -12.0, baseTime: 0.2000, description: 'Ombro Axilar', dff: 1.0, equipment: 'MESA' },
-            'shoulder-y': { kvModifier: 0.0, baseTime: 0.2000, description: 'Ombro Perfil (Y)', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            'shoulder-lat': { kvModifier: -8.0, baseTime: 0.1600, description: 'Ombro Lat', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            
-            // Mão
-            'hand-pa': { kvModifier: -22.0, baseTime: 0.0320, description: 'Mão PA', dff: 1.0, equipment: 'MESA' },
-            'hand-lat': { kvModifier: -22.0, baseTime: 0.0320, description: 'Mão Lat', dff: 1.0, equipment: 'MESA' },
-            'hand-oblique': { kvModifier: -22.0, baseTime: 0.0320, description: 'Mão Oblíqua', dff: 1.0, equipment: 'MESA' },
-            
-            // Punho
-            'wrist-pa': { kvModifier: -22.0, baseTime: 0.0320, description: 'Punho PA', dff: 1.0, equipment: 'MESA' },
-            'wrist-lat': { kvModifier: -22.0, baseTime: 0.0320, description: 'Punho Lat', dff: 1.0, equipment: 'MESA' },
-            'wrist-oblique': { kvModifier: -21.0, baseTime: 0.0320, description: 'Punho Oblíqua', dff: 1.0, equipment: 'MESA' },
-            
-            // Abdômen
-            'abdomen-ap': { kvModifier: 5.0, baseTime: 0.2800, description: 'Abdômen AP', dff: 1.0, equipment: 'MESA-GRADE' },
-            'abdomen-lat': { kvModifier: 5.0, baseTime: 0.2800, description: 'Abdômen Lat', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            'abdomen-oblique': { kvModifier: 7.0, baseTime: 0.2600, description: 'Abdômen Oblíqua', dff: 1.0, equipment: 'MESA-GRADE' },
-            
-            // Pelve/Bacia
-            'pelvis-ap': { kvModifier: 12.0, baseTime: 0.2800, description: 'Bacia AP', dff: 1.0, equipment: 'MESA-GRADE' },
-            'pelvis-lat': { kvModifier: 17.0, baseTime: 0.3000, description: 'Bacia Lat', dff: 1.0, equipment: 'MESA-GRADE' },
-            'pelvis-oblique': { kvModifier: 14.0, baseTime: 0.2800, description: 'Bacia Oblíqua', dff: 1.0, equipment: 'MESA-GRADE' },
-            
-            // Fêmur
-            'femur-ap': { kvModifier: 12.0, baseTime: 0.0500, description: 'Fêmur AP', dff: 1.0, equipment: 'MESA-GRADE' },
-            'femur-lat': { kvModifier: 12.0, baseTime: 0.0500, description: 'Fêmur Lat', dff: 1.0, equipment: 'MESA-GRADE' },
-            
-            // Perna
-            'leg-ap': { kvModifier: -5.0, baseTime: 0.0400, description: 'Perna AP', dff: 1.0, equipment: 'MESA' },
-            'leg-lat': { kvModifier: -5.0, baseTime: 0.0400, description: 'Perna Lat', dff: 1.0, equipment: 'MESA' },
-            
-            // Pé
-            'foot-ap': { kvModifier: -22.0, baseTime: 0.0400, description: 'Pé AP', dff: 1.0, equipment: 'MESA' },
-            'foot-lat': { kvModifier: -22.0, baseTime: 0.0400, description: 'Pé Lat', dff: 1.0, equipment: 'MESA' },
-            'foot-oblique': { kvModifier: -22.0, baseTime: 0.0400, description: 'Pé Oblíqua', dff: 1.0, equipment: 'MESA' },
-            
-            // Tornozelo
-            'ankle-ap': { kvModifier: -18.0, baseTime: 0.0320, description: 'Tornozelo AP', dff: 1.0, equipment: 'MESA' },
-            'ankle-lat': { kvModifier: -20.0, baseTime: 0.0320, description: 'Tornozelo Lat', dff: 1.0, equipment: 'MESA' },
-            
-            // Outras regiões importantes
-            'elbow-ap': { kvModifier: -12.0, baseTime: 0.0400, description: 'Cotovelo AP', dff: 1.0, equipment: 'MESA' },
-            'elbow-lat': { kvModifier: -12.0, baseTime: 0.0400, description: 'Cotovelo Lat', dff: 1.0, equipment: 'MESA' },
-            'knee-ap': { kvModifier: -3.0, baseTime: 0.0500, description: 'Joelho AP', dff: 1.0, equipment: 'MESA-GRADE' },
-            'knee-lat': { kvModifier: -5.0, baseTime: 0.0500, description: 'Joelho Lat', dff: 1.0, equipment: 'MESA-GRADE' },
-            'hip-ap': { kvModifier: 17.0, baseTime: 0.2000, description: 'Quadril AP', dff: 1.0, equipment: 'MESA-GRADE' },
-            'hip-lat': { kvModifier: 20.0, baseTime: 0.2500, description: 'Quadril Lat', dff: 1.0, equipment: 'MESA-GRADE' },
-            'finger-ap': { kvModifier: -26.0, baseTime: 0.0320, description: 'Dedo AP', dff: 1.0, equipment: 'MESA' },
-            'finger-lat': { kvModifier: -26.0, baseTime: 0.0320, description: 'Dedo Lat', dff: 1.0, equipment: 'MESA' },
-            'calcaneus': { kvModifier: -18.0, baseTime: 0.0320, description: 'Calcâneo Axial', dff: 1.0, equipment: 'MESA' }
-        };
-        
-        return bodyPartParams[this.currentBodyPart] || bodyPartParams.chest;
+    // Parâmetros por região corporal
+    obterDadosRegiao() {
+        return {
+            'skull-ap': { kvMod: 8.0, tempoBase: 0.2000, equipamento: 'MURAL-BUCKY' },
+            'skull-lat': { kvMod: 5.0, tempoBase: 0.2000, equipamento: 'MURAL-BUCKY' },
+            'face-sinuses': { kvMod: 10.0, tempoBase: 0.1600, equipamento: 'MURAL-BUCKY' },
+            'face-nose-lat': { kvMod: -18.0, tempoBase: 0.0400, equipamento: 'MESA' },
+            'face-orbits': { kvMod: 8.0, tempoBase: 0.1600, equipamento: 'MURAL-BUCKY' },
+            'face-mandible': { kvMod: 6.0, tempoBase: 0.2000, equipamento: 'MURAL-BUCKY' },
+            'cavum': { kvMod: 8.0, tempoBase: 0.2000, equipamento: 'MURAL-BUCKY' },
+            'ribs-ap': { kvMod: 28.0, tempoBase: 0.2500, equipamento: 'MESA-GRADE' },
+            'ribs-lat': { kvMod: 38.0, tempoBase: 0.3500, equipamento: 'MESA-GRADE' },
+            'ribs-oblique': { kvMod: 33.0, tempoBase: 0.3000, equipamento: 'MESA-GRADE' },
+            'chest': { kvMod: 32.0, tempoBase: 0.0200, equipamento: 'MURAL-BUCKY' },
+            'chest-lat': { kvMod: 52.0, tempoBase: 0.0400, equipamento: 'MURAL-BUCKY' },
+            'chest-ap': { kvMod: 37.0, tempoBase: 0.0250, equipamento: 'MURAL-BUCKY' },
+            'humerus-ap': { kvMod: -3.0, tempoBase: 0.0500, equipamento: 'MURAL-BUCKY' },
+            'humerus-lat': { kvMod: -3.0, tempoBase: 0.0500, equipamento: 'MURAL-BUCKY' },
+            'forearm-ap': { kvMod: -12.0, tempoBase: 0.0400, equipamento: 'MESA' },
+            'forearm-lat': { kvMod: -12.0, tempoBase: 0.0400, equipamento: 'MESA' },
+            'shoulder-ap': { kvMod: -10.0, tempoBase: 0.1600, equipamento: 'MURAL-BUCKY' },
+            'shoulder-ax': { kvMod: -12.0, tempoBase: 0.2000, equipamento: 'MESA' },
+            'shoulder-y': { kvMod: 0.0, tempoBase: 0.2000, equipamento: 'MURAL-BUCKY' },
+            'shoulder-lat': { kvMod: -8.0, tempoBase: 0.1600, equipamento: 'MURAL-BUCKY' },
+            'hand-pa': { kvMod: -22.0, tempoBase: 0.0320, equipamento: 'MESA' },
+            'hand-lat': { kvMod: -22.0, tempoBase: 0.0320, equipamento: 'MESA' },
+            'hand-oblique': { kvMod: -22.0, tempoBase: 0.0320, equipamento: 'MESA' },
+            'wrist-pa': { kvMod: -22.0, tempoBase: 0.0320, equipamento: 'MESA' },
+            'wrist-lat': { kvMod: -22.0, tempoBase: 0.0320, equipamento: 'MESA' },
+            'wrist-oblique': { kvMod: -21.0, tempoBase: 0.0320, equipamento: 'MESA' },
+            'abdomen-ap': { kvMod: 5.0, tempoBase: 0.2800, equipamento: 'MESA-GRADE' },
+            'abdomen-lat': { kvMod: 5.0, tempoBase: 0.2800, equipamento: 'MURAL-BUCKY' },
+            'abdomen-oblique': { kvMod: 7.0, tempoBase: 0.2600, equipamento: 'MESA-GRADE' },
+            'pelvis-ap': { kvMod: 12.0, tempoBase: 0.2800, equipamento: 'MESA-GRADE' },
+            'pelvis-lat': { kvMod: 17.0, tempoBase: 0.3000, equipamento: 'MESA-GRADE' },
+            'pelvis-oblique': { kvMod: 14.0, tempoBase: 0.2800, equipamento: 'MESA-GRADE' },
+            'femur-ap': { kvMod: 12.0, tempoBase: 0.0500, equipamento: 'MESA-GRADE' },
+            'femur-lat': { kvMod: 12.0, tempoBase: 0.0500, equipamento: 'MESA-GRADE' },
+            'leg-ap': { kvMod: -5.0, tempoBase: 0.0400, equipamento: 'MESA' },
+            'leg-lat': { kvMod: -5.0, tempoBase: 0.0400, equipamento: 'MESA' },
+            'foot-ap': { kvMod: -22.0, tempoBase: 0.0400, equipamento: 'MESA' },
+            'foot-lat': { kvMod: -22.0, tempoBase: 0.0400, equipamento: 'MESA' },
+            'foot-oblique': { kvMod: -22.0, tempoBase: 0.0400, equipamento: 'MESA' },
+            'ankle-ap': { kvMod: -18.0, tempoBase: 0.0320, equipamento: 'MESA' },
+            'ankle-lat': { kvMod: -20.0, tempoBase: 0.0320, equipamento: 'MESA' },
+            'elbow-ap': { kvMod: -12.0, tempoBase: 0.0400, equipamento: 'MESA' },
+            'elbow-lat': { kvMod: -12.0, tempoBase: 0.0400, equipamento: 'MESA' },
+            'knee-ap': { kvMod: -3.0, tempoBase: 0.0500, equipamento: 'MESA-GRADE' },
+            'knee-lat': { kvMod: -5.0, tempoBase: 0.0500, equipamento: 'MESA-GRADE' },
+            'hip-ap': { kvMod: 17.0, tempoBase: 0.2000, equipamento: 'MESA-GRADE' },
+            'hip-lat': { kvMod: 20.0, tempoBase: 0.2500, equipamento: 'MESA-GRADE' },
+            'finger-ap': { kvMod: -26.0, tempoBase: 0.0320, equipamento: 'MESA' },
+            'finger-lat': { kvMod: -26.0, tempoBase: 0.0320, equipamento: 'MESA' },
+            'calcaneus': { kvMod: -18.0, tempoBase: 0.0320, equipamento: 'MESA' }
+        }[this.regiaoAtual] || { kvMod: 32.0, tempoBase: 0.0200, equipamento: 'MURAL-BUCKY' };
     }
 
-    // Modificadores por tipo físico (apenas adultos) - Novo sistema P, M, G, GG, XL
-    getBodyTypeModifiers() {
-        if (this.currentAge !== 'adult') {
-            return { kvModifier: 0.0, timeModifier: 1.0000 };
-        }
-        
-        const bodyModifiers = {
-            'p': { kvModifier: -10.0, timeModifier: 0.6500, weight: 'Pequeno' },
-            'm': { kvModifier: 0.0, timeModifier: 1.0000, weight: 'Médio' },
-            'g': { kvModifier: 8.0, timeModifier: 1.2000, weight: 'Grande' },
-            'gg': { kvModifier: 15.0, timeModifier: 1.4000, weight: 'Muito Grande' },
-            'xl': { kvModifier: 22.0, timeModifier: 1.6000, weight: 'Extra Grande' }
-        };
-        
-        return bodyModifiers[this.currentBodyType] || bodyModifiers.m;
+    // Modificadores por tipo físico (adulto)
+    modificadorTipoFisico() {
+        if (this.idadeAtual !== 'adult') return { kvMod: 0.0, tempoMod: 1.0 };
+        return {
+            'p': { kvMod: -10.0, tempoMod: 0.65 },
+            'm': { kvMod: 0.0, tempoMod: 1.0 },
+            'g': { kvMod: 8.0, tempoMod: 1.2 },
+            'gg': { kvMod: 15.0, tempoMod: 1.4 },
+            'xl': { kvMod: 22.0, tempoMod: 1.6 }
+        }[this.tipoFisicoAtual] || { kvMod: 0.0, tempoMod: 1.0 };
     }
 
-    // Parâmetros específicos para tórax AP e PA por biotipo
-    getChestSpecificParams() {
-        const chestParams = {
-            'p': { kv: 77, mAs: 18, ma: 200, time: 0.09 },
-            'm': { kv: 82, mAs: 20, ma: 200, time: 0.10 },
-            'g': { kv: 88, mAs: 25, ma: 200, time: 0.125 },
-            'gg': { kv: 94, mAs: 30, ma: 200, time: 0.15 },
-            'xl': { kv: 100, mAs: 40, ma: 200, time: 0.20 }
-        };
-        
-        return chestParams[this.currentBodyType] || chestParams.m;
+    // Parâmetros específicos para tórax adulto
+    parametrosTorax() {
+        return {
+            'p': { kv: 77, mAs: 18, ma: 200, tempo: 0.09 },
+            'm': { kv: 82, mAs: 20, ma: 200, tempo: 0.10 },
+            'g': { kv: 88, mAs: 25, ma: 200, tempo: 0.125 },
+            'gg': { kv: 94, mAs: 30, ma: 200, tempo: 0.15 },
+            'xl': { kv: 100, mAs: 40, ma: 200, tempo: 0.20 }
+        }[this.tipoFisicoAtual] || { kv: 82, mAs: 20, ma: 200, tempo: 0.10 };
     }
 
-    // Exibir resultados
-    displayResults(params) {
-        // Formatar valores com maior precisão
-        const formattedKV = params.kv.toFixed(1);
-        const formattedMA = params.ma.toFixed(1);
-        const formattedMAs = params.mAs.toString();
-        
-        document.getElementById('kvValue').textContent = formattedKV;
-        document.getElementById('maValue').textContent = formattedMA;
-        document.getElementById('mAsValue').textContent = formattedMAs;
+    // Exibe os resultados na tela
+    exibirResultados(param) {
+        document.getElementById('kvValue').textContent = param.kv.toFixed(1);
+        document.getElementById('maValue').textContent = param.ma.toFixed(1);
+        document.getElementById('mAsValue').textContent = param.mAs.toString();
 
-        // Mostrar equipamento recomendado se disponível
-        if (params.equipment) {
-            const equipmentInfo = document.createElement('div');
-            equipmentInfo.className = 'result-item equipment-info';
-            equipmentInfo.innerHTML = `
+        // Equipamento recomendado
+        if (param.equipamento) {
+            const info = document.createElement('div');
+            info.className = 'result-item equipment-info';
+            info.innerHTML = `
                 <div class="result-label">
                     <i class="fas fa-cogs"></i>
                     <span>Equipamento</span>
                 </div>
-                <div class="result-value">${params.equipment}</div>
+                <div class="result-value">${param.equipamento}</div>
             `;
-            
-            // Adicionar após o último resultado
-            const resultsGrid = document.querySelector('.results-grid');
-            const existingEquipment = resultsGrid.querySelector('.equipment-info');
-            if (existingEquipment) {
-                existingEquipment.remove();
-            }
-            resultsGrid.appendChild(equipmentInfo);
+            const grid = document.querySelector('.results-grid');
+            const existente = grid.querySelector('.equipment-info');
+            if (existente) existente.remove();
+            grid.appendChild(info);
         }
-        
-        // Adicionar animação aos resultados
-        this.animateResults();
+        this.animarResultados();
     }
 
-    // Animar resultados
-    animateResults() {
-        const resultItems = document.querySelectorAll('.result-item');
-        resultItems.forEach((item, index) => {
+    // Anima os resultados
+    animarResultados() {
+        document.querySelectorAll('.result-item').forEach((item, i) => {
             item.style.animation = 'none';
             setTimeout(() => {
-                item.style.animation = `fadeIn 0.6s ease-out ${index * 0.1}s both`;
+                item.style.animation = `fadeIn 0.6s ease-out ${i * 0.1}s both`;
             }, 10);
         });
     }
 
-    // Obter informações do paciente
-    getPatientInfo() {
-        const ageInfo = {
-            newborn: 'Recém-nascido (0-1 mês)',
-            '1a5': 'Criança (1 a 5 anos)',
-            '5a10': 'Criança (5 a 10 anos)',
-            '10a18': 'Criança (10 a 18 anos)',
-            adult: 'Adulto'
-        };
-
-        const bodyTypeInfo = this.currentAge === 'adult' ? 
-            ` - ${this.getBodyTypeDescription()}` : '';
-
-        return ageInfo[this.currentAge] + bodyTypeInfo;
-    }
-
-    // Obter descrição detalhada do tipo físico
-    getBodyTypeDescription() {
-        const bodyModifiers = this.getBodyTypeModifiers();
-        const descriptions = {
-            'p': 'Pequeno',
-            'm': 'Médio',
-            'g': 'Grande',
-            'gg': 'Muito Grande',
-            'xl': 'Extra Grande'
-        };
-        
-        return descriptions[this.currentBodyType] || descriptions.m;
-    }
-
-    // Obter informações da técnica
-    getTechniqueInfo() {
-        const bodyPartInfo = this.getBodyPartParameters();
-        return bodyPartInfo.description;
-    }
-
-    // Carregar configuração salva
-    // Removido conforme solicitado
-    // loadConfiguration() {
-    //     const savedConfig = localStorage.getItem('radiologicalCalculatorConfig');
-    //     if (savedConfig) {
-    //         try {
-    //             const config = JSON.parse(savedConfig);
-    //             
-    //             // Aplicar configuração
-    //             this.currentAge = config.age;
-    //             this.currentBodyType = config.bodyType;
-    //             this.currentBodyPart = config.bodyPart;
-    //             
-    //             // Atualizar interface
-    //             this.updateUI();
-    //             this.calculate();
-    //             
-    //             this.showNotification('Configuração carregada com sucesso!', 'success');
-    //         } catch (error) {
-    //             console.error('Erro ao carregar configuração:', error);
-    //             this.showNotification('Erro ao carregar configuração', 'error');
-    //         }
-    //     }
-    // }
-
-    // Atualizar interface baseado na configuração
-    updateUI() {
-        // Atualizar botões ativos
-        document.querySelector(`[data-age="${this.currentAge}"]`).classList.add('active');
-        
-        if (this.currentAge === 'adult') {
-            document.querySelector(`[data-body="${this.currentBodyType}"]`).classList.add('active');
-        }
-        
-        // Determinar região geral baseada na região específica atual
-        const regionMapping = {
-            // Cabeça
-            'skull-ap': 'head',
-            'skull-lat': 'head',
-            'face-sinuses': 'head',
-            'face-nose-lat': 'head',
-            'face-orbits': 'head',
-            'face-mandible': 'head',
-            'cavum': 'head',
-            
-            // Tronco
-            'chest': 'torso',
-            'chest-lat': 'torso',
-            'chest-ap': 'torso',
-            'ribs-ap': 'torso',
-            'ribs-lat': 'torso',
-            'ribs-oblique': 'torso',
-            'abdomen-ap': 'torso',
-            'abdomen-lat': 'torso',
-            'abdomen-oblique': 'torso',
-            'pelvis-ap': 'torso',
-            'pelvis-lat': 'torso',
-            'pelvis-oblique': 'torso',
-            
-            // Membros Superiores
-            'shoulder-ap': 'upper-limbs',
-            'shoulder-ax': 'upper-limbs',
-            'shoulder-y': 'upper-limbs',
-            'shoulder-lat': 'upper-limbs',
-            'humerus-ap': 'upper-limbs',
-            'humerus-lat': 'upper-limbs',
-            'elbow-ap': 'upper-limbs',
-            'elbow-lat': 'upper-limbs',
-            'forearm-ap': 'upper-limbs',
-            'forearm-lat': 'upper-limbs',
-            'wrist-pa': 'upper-limbs',
-            'wrist-lat': 'upper-limbs',
-            'wrist-oblique': 'upper-limbs',
-            'hand-pa': 'upper-limbs',
-            'hand-lat': 'upper-limbs',
-            'hand-oblique': 'upper-limbs',
-            'finger-ap': 'upper-limbs',
-            'finger-lat': 'upper-limbs',
-            
-            // Membros Inferiores
-            'hip-ap': 'lower-limbs',
-            'hip-lat': 'lower-limbs',
-            'femur-ap': 'lower-limbs',
-            'femur-lat': 'lower-limbs',
-            'knee-ap': 'lower-limbs',
-            'knee-lat': 'lower-limbs',
-            'leg-ap': 'lower-limbs',
-            'leg-lat': 'lower-limbs',
-            'ankle-ap': 'lower-limbs',
-            'ankle-lat': 'lower-limbs',
-            'foot-ap': 'lower-limbs',
-            'foot-lat': 'lower-limbs',
-            'foot-oblique': 'lower-limbs',
-            'calcaneus': 'lower-limbs'
-        };
-        
-        const generalRegion = regionMapping[this.currentBodyPart] || 'torso';
-        
-        // Atualizar região geral
-        document.querySelector(`[data-region="${generalRegion}"]`).classList.add('active');
-        
-        // Mostrar regiões específicas se necessário
-        this.showSpecificRegionsInline(generalRegion);
-        
-        // Atualizar região específica
-        document.querySelector(`[data-bodypart="${this.currentBodyPart}"]`).classList.add('active');
-        
-        this.updateBodyTypeSection();
-    }
-
-    // Mostrar regiões específicas inline (na mesma seção)
-    showSpecificRegionsInline(region) {
-        // Ocultar regiões gerais
+    // Mostra regiões específicas
+    mostrarRegiaoEspecifica(regiao) {
         document.getElementById('general-regions').style.display = 'none';
-        
-        // Ocultar todas as regiões específicas
-        document.querySelectorAll('.specific-regions').forEach(el => {
-            el.style.display = 'none';
-        });
-        
-        // Mostrar região específica selecionada
-        const specificRegion = document.getElementById(`${region}-specific`);
-        if (specificRegion) {
-            specificRegion.style.display = 'block';
-            
-            // Adicionar animação de entrada
-            specificRegion.style.animation = 'fadeIn 0.5s ease-out';
+        document.querySelectorAll('.specific-regions').forEach(el => el.style.display = 'none');
+        const especifica = document.getElementById(`${regiao}-specific`);
+        if (especifica) {
+            especifica.style.display = 'block';
+            especifica.style.animation = 'fadeIn 0.5s ease-out';
         }
-        
-        // Selecionar primeira opção específica por padrão
-        const firstSpecificBtn = specificRegion?.querySelector('[data-bodypart]');
-        if (firstSpecificBtn) {
-            this.selectButton('[data-bodypart]', firstSpecificBtn);
-            this.currentBodyPart = firstSpecificBtn.dataset.bodypart;
-            this.calculate();
+        const primeiro = especifica?.querySelector('[data-bodypart]');
+        if (primeiro) {
+            this.selecionarBotao('[data-bodypart]', primeiro);
+            this.regiaoAtual = primeiro.dataset.bodypart;
+            this.calcular();
         }
     }
 
-    // Mostrar regiões gerais
-    showGeneralRegions() {
-        // Ocultar regiões específicas
-        document.querySelectorAll('.specific-regions').forEach(el => {
-            el.style.display = 'none';
-        });
-        
-        // Mostrar regiões gerais
+    // Volta para regiões gerais
+    mostrarRegiaoGeral() {
+        document.querySelectorAll('.specific-regions').forEach(el => el.style.display = 'none');
         document.getElementById('general-regions').style.display = 'block';
-        
-        // Resetar seleção para tórax (padrão)
-        this.currentBodyPart = 'chest';
-        this.selectButton('[data-region]', document.querySelector('[data-region="torso"]'));
-        this.calculate();
+        this.regiaoAtual = 'chest';
+        this.selecionarBotao('[data-region]', document.querySelector('[data-region="torso"]'));
+        this.calcular();
     }
 
-    // Mostrar notificação
-    showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.textContent = message;
-        
-        // Estilos da notificação
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 500;
-            z-index: 1000;
-            animation: slideIn 0.3s ease-out;
-            background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        `;
-        
-        document.body.appendChild(notification);
-        
-        // Remover após 3 segundos
-        setTimeout(() => {
-            notification.style.animation = 'slideOut 0.3s ease-out';
-            setTimeout(() => {
-                if (document.body.contains(notification)) {
-                    document.body.removeChild(notification);
-                }
-            }, 300);
-        }, 3000);
-    }
-
-    // Mostrar seção de posicionamentos
-    showPositioning() {
-        // Ocultar calculadora
-        document.querySelector('.main-container').style.display = 'none';
-        
-        // Mostrar seção de posicionamentos
-        document.getElementById('positioning-section').style.display = 'block';
-        
-        // Inicializar categorias de posicionamentos
-        this.initializePositioningCategories();
-        
-        // Adicionar event listeners para os botões de posicionamento
-        this.initializePositioningButtons();
-    }
-
-    // Mostrar calculadora
-    showCalculator() {
-        // Ocultar seção de posicionamentos
-        document.getElementById('positioning-section').style.display = 'none';
-        
-        // Mostrar calculadora
-        document.querySelector('.main-container').style.display = 'grid';
-    }
-
-    // Inicializar categorias de posicionamentos
-    initializePositioningCategories() {
-        const categoryTabs = document.querySelectorAll('.category-tab');
-        const categoryContents = document.querySelectorAll('.position-category');
-
-        categoryTabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                const targetCategory = tab.dataset.category;
-                
-                // Atualizar tabs ativas
-                categoryTabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                
-                // Atualizar conteúdo ativo
-                categoryContents.forEach(content => {
-                    content.classList.remove('active');
-                    if (content.id === targetCategory) {
-                        content.classList.add('active');
-                    }
-                });
-            });
-        });
-    }
-
-    // Inicializar botões de posicionamento
-    initializePositioningButtons() {
-        const viewPositionBtns = document.querySelectorAll('.view-position-btn');
-        
-        viewPositionBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const positionCard = btn.closest('.position-card');
-                const position = positionCard.dataset.position;
-                this.showPositionModal(position);
-            });
-        });
-
-        // Também permitir clicar no card inteiro
-        const positionCards = document.querySelectorAll('.position-card');
-        positionCards.forEach(card => {
-            card.addEventListener('click', () => {
-                const position = card.dataset.position;
-                this.showPositionModal(position);
-            });
-        });
-    }
-
-    // Mostrar modal de posicionamento
-    showPositionModal(position) {
-        const modal = document.getElementById('position-modal');
-        const modalTitle = document.getElementById('modal-title');
-        const modalIcon = document.getElementById('modal-icon');
-        const modalInstructions = document.getElementById('modal-instructions');
-        const modalParameters = document.getElementById('modal-parameters');
-        const modalEquipment = document.getElementById('modal-equipment');
-
-        // Obter dados do posicionamento
-        const positionData = this.getPositionData(position);
-        
-        // Preencher modal
-        modalTitle.textContent = positionData.title;
-        modalIcon.className = positionData.icon;
-        modalInstructions.innerHTML = positionData.instructions;
-        modalParameters.innerHTML = positionData.parameters;
-        modalEquipment.innerHTML = positionData.equipment;
-        
-        // Mostrar modal
-        modal.style.display = 'flex';
-        
-        // Fechar modal ao clicar fora
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                this.closePositionModal();
-            }
-        });
-        
-        const imageLarge = document.querySelector('.position-image-large');
-        if (position === 'chest-pa') {
-            imageLarge.innerHTML = '<img src="txpa.jpeg" alt="Tórax PA" style="max-width:100%;max-height:180px;">';
-        } else {
-            imageLarge.innerHTML = '<i class="fas fa-user" id="modal-icon"></i>';
-        }
-    }
-
-    // Fechar modal de posicionamento
-    closePositionModal() {
-        const modal = document.getElementById('position-modal');
-        modal.style.display = 'none';
-    }
-
-    // Obter dados do posicionamento
-    getPositionData(position) {
-        const positionDatabase = {
-            // Cabeça
-            'skull-ap': {
-                title: 'Crânio AP',
-                icon: 'fas fa-brain',
-                instructions: `
-                    <ul>
-                        <li>Paciente em decúbito dorsal</li>
-                        <li>Cabeça centralizada no filme</li>
-                        <li>Linha infraorbitomeatal perpendicular ao filme</li>
-                        <li>Braços ao longo do corpo</li>
-                        <li>Inspiração suave e prender a respiração</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 70-80</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.25s</li>
-                    </ul>
-                `,
-                equipment: 'MURAL-BUCKY'
-            },
-            'skull-lateral': {
-                title: 'Crânio Lateral',
-                icon: 'fas fa-brain',
-                instructions: `
-                    <ul>
-                        <li>Paciente em decúbito lateral</li>
-                        <li>Cabeça em perfil perfeito</li>
-                        <li>Linha infraorbitomeatal paralela ao filme</li>
-                        <li>Braços elevados</li>
-                        <li>Inspiração suave e prender a respiração</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 67-75</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.25s</li>
-                    </ul>
-                `,
-                equipment: 'MURAL-BUCKY'
-            },
-            'face-waters': {
-                title: 'Face - Waters',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente sentado</li>
-                        <li>Queixo elevado</li>
-                        <li>Boca aberta</li>
-                        <li>Linha infraorbitomeatal a 37°</li>
-                        <li>Braços para trás</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 65-75</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.20s</li>
-                    </ul>
-                `,
-                equipment: 'MURAL-BUCKY'
-            },
-            'sinuses-caldwell': {
-                title: 'Seios - Caldwell',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente sentado</li>
-                        <li>Queixo no filme</li>
-                        <li>Linha infraorbitomeatal a 15°</li>
-                        <li>Braços para trás</li>
-                        <li>Inspiração suave</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 70-80</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.20s</li>
-                    </ul>
-                `,
-                equipment: 'MURAL-BUCKY'
-            },
-            // Tórax
-            'chest-pa': {
-                title: 'Tórax PA',
-                icon: 'fas fa-lungs',
-                instructions: `
-                    <ul>
-                        <li>Paciente em posição ortostática</li>
-                        <li>Tórax contra o filme</li>
-                        <li>Braços para trás</li>
-                        <li>Inspiração profunda e prender</li>
-                        <li>Escápulas afastadas</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 95-120</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.025s</li>
-                    </ul>
-                `,
-                equipment: 'MURAL-BUCKY'
-            },
-            'chest-lateral': {
-                title: 'Tórax Lateral',
-                icon: 'fas fa-lungs',
-                instructions: `
-                    <ul>
-                        <li>Paciente em posição ortostática</li>
-                        <li>Lado esquerdo contra o filme</li>
-                        <li>Braços elevados</li>
-                        <li>Inspiração profunda e prender</li>
-                        <li>Escápulas afastadas</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 115-140</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.05s</li>
-                    </ul>
-                `,
-                equipment: 'MURAL-BUCKY'
-            },
-            'chest-ap': {
-                title: 'Tórax AP',
-                icon: 'fas fa-lungs',
-                instructions: `
-                    <ul>
-                        <li>Paciente em decúbito dorsal</li>
-                        <li>Filme atrás das costas</li>
-                        <li>Braços para os lados</li>
-                        <li>Inspiração profunda e prender</li>
-                        <li>Escápulas afastadas</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 100-125</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.03s</li>
-                    </ul>
-                `,
-                equipment: 'MURAL-BUCKY'
-            },
-            'ribs-ap': {
-                title: 'Costelas AP',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente em decúbito dorsal</li>
-                        <li>Braços elevados</li>
-                        <li>Filme centralizado no tórax</li>
-                        <li>Inspiração profunda e prender</li>
-                        <li>Escápulas afastadas</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 90-110</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.30s</li>
-                    </ul>
-                `,
-                equipment: 'MESA-GRADE'
-            },
-            // Coluna
-            'cervical-ap': {
-                title: 'Coluna Cervical AP',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente sentado</li>
-                        <li>Queixo elevado</li>
-                        <li>Linha infraorbitomeatal a 15-20°</li>
-                        <li>Braços para trás</li>
-                        <li>Inspiração suave</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 70-80</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.25s</li>
-                    </ul>
-                `,
-                equipment: 'MURAL-BUCKY'
-            },
-            'cervical-lateral': {
-                title: 'Coluna Cervical Lateral',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente sentado</li>
-                        <li>Perfil da cabeça</li>
-                        <li>Queixo elevado</li>
-                        <li>Braços para trás</li>
-                        <li>Inspiração suave</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 70-80</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.25s</li>
-                    </ul>
-                `,
-                equipment: 'MURAL-BUCKY'
-            },
-            'thoracic-ap': {
-                title: 'Coluna Torácica AP',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente em decúbito dorsal</li>
-                        <li>Braços para os lados</li>
-                        <li>Joelhos flexionados</li>
-                        <li>Inspiração suave</li>
-                        <li>Escápulas afastadas</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 80-100</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.30s</li>
-                    </ul>
-                `,
-                equipment: 'MESA-GRADE'
-            },
-            'lumbar-ap': {
-                title: 'Coluna Lombar AP',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente em decúbito dorsal</li>
-                        <li>Braços para os lados</li>
-                        <li>Joelhos flexionados</li>
-                        <li>Inspiração suave</li>
-                        <li>Pelve centralizada</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 80-100</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.30s</li>
-                    </ul>
-                `,
-                equipment: 'MESA-GRADE'
-            },
-            // Membros Superiores
-            'shoulder-ap': {
-                title: 'Ombro AP',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente sentado</li>
-                        <li>Braço em rotação neutra</li>
-                        <li>Cotovelo flexionado a 90°</li>
-                        <li>Ombro centralizado no filme</li>
-                        <li>Braço oposto para trás</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 52-65</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.20s</li>
-                    </ul>
-                `,
-                equipment: 'MURAL-BUCKY'
-            },
-            'shoulder-y': {
-                title: 'Ombro Y',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente sentado</li>
-                        <li>Braço em rotação externa</li>
-                        <li>Cotovelo flexionado a 90°</li>
-                        <li>Ombro centralizado no filme</li>
-                        <li>Braço oposto para trás</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 63-75</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.25s</li>
-                    </ul>
-                `,
-                equipment: 'MURAL-BUCKY'
-            },
-            'elbow-ap': {
-                title: 'Cotovelo AP',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente sentado</li>
-                        <li>Braço estendido</li>
-                        <li>Palma para cima</li>
-                        <li>Cotovelo centralizado no filme</li>
-                        <li>Braço oposto para trás</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 52-65</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.05s</li>
-                    </ul>
-                `,
-                equipment: 'MESA'
-            },
-            'hand-pa': {
-                title: 'Mão PA',
-                icon: 'fas fa-hand-paper',
-                instructions: `
-                    <ul>
-                        <li>Paciente sentado</li>
-                        <li>Mão apoiada no filme</li>
-                        <li>Dedos estendidos e separados</li>
-                        <li>Punho em posição neutra</li>
-                        <li>Braço oposto para trás</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 44-55</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.04s</li>
-                    </ul>
-                `,
-                equipment: 'MESA'
-            },
-            // Membros Inferiores
-            'hip-ap': {
-                title: 'Quadril AP',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente em decúbito dorsal</li>
-                        <li>Pernas estendidas</li>
-                        <li>Pés em rotação interna</li>
-                        <li>Pelve centralizada no filme</li>
-                        <li>Braços para os lados</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 75-90</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.25s</li>
-                    </ul>
-                `,
-                equipment: 'MESA-GRADE'
-            },
-            'knee-ap': {
-                title: 'Joelho AP',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente em decúbito dorsal</li>
-                        <li>Perna estendida</li>
-                        <li>Patela centralizada no filme</li>
-                        <li>Pé em posição neutra</li>
-                        <li>Braços para os lados</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 60-75</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.06s</li>
-                    </ul>
-                `,
-                equipment: 'MESA-GRADE'
-            },
-            'ankle-ap': {
-                title: 'Tornozelo AP',
-                icon: 'fas fa-shoe-prints',
-                instructions: `
-                    <ul>
-                        <li>Paciente em decúbito dorsal</li>
-                        <li>Pé em flexão dorsal</li>
-                        <li>Maléolos centralizados no filme</li>
-                        <li>Perna estendida</li>
-                        <li>Braços para os lados</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 47-60</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.04s</li>
-                    </ul>
-                `,
-                equipment: 'MESA'
-            },
-            'foot-ap': {
-                title: 'Pé AP',
-                icon: 'fas fa-shoe-prints',
-                instructions: `
-                    <ul>
-                        <li>Paciente sentado</li>
-                        <li>Pé apoiado no filme</li>
-                        <li>Dedos estendidos</li>
-                        <li>Pé em posição neutra</li>
-                        <li>Braço oposto para trás</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 44-55</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.05s</li>
-                    </ul>
-                `,
-                equipment: 'MESA'
-            },
-            // Abdômen
-            'abdomen-ap': {
-                title: 'Abdômen AP',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente em decúbito dorsal</li>
-                        <li>Braços para os lados</li>
-                        <li>Joelhos flexionados</li>
-                        <li>Abdômen centralizado no filme</li>
-                        <li>Inspiração suave</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 67-80</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.32s</li>
-                    </ul>
-                `,
-                equipment: 'MESA-GRADE'
-            },
-            'abdomen-lateral': {
-                title: 'Abdômen Lateral',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente em decúbito lateral</li>
-                        <li>Braços elevados</li>
-                        <li>Joelhos flexionados</li>
-                        <li>Abdômen centralizado no filme</li>
-                        <li>Inspiração suave</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 67-80</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.32s</li>
-                    </ul>
-                `,
-                equipment: 'MURAL-BUCKY'
-            },
-            'pelvis-ap': {
-                title: 'Pelve AP',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente em decúbito dorsal</li>
-                        <li>Pernas estendidas</li>
-                        <li>Pés em rotação interna</li>
-                        <li>Pelve centralizada no filme</li>
-                        <li>Braços para os lados</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 75-90</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.32s</li>
-                    </ul>
-                `,
-                equipment: 'MESA-GRADE'
-            },
-            'pelvis-lateral': {
-                title: 'Pelve Lateral',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente em decúbito lateral</li>
-                        <li>Braços elevados</li>
-                        <li>Joelhos flexionados</li>
-                        <li>Pelve centralizada no filme</li>
-                        <li>Inspiração suave</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 80-95</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.35s</li>
-                    </ul>
-                `,
-                equipment: 'MESA-GRADE'
-            }
-        };
-        
-        return positionDatabase[position] || {
-            title: 'Posicionamento',
-            icon: 'fas fa-user',
-            instructions: '<p>Instruções não disponíveis para este posicionamento.</p>',
-            parameters: '<p>Parâmetros não disponíveis para este posicionamento.</p>',
-            equipment: 'Não especificado'
-        };
-    }
-
-    // Abrir modal de KV/mAs
-    openKvMasModal() {
+    // Modal KV/mAs - simplificado para constante do equipamento
+    abrirModalKvMas() {
         document.getElementById('kvmas-modal').style.display = 'flex';
         document.getElementById('kvmas-result').innerHTML = '';
         document.getElementById('kvmas-form').reset();
     }
 
-    // Fechar modal de KV/mAs
-    closeKvMasModal() {
+    fecharModalKvMas() {
         document.getElementById('kvmas-modal').style.display = 'none';
     }
 
-    // Calcular KV/mAs
-    calculateKvMas(event) {
+    // Calcula KV/mAs usando constante do equipamento
+    calcularKvMas(event) {
         event.preventDefault();
-        const examArea = document.getElementById('input-exam-area').value;
-        const thickness = parseFloat(document.getElementById('input-thickness').value);
-        const distance = parseFloat(document.getElementById('input-distance').value);
+        const constanteEquipamento = parseFloat(document.getElementById('input-thickness').value);
+        const distancia = parseFloat(document.getElementById('input-distance').value);
+        const regiao = document.getElementById('input-region').value;
 
-        if (!examArea || isNaN(thickness) || isNaN(distance)) {
-            this.showKvMasResultModal('Preencha todos os campos corretamente.');
+        if (isNaN(constanteEquipamento) || isNaN(distancia) || !regiao) {
+            this.mostrarModalKvMas('Preencha todos os campos corretamente.');
             return;
         }
 
-        // Base KV por área de exame
-        const areaBaseKV = {
-            'cranio': 70,
-            'torax': 90,
-            'abdomen': 75,
-            'coluna': 80,
-            'membros-superiores': 55,
-            'membros-inferiores': 65,
-            'pelvis': 80
+        // Constantes de mA de Maron por região
+        const constantesMA = {
+            osseo: 200,
+            extremidade: 100,
+            respiratorio: 200,
+            digestorio: 250,
+            urinario: 250,
+            'partes-moles': 150
         };
+        let ma = constantesMA[regiao] || 200;
+        let kv = constanteEquipamento;
+        if (distancia > 100) kv += 5;
+        let tempo = 0.1;
+        let mas = Math.round(ma * tempo * 1000) / 1000;
 
-        // Base mAs por área de exame
-        const areaBaseMAs = {
-            'cranio': 25,
-            'torax': 20,
-            'abdomen': 30,
-            'coluna': 25,
-            'membros-superiores': 15,
-            'membros-inferiores': 20,
-            'pelvis': 30
-        };
-
-        // Cálculo de KV baseado na área + espessura + distância
-        let kv = areaBaseKV[examArea] || 70;
-        kv += Math.round((thickness - 15) * 1.5); // Ajuste por espessura
-        kv += distance > 100 ? 5 : 0; // Ajuste por distância
-
-        // Cálculo de mAs baseado na área + espessura
-        let mas = areaBaseMAs[examArea] || 20;
-        mas += Math.round((thickness - 15) * 0.8); // Ajuste por espessura
-
-        // Ajuste por distância (inverso do quadrado)
-        const distanceFactor = Math.pow(distance / 100, 2);
-        mas = Math.round(mas * distanceFactor);
-
-        // Calcular mA baseado no mAs e tempo padrão
-        const timeStandard = 0.1; // tempo padrão de 0.1 segundos
-        // Corrigir mA para valores reais (100 ou 200)
-        let ma = mas / timeStandard <= 100 ? 100 : 200;
-
-        // Garantir valores mínimos e máximos seguros
         kv = Math.max(40, Math.min(150, kv));
-        mas = Math.max(5, Math.min(100, mas));
         ma = Math.max(25, Math.min(800, ma));
+        mas = Math.max(5, Math.min(100, mas));
 
-        const resultHtml = `
-            <p><strong>Resultado para ${document.getElementById('input-exam-area').options[document.getElementById('input-exam-area').selectedIndex].text}:</strong></p>
+        const resultado = `
+            <p><strong>Resultado:</strong></p>
             <p>KV: <b>${kv}</b></p>
             <p>mA: <b>${ma}</b></p>
             <p>mAs: <b>${mas}</b></p>
-            <p><small>Baseado na espessura (${thickness}cm) e distância (${distance}cm)</small></p>
+            <p><small>Constante do equipamento: ${constanteEquipamento} | Distância: ${distancia}cm | Região: ${document.getElementById('input-region').selectedOptions[0].text}</small></p>
         `;
-        this.showKvMasResultModal(resultHtml);
+        this.mostrarModalKvMas(resultado);
     }
 
-    showKvMasResultModal(content) {
+    mostrarModalKvMas(conteudo) {
         const modal = document.getElementById('kvmas-result-modal');
-        const modalContent = document.getElementById('kvmas-result-modal-content');
-        modalContent.innerHTML = content;
+        document.getElementById('kvmas-result-modal-content').innerHTML = conteudo;
         modal.style.display = 'flex';
-        document.getElementById('closeKvMasResultModal').onclick = () => {
-            modal.style.display = 'none';
-        };
-        // Fechar ao clicar fora
-        modal.onclick = (e) => {
-            if (e.target === modal) modal.style.display = 'none';
-        };
+        document.getElementById('closeKvMasResultModal').onclick = () => modal.style.display = 'none';
+        modal.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
     }
 }
 
-// Adicionar estilos para notificações
-const notificationStyles = document.createElement('style');
-notificationStyles.textContent = `
-    @keyframes slideIn {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-    
-    @keyframes slideOut {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(100%); opacity: 0; }
-    }
+// Estilos para notificações
+const estilosNotificacao = document.createElement('style');
+estilosNotificacao.textContent = `
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
 `;
-document.head.appendChild(notificationStyles);
+document.head.appendChild(estilosNotificacao);
 
-// Inicializar calculadora quando a página carregar
+// Inicialização
 document.addEventListener('DOMContentLoaded', () => {
-    window.calculator = new RadiologicalCalculator();
-    
-    // Carregar configuração salva
-    // window.calculator.loadConfiguration(); // Removido conforme solicitado
-    
-    // Adicionar funcionalidade de header shrinking
-    addHeaderScrollEffect();
+    window.calculadora = new CalculadoraRadiologica();
+    efeitoHeader();
 });
 
-
-
-// Adicionar efeito de header shrinking no scroll
-function addHeaderScrollEffect() {
+// Efeito de header ao rolar
+function efeitoHeader() {
     const header = document.querySelector('.header');
-    let lastScrollTop = 0;
-    
-    // Função para debounce do scroll
-    function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
+    function debounce(fn, ms) {
+        let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
     }
-    
-    // Função para atualizar header
-    const updateHeader = debounce(() => {
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        
-        if (scrollTop > 50) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
-        }
-        
-        lastScrollTop = scrollTop;
+    const atualizar = debounce(() => {
+        const scroll = window.pageYOffset || document.documentElement.scrollTop;
+        if (scroll > 50) header.classList.add('scrolled');
+        else header.classList.remove('scrolled');
     }, 10);
-    
-    // Adicionar event listener para scroll
-    window.addEventListener('scroll', updateHeader, { passive: true });
-    
-    // Adicionar event listener para touch move (mobile)
-    window.addEventListener('touchmove', updateHeader, { passive: true });
+    window.addEventListener('scroll', atualizar, { passive: true });
+    window.addEventListener('touchmove', atualizar, { passive: true });
 }
 
-// Cálculo específico (modal)
+// Ajuste do modal KV/mAs para novo cálculo
 document.addEventListener('DOMContentLoaded', function() {
-    const openBtn = document.getElementById('openSpecificCalcBtn');
-    const modal = document.getElementById('specific-calc-modal');
-    const closeBtn = document.getElementById('closeSpecificCalcBtn');
-    const form = document.getElementById('specificCalcForm');
-    const resultDiv = document.getElementById('specificCalcResult');
-
-    if (openBtn && modal && closeBtn && form && resultDiv) {
-        openBtn.onclick = () => { modal.style.display = 'block'; };
-        closeBtn.onclick = () => { modal.style.display = 'none'; resultDiv.innerHTML = ''; };
-        window.onclick = (e) => { if (e.target == modal) { modal.style.display = 'none'; resultDiv.innerHTML = ''; } };
-
+    const form = document.getElementById('kvmas-form');
+    if (form) {
         form.onsubmit = function(e) {
-            e.preventDefault();
-            const v1 = parseFloat(document.getElementById('valor1').value);
-            const v2 = parseFloat(document.getElementById('valor2').value);
-            const v3 = parseFloat(document.getElementById('valor3').value);
-            if (v3 === 0) {
-                resultDiv.innerHTML = '<span style="color:red;">Divisão por zero não permitida.</span>';
-                return;
-            }
-            const resultado = (v1 * v2) / v3;
-            resultDiv.innerHTML = `<strong>Resultado:</strong> ${resultado.toFixed(2)}`;
+            window.calculadora.calcularKvMas(e);
         };
     }
 });
