@@ -110,11 +110,7 @@ body {
 .logo {
     width: 60px;
     height: 60px;
-    border-radius: 12px;
-    object-fit: cover;
-    box-shadow: var(--shadow-primary);
-    border: 2px solid var(--border-primary);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+   
 }
 
 .logo img {

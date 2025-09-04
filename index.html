@@ -196,7 +196,7 @@
                         <button class="bodypart-btn" data-bodypart="ribs-oblique">
                             <i class="fas fa-user"></i>
                             <span>Costelas Oblíqua</span>
-                            <small</small>
+                            <small></small>
                         </button>
                         <button class="bodypart-btn" data-bodypart="abdomen-ap">
                             <i class="fas fa-user"></i>
@@ -798,35 +798,38 @@
                 <form id="kvmas-form" onsubmit="window.calculator.calculateKvMas(event)">
                     <div class="form-row">
                         <label>
-                            <span>Área de Exame:</span>
-                            <select id="input-exam-area" required>
-                                <option value="">Selecione a área...</option>
-                                <option value="cranio">Crânio</option>
-                                <option value="torax">Tórax</option>
-                                <option value="abdomen">Abdômen</option>
-                                <option value="coluna">Coluna</option>
-                                <option value="membros-superiores">Membros Superiores</option>
-                                <option value="membros-inferiores">Membros Inferiores</option>
-                                <option value="pelvis">Pelve</option>
-                            </select>
-                        </label>
-                        <label>
-                            <span>Espessura da Parte (cm):</span>
-                            <input type="number" id="input-thickness" required min="1" max="50" step="0.5" placeholder="Ex: 15">
+                            <span>Espessura (cm):</span>
+                            <input type="number" id="input-thickness" required min="1" max="50" step="0.1" placeholder="Ex: 20">
                         </label>
                     </div>
-                    
                     <div class="form-row">
                         <label>
-                            <span>Distância Foco-Filme (cm):</span>
-                            <input type="number" id="input-distance" required min="50" max="200" step="5" placeholder="Ex: 100">
+                            <span>Estrutura/Região:</span>
+                            <select id="input-exam-area" required>
+                                <option value="">Selecione...</option>
+                                <option value="corpo-osseo">Corpo Ósseo</option>
+                                <option value="extremidades">Extremidades</option>
+                                <option value="aparelho-respiratorio">Aparelho Respiratório</option>
+                                <option value="aparelho-digestorio">Aparelho Digestório</option>
+                                <option value="aparelho-urinario">Aparelho Urinário</option>
+                                <option value="partes-moles">Somente Partes Moles</option>
+                            </select>
                         </label>
-
                     </div>
-                    
+                    <div class="form-row">
+                        <label>
+                            <span>Constante do Equipamento:</span>
+                            <input type="number" id="input-constante" required min="20" max="60" step="0.1" placeholder="Ex: 40">
+                        </label>
+                    </div>
+                    <div class="form-row">
+                        <label>
+                            <span>DFF (cm):</span>
+                            <input type="number" id="input-distance" required min="80" max="200" step="1" placeholder="Ex: 100">
+                        </label>
+                    </div>
                     <button type="submit" class="calculate-btn">
-                        <i class="fas fa-calculator"></i>
-                        Calcular Parâmetros Otimizados
+                        <i class="fas fa-calculator"></i> Calcular
                     </button>
                 </form>
                 <div id="kvmas-result" class="kvmas-result"></div>
@@ -839,7 +842,7 @@
     <footer class="footer">
         <div class="footer-content">
             <p><span class="highlight">ExpoRad</span> - Calculadora Radiológica desenvolvida para técnicos e tecnólogos de radiologia</p>
-            <p>🚀 Acertar a técnica usando a calculadora fica muito fácil!</p>
+            <p> </p>
         </div>
     </footer>
 

@@ -877,7 +877,6 @@ class RadiologicalCalculator {
                 instructions: `
                     <ul>
                         <li>Paciente em decúbito dorsal</li>
-                        <li>Braços para os lados</li>
                         <li>Joelhos flexionados</li>
                         <li>Inspiração suave</li>
                         <li>Escápulas afastadas</li>
@@ -1194,65 +1193,73 @@ class RadiologicalCalculator {
     // Calcular KV/mAs
     calculateKvMas(event) {
         event.preventDefault();
-        const examArea = document.getElementById('input-exam-area').value;
         const thickness = parseFloat(document.getElementById('input-thickness').value);
-        const distance = parseFloat(document.getElementById('input-distance').value);
+        const structure = document.getElementById('input-exam-area').value;
+        const constante = parseFloat(document.getElementById('input-constante').value);
+        const dff = parseFloat(document.getElementById('input-distance').value);
 
-        if (!examArea || isNaN(thickness) || isNaN(distance)) {
+        if (!structure || isNaN(thickness) || isNaN(constante) || isNaN(dff)) {
             document.getElementById('kvmas-result').innerHTML = 'Preencha todos os campos corretamente.';
             return;
         }
 
-        // Base KV por área de exame
-        const areaBaseKV = {
-            'cranio': 70,
-            'torax': 90,
-            'abdomen': 75,
-            'coluna': 80,
-            'membros-superiores': 55,
-            'membros-inferiores': 65,
-            'pelvis': 80
+        // Fatores de Maron por estrutura
+        const maronFactors = {
+            'corpo-osseo': 0.5,
+            'extremidades': 0.1,
+            'aparelho-respiratorio': 0.1,
+            'aparelho-digestorio': 0.3,
+            'aparelho-urinario': 0.3,
+            'partes-moles': 0.01
         };
 
-        // Base mAs por área de exame
-        const areaBaseMAs = {
-            'cranio': 25,
-            'torax': 20,
-            'abdomen': 30,
-            'coluna': 25,
-            'membros-superiores': 15,
-            'membros-inferiores': 20,
-            'pelvis': 30
+        // Nome amigável
+        const nomesEstrutura = {
+            'corpo-osseo': 'Corpo Ósseo',
+            'extremidades': 'Extremidades',
+            'aparelho-respiratorio': 'Aparelho Respiratório', 
+            'aparelho-digestorio': 'Aparelho Digestório',
+            'aparelho-urinario': 'Aparelho Urinário',
+            'partes-moles': 'Partes Moles'
         };
 
-        // Cálculo de KV baseado na área + espessura + distância
-        let kv = areaBaseKV[examArea] || 70;
-        kv += Math.round((thickness - 15) * 1.5); // Ajuste por espessura
-        kv += distance > 100 ? 5 : 0; // Ajuste por distância
+        const fatorMaron = maronFactors[structure] || 2;
 
-        // Cálculo de mAs baseado na área + espessura
-        let mas = areaBaseMAs[examArea] || 20;
-        mas += Math.round((thickness - 15) * 0.8); // Ajuste por espessura
+        // Cálculo do kV
+        const kv = 2 * thickness + constante;
 
-        // Ajuste por distância (inverso do quadrado)
-        const distanceFactor = Math.pow(distance / 100, 2);
-        mas = Math.round(mas * distanceFactor);
+        // Cálculo do mAs (Maron)
+        let mAs = kv * fatorMaron;
 
-        // Calcular mA baseado no mAs e tempo padrão
-        const timeStandard = 0.1; // tempo padrão de 0.1 segundos
-        let ma = Math.round(mas / timeStandard);
+        // Cenário 1: mA = 100
+        const ma1 = 100;
+        const tempo1 = mAs / ma1;
+        // Cenário 2: mA = 200
+        const ma2 = 200;
+        const tempo2 = mAs / ma2;
 
-        // Garantir valores mínimos e máximos seguros
-        kv = Math.max(40, Math.min(150, kv));
-        mas = Math.max(5, Math.min(100, mas));
-        ma = Math.max(25, Math.min(800, ma));
+        // mAs para DFF diferente de 100cm (referência)
+        //const dffReferencia = 100;
+        //mAs = mAs * Math.pow(dff / dffReferencia, 2);
+
+        let tempo = 0.1;
+        if (thickness <= 10) tempo = 0.05;
+        else if (thickness <= 20) tempo = 0.10;
+        else if (thickness <= 30) tempo = 0.20;
+        else tempo = 0.30;
+
+        
+
+        // Calcular mA a partir do tempo informado
+        const mA = mAs / tempo;
 
         document.getElementById('kvmas-result').innerHTML = `
-            <p><strong>Resultado para ${document.getElementById('input-exam-area').options[document.getElementById('input-exam-area').selectedIndex].text}:</strong></p>
-            <p>KV: <b>${kv}</b></p>
-            <p>mA: <b>${ma}</b></p>
-            <p>mAs: <b>${mas}</b></p>
-            <p><small>Baseado na espessura (${thickness}cm) e distância (${distance}cm)</small></p>
+            <p><strong>Resultado para ${nomesEstrutura[structure] || structure}:</strong></p>
+            <p>kV: <b>${kv.toFixed(1)}</b></p>
+            <p>mAs: <b>${mAs.toFixed(2)}</b></p>
+            <p><strong>Se mA = 100:</strong> tempo = ${tempo1.toFixed(3)} s</p>
+            <p><strong>Se mA = 200:</strong> tempo = ${tempo2.toFixed(3)} s</p>
+            <p><small>Espessura: ${thickness}cm, Constante: ${constante}, DFF: ${dff}cm, Fator Maron: ${fatorMaron}</small></p>
         `;
     }
 }
@@ -1300,7 +1307,7 @@ function addHeaderScrollEffect() {
             };
             clearTimeout(timeout);
             timeout = setTimeout(later, wait);
-        };
+        }
     }
     
     // Função para atualizar header
