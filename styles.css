@@ -1863,10 +1863,6 @@ body {
     }
     
     /* Responsividade para regiões corporais inline em mobile */
-    .button-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
     
     .bodypart-general-btn {
         min-height: 100px;
@@ -1923,11 +1919,3 @@ body {
     }
 }
 
-/* Ajuste extra para iPhone/Safari */
-@supports (-webkit-touch-callout: none) {
-    .bodypart-btn span {
-        font-size: 1.05rem;
-        line-height: 1.2;
-        word-break: break-word;
-    }
-}
