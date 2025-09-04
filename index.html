@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <!-- Cabeçalho -->
+    <!-- Header -->
     <header class="header">
         <div class="header-content">
             <div class="app-title">
@@ -19,48 +19,94 @@
                 </div>
                 <p>Calculadora Radiológica - KV, mAs e Tempo para Diferentes Faixas Etárias e Tipos Físicos</p>
             </div>
-            <div class="radiation-symbol" onclick="window.calculadora.abrirModalKvMas()">
+            <div class="radiation-symbol" onclick="window.calculator.openKvMasModal()">
                 <i class="fas fa-atom"></i>
             </div>
         </div>
     </header>
 
-    <!-- Principal -->
+    <!-- Container Principal -->
     <div class="main-container">
-        <!-- Calculadora -->
+        <!-- Seção da Calculadora -->
         <div class="calculator-section">
             <h2 class="section-title">🎯 Seleção do Paciente</h2>
-            <!-- Idade -->
+            
+            <!-- Seleção de Idade -->
             <div class="age-selection">
                 <h3>Faixa Etária</h3>
                 <div class="age-grid">
-                    <button class="age-btn active" data-age="newborn"><i class="fas fa-baby"></i><span>Recém-nascido</span></button>
-                    <button class="age-btn" data-age="1a5"><i class="fas fa-child"></i><span>1 a 5 anos</span></button>
-                    <button class="age-btn" data-age="5a10"><i class="fas fa-child"></i><span>5 a 10 anos</span></button>
-                    <button class="age-btn" data-age="10a18"><i class="fas fa-child"></i><span>10 a 18 anos</span></button>
-                    <button class="age-btn" data-age="adult"><i class="fas fa-user"></i><span>Adulto</span></button>
+                    <button class="age-btn active" data-age="newborn">
+                        <i class="fas fa-baby"></i>
+                        <span>Recém-nascido</span>
+                    </button>
+                    <button class="age-btn" data-age="1a5">
+                        <i class="fas fa-child"></i>
+                        <span>1 a 5 anos</span>
+                    </button>
+                    <button class="age-btn" data-age="5a10">
+                        <i class="fas fa-child"></i>
+                        <span>5 a 10 anos</span>
+                    </button>
+                    <button class="age-btn" data-age="10a18">
+                        <i class="fas fa-child"></i>
+                        <span>10 a 18 anos</span>
+                    </button>
+                    <button class="age-btn" data-age="adult">
+                        <i class="fas fa-user"></i>
+                        <span>Adulto</span>
+                    </button>
                 </div>
             </div>
-            <!-- Tipo físico -->
+
+            <!-- Seleção de Tipo Físico (apenas para adultos) -->
             <div class="body-type-section" id="body-type-section">
                 <h3>Tipo Físico</h3>
                 <div class="body-grid">
-                    <button class="body-btn active" data-body="p"><i class="fas fa-user"></i><span>P</span></button>
-                    <button class="body-btn" data-body="m"><i class="fas fa-user"></i><span>M</span></button>
-                    <button class="body-btn" data-body="g"><i class="fas fa-user"></i><span>G</span></button>
-                    <button class="body-btn" data-body="gg"><i class="fas fa-user"></i><span>GG</span></button>
-                    <button class="body-btn" data-body="xl"><i class="fas fa-user"></i><span>XL</span></button>
+                    <button class="body-btn active" data-body="p">
+                        <i class="fas fa-user"></i>
+                        <span>P</span>
+                    </button>
+                    <button class="body-btn" data-body="m">
+                        <i class="fas fa-user"></i>
+                        <span>M</span>
+                    </button>
+                    <button class="body-btn" data-body="g">
+                        <i class="fas fa-user"></i>
+                        <span>G</span>
+                    </button>
+                    <button class="body-btn" data-body="gg">
+                        <i class="fas fa-user"></i>
+                        <span>GG</span>
+                    </button>
+                    <button class="body-btn" data-body="xl">
+                        <i class="fas fa-user"></i>
+                        <span>XL</span>
+                    </button>
                 </div>
             </div>
-            <!-- Região corporal -->
+
+            <!-- Seleção de Região Corporal -->
             <div class="bodypart-section">
+                <!-- Regiões Gerais -->
                 <div class="selection-group" id="general-regions">
                     <h3>Região Corporal</h3>
                     <div class="button-grid">
-                        <button class="bodypart-general-btn" data-region="head"><i class="fas fa-brain"></i><span>Cabeça</span></button>
-                        <button class="bodypart-general-btn" data-region="torso"><i class="fas fa-user"></i><span>Tronco</span></button>
-                        <button class="bodypart-general-btn" data-region="upper-limbs"><i class="fas fa-hand-paper"></i><span>Membros Superiores</span></button>
-                        <button class="bodypart-general-btn" data-region="lower-limbs"><i class="fas fa-shoe-prints"></i><span>Membros Inferiores</span></button>
+                        <button class="bodypart-general-btn" data-region="head">
+                            <i class="fas fa-brain"></i>
+                            <span>Cabeça</span>
+                        </button>
+                        <button class="bodypart-general-btn" data-region="torso">
+                            <i class="fas fa-user"></i>
+                            <span>Tronco</span>
+                        </button>
+                        <button class="bodypart-general-btn" data-region="upper-limbs">
+                            <i class="fas fa-hand-paper"></i>
+                            <span>Membros Superiores</span>
+                        </button>
+                        <button class="bodypart-general-btn" data-region="lower-limbs">
+                            <i class="fas fa-shoe-prints"></i>
+                            <span>Membros Inferiores</span>
+                        </button>
                     </div>
                 </div>
 
@@ -68,7 +114,7 @@
                 <div id="head-specific" class="specific-regions" style="display: none;">
                     <div class="specific-header">
                         <h4>Cabeça</h4>
-                        <button class="back-btn" onclick="window.calculadora.mostrarRegiaoGeral()">
+                        <button class="back-btn" onclick="window.calculator.showGeneralRegions()">
                             <i class="fas fa-arrow-left"></i>
                             Voltar
                         </button>
@@ -116,7 +162,7 @@
                 <div id="torso-specific" class="specific-regions" style="display: none;">
                     <div class="specific-header">
                         <h4>Tronco</h4>
-                        <button class="back-btn" onclick="window.calculadora.mostrarRegiaoGeral()">
+                        <button class="back-btn" onclick="window.calculator.showGeneralRegions()">
                             <i class="fas fa-arrow-left"></i>
                             Voltar
                         </button>
@@ -189,7 +235,7 @@
                 <div id="upper-limbs-specific" class="specific-regions" style="display: none;">
                     <div class="specific-header">
                         <h4>Membros Superiores</h4>
-                        <button class="back-btn" onclick="window.calculadora.mostrarRegiaoGeral()">
+                        <button class="back-btn" onclick="window.calculator.showGeneralRegions()">
                             <i class="fas fa-arrow-left"></i>
                             Voltar
                         </button>
@@ -292,7 +338,7 @@
                 <div id="lower-limbs-specific" class="specific-regions" style="display: none;">
                     <div class="specific-header">
                         <h4>Membros Inferiores</h4>
-                        <button class="back-btn" onclick="window.calculadora.mostrarRegiaoGeral()">
+                        <button class="back-btn" onclick="window.calculator.showGeneralRegions()">
                             <i class="fas fa-arrow-left"></i>
                             Voltar
                         </button>
@@ -371,32 +417,46 @@
                     </div>
                 </div>
             </div>
-            <!-- Botão calcular -->
+
+            <!-- Botão Calcular -->
             <button id="calculateBtn" class="calculate-btn">
                 <i class="fas fa-calculator"></i>
                 CALCULAR PARÂMETROS
             </button>
         </div>
-        <!-- Resultados -->
+
+        <!-- Seção de Resultados -->
         <div class="results-section">
             <h2 class="section-title">📊 Resultados</h2>
             <div class="results-grid">
                 <div class="result-item">
-                    <div class="result-label"><i class="fas fa-bolt"></i><span>KV</span></div>
+                    <div class="result-label">
+                        <i class="fas fa-bolt"></i>
+                        <span>KV</span>
+                    </div>
                     <div class="result-value" id="kvValue">--</div>
                 </div>
+                
                 <div class="result-item">
-                    <div class="result-label"><i class="fas fa-tachometer-alt"></i><span>mA</span></div>
+                    <div class="result-label">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>mA</span>
+                    </div>
                     <div class="result-value" id="maValue">--</div>
                 </div>
+                
                 <div class="result-item">
-                    <div class="result-label"><i class="fas fa-calculator"></i><span>mAs</span></div>
+                    <div class="result-label">
+                        <i class="fas fa-calculator"></i>
+                        <span>mAs</span>
+                    </div>
                     <div class="result-value" id="mAsValue">--</div>
                 </div>
             </div>
+            
             <!-- Botão de Posicionamentos -->
             <div class="positioning-button-container">
-                <button class="positioning-btn" onclick="window.calculadora.mostrarPosicionamentos()">
+                <button class="positioning-btn" onclick="window.calculator.showPositioning()">
                     <i class="fas fa-camera"></i>
                     <span>Ver Posicionamentos</span>
                 </button>
@@ -407,7 +467,7 @@
     <!-- Seção de Posicionamentos -->
     <div class="positioning-section" id="positioning-section" style="display: none;">
         <div class="positioning-header">
-            <button class="back-to-calculator-btn" onclick="window.calculadora.mostrarCalculadora()">
+            <button class="back-to-calculator-btn" onclick="window.calculator.showCalculator()">
                 <i class="fas fa-arrow-left"></i>
                 Voltar à Calculadora
             </button>
@@ -699,7 +759,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3 id="modal-title">Posicionamento</h3>
-                <button class="close-modal-btn" onclick="window.calculadora.fecharModalPosicionamento()">
+                <button class="close-modal-btn" onclick="window.calculator.closePositionModal()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -711,8 +771,12 @@
                     <div class="position-instructions">
                         <h4>Instruções de Posicionamento:</h4>
                         <div id="modal-instructions"></div>
-                        <h4>Parâmetros Técnicos:</h4>
+                        
+                                                <h4>Parâmetros Técnicos:</h4>
                         <div id="modal-parameters"></div>
+
+                        <!-- Parâmetros técnicos específicos por projeção -->
+                        
                         <h4>Equipamento:</h4>
                         <div id="modal-equipment"></div>
                     </div>
@@ -726,59 +790,59 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Calculadora de KV e mAs</h3>
-                <button class="close-modal-btn" onclick="window.calculadora.fecharModalKvMas()">
+                <button class="close-modal-btn" onclick="window.calculator.closeKvMasModal()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <form id="kvmas-form" onsubmit="window.calculadora.calcularKvMas(event)">
+                <form id="kvmas-form" onsubmit="window.calculator.calculateKvMas(event)">
                     <div class="form-row">
                         <label>
-                            <span>Constante do Equipamento:</span>
-                            <input type="number" id="input-thickness" required min="1" max="150" step="0.5" placeholder="Ex: 80">
+                            <span>Área de Exame:</span>
+                            <select id="input-exam-area" required>
+                                <option value="">Selecione a área...</option>
+                                <option value="cranio">Crânio</option>
+                                <option value="torax">Tórax</option>
+                                <option value="abdomen">Abdômen</option>
+                                <option value="coluna">Coluna</option>
+                                <option value="membros-superiores">Membros Superiores</option>
+                                <option value="membros-inferiores">Membros Inferiores</option>
+                                <option value="pelvis">Pelve</option>
+                            </select>
                         </label>
+                        <label>
+                            <span>Espessura da Parte (cm):</span>
+                            <input type="number" id="input-thickness" required min="1" max="50" step="0.5" placeholder="Ex: 15">
+                        </label>
+                    </div>
+                    
+                    <div class="form-row">
                         <label>
                             <span>Distância Foco-Filme (cm):</span>
                             <input type="number" id="input-distance" required min="50" max="200" step="5" placeholder="Ex: 100">
                         </label>
-                        <label>
-                            <span>Região Radiografada:</span>
-                            <select id="input-region" required>
-                                <option value="osseo">Corpo Ósseo</option>
-                                <option value="extremidade">Extremidade</option>
-                                <option value="respiratorio">Aparelho Respiratório</option>
-                                <option value="digestorio">Aparelho Digestório</option>
-                                <option value="urinario">Aparelho Urinário</option>
-                                <option value="partes-moles">Partes Moles</option>
-                            </select>
-                        </label>
+
                     </div>
+                    
                     <button type="submit" class="calculate-btn">
                         <i class="fas fa-calculator"></i>
-                        Calcular Parâmetros
+                        Calcular Parâmetros Otimizados
                     </button>
                 </form>
+                <div id="kvmas-result" class="kvmas-result"></div>
             </div>
         </div>
     </div>
     <!-- Fim Modal Calculadora KV/mAs -->
 
-    <!-- Modal de Resultado KV/mAs -->
-    <div id="kvmas-result-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:99999; align-items:center; justify-content:center;">
-        <div style="background:#fff; color:#222; border-radius:16px; padding:2rem; min-width:300px; max-width:90vw; position:relative;">
-            <button id="closeKvMasResultModal" style="position:absolute; top:1rem; right:1rem; background:#ef4444; color:#fff; border:none; border-radius:50%; width:32px; height:32px; cursor:pointer;">
-                <i class="fas fa-times"></i>
-            </button>
-            <div id="kvmas-result-modal-content"></div>
-        </div>
-    </div>
-    <!-- Rodapé -->
+    <!-- Footer -->
     <footer class="footer">
         <div class="footer-content">
             <p><span class="highlight">ExpoRad</span> - Calculadora Radiológica desenvolvida para técnicos e tecnólogos de radiologia</p>
-            <p> </p>
+            <p>🚀 Acertar a técnica usando a calculadora fica muito fácil!</p>
         </div>
     </footer>
+
     <script src="script.js"></script>
 </body>
 </html>
