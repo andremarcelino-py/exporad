@@ -1,1482 +1,1829 @@
-// Calculadora Radiológica - KV, mAs e Tempo
-class RadiologicalCalculator {
-    constructor() {
-        this.currentAge = 'newborn';
-        this.currentBodyType = 'm';
-        this.currentBodyPart = 'chest';
-        
-        this.initializeEventListeners();
-        this.updateBodyTypeSection();
+/* Reset e configurações base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Paleta de cores moderna e sofisticada */
+    --primary-bg: #0a0a0f;
+    --secondary-bg: #1a1a2e;
+    --accent-primary: #00d4ff;
+    --accent-secondary: #0099cc;
+    --accent-tertiary: #ff6b35;
+    --text-primary: #fffbfb;
+    --text-secondary: #b8c5d6;
+    --text-muted: #6b7280;
+    --border-primary: rgba(0, 212, 255, 0.2);
+    --border-secondary: rgba(255, 255, 255, 0.1);
+    --shadow-primary: 0 8px 32px rgba(0, 212, 255, 0.15);
+    --shadow-secondary: 0 4px 16px rgba(0, 0, 0, 0.3);
+    --gradient-primary: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+    --gradient-secondary: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+    --gradient-bg: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--gradient-bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--secondary-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--accent-primary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-secondary);
+}
+
+/* Header */
+.header {
+    background: rgba(26, 26, 46, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-primary);
+    padding: 1.5rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-secondary);
+    transition: all 0.3s ease;
+}
+
+.header.scrolled {
+    padding: 0.8rem 0;
+    background: rgba(26, 26, 46, 0.98);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+}
+
+.header.scrolled .logo {
+    width: 40px;
+    height: 40px;
+}
+
+.header.scrolled .app-title h1 {
+    font-size: 1.8rem;
+}
+
+.header.scrolled .app-title p {
+    display: none;
+}
+
+.header.scrolled .radiation-symbol {
+    width: 50px;
+    height: 50px;
+    font-size: 1.3rem;
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0;
+}
+
+.logo {
+    width: 60px;
+    height: 60px;
+   
+}
+
+.logo img {
+    border: none !important;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 40px rgba(0, 212, 255, 0.25);
+}
+
+.app-title h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+}
+
+.app-title p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    font-weight: 400;
+}
+
+.radiation-symbol {
+    width: 80px;
+    height: 80px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--primary-bg);
+    box-shadow: var(--shadow-primary);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* Container principal */
+.main-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+}
+
+/* Seções */
+.calculator-section {
+    background: rgba(26, 26, 46, 0.6);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 2.5rem;
+    border: 1px solid var(--border-primary);
+    box-shadow: var(--shadow-secondary);
+    transition: all 0.3s ease;
+}
+
+.calculator-section:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-primary);
+    border-color: var(--accent-primary);
+}
+
+.section-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--accent-primary);
+    margin-bottom: 2rem;
+    text-align: center;
+    position: relative;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: var(--gradient-primary);
+    border-radius: 2px;
+}
+
+/* Seleção de idade */
+.age-selection {
+    margin-bottom: 2.5rem;
+}
+
+.age-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+}
+
+.age-btn {
+    background: rgba(0, 212, 255, 0.05);
+    border: 2px solid var(--border-primary);
+    border-radius: 16px;
+    padding: 1.2rem 1rem;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.age-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-primary);
+    transition: left 0.3s ease;
+    z-index: -1;
+}
+
+.age-btn:hover::before {
+    left: 0;
+}
+
+.age-btn:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent-primary);
+    box-shadow: var(--shadow-primary);
+}
+
+.age-btn.active {
+    background: var(--gradient-primary);
+    border-color: var(--accent-primary);
+    color: var(--primary-bg);
+    box-shadow: var(--shadow-primary);
+}
+
+.age-btn i {
+    font-size: 1.5rem;
+    color: var(--accent-primary);
+}
+
+.age-btn.active i {
+    color: var(--primary-bg);
+}
+
+/* Seleção de tipo físico */
+.body-type-section {
+    margin-bottom: 2.5rem;
+    display: none;
+}
+
+/* Constante do Aparelho */
+.equipment-constant-section {
+    margin-bottom: 2.5rem;
+}
+
+.equipment-constant-section h3 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--accent-primary);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.constant-input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.constant-input-container input {
+    width: 200px;
+    padding: 1rem 1.5rem;
+    border: 2px solid var(--border-primary);
+    border-radius: 12px;
+    background: rgba(0, 212, 255, 0.05);
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.constant-input-container input:focus {
+    border-color: var(--accent-primary);
+    box-shadow: var(--shadow-primary);
+    background: rgba(0, 212, 255, 0.1);
+}
+
+.constant-input-container small {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-align: center;
+    max-width: 300px;
+}
+
+.body-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+}
+
+.body-btn {
+    background: rgba(255, 107, 53, 0.05);
+    border: 2px solid rgba(255, 107, 53, 0.2);
+    border-radius: 16px;
+    padding: 1.2rem 1rem;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.body-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-secondary);
+    transition: left 0.3s ease;
+    z-index: -1;
+}
+
+.body-btn:hover::before {
+    left: 0;
+}
+
+.body-btn:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent-tertiary);
+    box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
+}
+
+.body-btn.active {
+    background: var(--gradient-secondary);
+    border-color: var(--accent-tertiary);
+    color: var(--primary-bg);
+    box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
+}
+
+.body-btn i {
+    font-size: 1.3rem;
+    color: var(--accent-tertiary);
+}
+
+.body-btn.active i {
+    color: var(--primary-bg);
+}
+
+.body-btn span {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.body-btn small {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+.body-btn.active small {
+    color: var(--primary-bg);
+    opacity: 0.8;
+}
+
+/* Seleção de região corporal */
+.bodypart-section {
+    margin-bottom: 2.5rem;
+    position: relative;
+    min-height: 300px;
+}
+
+.selection-group {
+    margin-bottom: 2rem;
+}
+
+.selection-group h3 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--accent-primary);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.button-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.bodypart-general-btn {
+    background: rgba(0, 212, 255, 0.08);
+    border: 2px solid var(--border-primary);
+    border-radius: 20px;
+    padding: 2rem 1.5rem;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    min-height: 120px;
+    justify-content: center;
+}
+
+.bodypart-general-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-primary);
+    transition: left 0.3s ease;
+    z-index: -1;
+}
+
+.bodypart-general-btn:hover::before {
+    left: 0;
+}
+
+.bodypart-general-btn:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-primary);
+    box-shadow: var(--shadow-primary);
+}
+
+.bodypart-general-btn.active {
+    background: var(--gradient-primary);
+    border-color: var(--accent-primary);
+    color: var(--primary-bg);
+    box-shadow: var(--shadow-primary);
+}
+
+.bodypart-general-btn i {
+    font-size: 2.2rem;
+    color: var(--accent-primary);
+}
+
+.bodypart-general-btn.active i {
+    color: var(--primary-bg);
+}
+
+.bodypart-general-btn span {
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+/* Regiões específicas inline */
+.specific-regions {
+    background: rgba(0, 212, 255, 0.03);
+    border-radius: 20px;
+    padding: 2rem;
+    border: 1px solid var(--border-primary);
+    margin-top: 1rem;
+    animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
     }
-
-    // Inicializar event listeners
-    initializeEventListeners() {
-        // Botões de idade
-        document.querySelectorAll('.age-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                this.selectButton('.age-btn', e.target.closest('.age-btn'));
-                this.currentAge = e.target.closest('.age-btn').dataset.age;
-                this.updateBodyTypeSection();
-                this.calculate();
-            });
-        });
-
-        // Botões de tipo físico
-        document.querySelectorAll('.body-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                this.selectButton('.body-btn', e.target.closest('.body-btn'));
-                this.currentBodyType = e.target.closest('.body-btn').dataset.body;
-                this.calculate();
-            });
-        });
-
-        // Botões de região geral
-        document.querySelectorAll('[data-region]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                this.selectButton('[data-region]', e.target.closest('[data-region]'));
-                const region = e.target.closest('[data-region]').dataset.region;
-                this.showSpecificRegionsInline(region);
-            });
-        });
-
-        // Botões de região específica
-        document.querySelectorAll('[data-bodypart]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                this.selectButton('[data-bodypart]', e.target.closest('[data-bodypart]'));
-                this.currentBodyPart = e.target.closest('[data-bodypart]').dataset.bodypart;
-                this.calculate();
-            });
-        });
-
-        // Botão calcular
-        document.getElementById('calculateBtn').addEventListener('click', () => {
-            this.calculate();
-        });
-
-        // Constante do aparelho
-        document.getElementById('equipment-constant').addEventListener('input', () => {
-            this.calculate();
-        });
-    }
-
-    // Selecionar botão ativo
-    selectButton(selector, activeButton) {
-        document.querySelectorAll(selector).forEach(btn => {
-            btn.classList.remove('active');
-        });
-        activeButton.classList.add('active');
-    }
-
-    // Atualizar seção de tipo físico baseado na idade
-    updateBodyTypeSection() {
-        const bodyTypeSection = document.getElementById('body-type-section');
-        if (this.currentAge === 'adult') {
-            bodyTypeSection.style.display = 'block';
-        } else {
-            bodyTypeSection.style.display = 'none';
-            this.currentBodyType = 'm'; // Reset para padrão
-        }
-    }
-
-    // Calcular parâmetros radiológicos
-    calculate() {
-        const params = this.calculateParameters();
-        this.displayResults(params);
-    }
-
-    // Calcular parâmetros baseados na seleção usando a fórmula da modal
-    calculateParameters() {
-        // 1) Obter constante do aparelho
-        const constante = parseFloat(document.getElementById('equipment-constant').value) || 40;
-        
-        // 2) Calcular espessura baseada na idade e tipo físico
-        const thickness = this.calculateThickness();
-        
-        // 3) Determinar estrutura/região baseada na seleção
-        const structure = this.getStructureFromBodyPart();
-        
-        // 4) Obter fatores de Maron
-        const maronFactors = {
-            'corpo-osseo': 0.5,
-            'extremidades': 0.1,
-            'aparelho-respiratorio': 0.1,
-            'aparelho-digestorio': 0.3,
-            'aparelho-urinario': 0.3,
-            'partes-moles': 0.01
-        };
-        
-        const fatorMaron = maronFactors[structure] || 0.1;
-        
-        // 5) Calcular KV usando a fórmula: KV = 2 * espessura + constante
-        const kv = 2 * thickness + constante;
-        
-        // 6) Calcular mAs: mAs = KV * fatorMaron
-        let mAs = kv * fatorMaron;
-        
-        // 7) Calcular tempo baseado na espessura
-        let tempo = 0.1;
-        if (thickness <= 10) tempo = 0.05;
-        else if (thickness <= 20) tempo = 0.10;
-        else if (thickness <= 30) tempo = 0.20;
-        else tempo = 0.30;
-        
-        // 8) Calcular mA: mA = mAs / tempo
-        const mA = mAs / tempo;
-        
-        // 9) Obter informações do equipamento
-        const bodyPartParams = this.getBodyPartParameters();
-        
-        // 10) Sanitização e retorno
-        const finalKV = Math.max(40, Math.min(150, Math.round(kv * 10) / 10));
-        const finalMA = Math.max(25, Math.min(800, Math.round(mA * 10) / 10));
-        const finalTime = Math.max(0.001, Math.min(5.0, Math.round(tempo * 10000) / 10000));
-        const finalMAs = Math.round(mAs * 1000) / 1000;
-        
-        return {
-            kv: finalKV,
-            ma: finalMA,
-            mAs: finalMAs,
-            time: finalTime,
-            equipment: bodyPartParams.equipment || 'MESA',
-            thickness: thickness,
-            constante: constante,
-            fatorMaron: fatorMaron
-        };
-    }
-
-    // Calcular espessura baseada na idade e tipo físico
-    calculateThickness() {
-        // Espessura base por idade (em cm)
-        const ageThickness = {
-            newborn: 8,
-            '1a5': 12,
-            '5a10': 15,
-            '10a18': 18,
-            adult: 20
-        };
-        
-        let baseThickness = ageThickness[this.currentAge] || 20;
-        
-        // Ajustar espessura baseada no tipo físico (apenas adultos)
-        if (this.currentAge === 'adult') {
-            const bodyThicknessModifiers = {
-                'p': -3,  // Pequeno: -3cm
-                'm': 0,   // Médio: sem alteração
-                'g': 3,   // Grande: +3cm
-                'gg': 6,  // Muito Grande: +6cm
-                'xl': 9   // Extra Grande: +9cm
-            };
-            
-            baseThickness += bodyThicknessModifiers[this.currentBodyType] || 0;
-        }
-        
-        return Math.max(5, baseThickness); // Mínimo de 5cm
-    }
-    
-    // Determinar estrutura baseada na região corporal selecionada
-    getStructureFromBodyPart() {
-        const structureMapping = {
-            // Cabeça - corpo ósseo
-            'skull-ap': 'corpo-osseo',
-            'skull-lat': 'corpo-osseo',
-            'face-sinuses': 'corpo-osseo',
-            'face-nose-lat': 'corpo-osseo',
-            'face-orbits': 'corpo-osseo',
-            'face-mandible': 'corpo-osseo',
-            'cavum': 'corpo-osseo',
-            
-            // Tórax - aparelho respiratório
-            'chest': 'aparelho-respiratorio',
-            'chest-lat': 'aparelho-respiratorio',
-            'chest-ap': 'aparelho-respiratorio',
-            'ribs-ap': 'corpo-osseo',
-            'ribs-lat': 'corpo-osseo',
-            'ribs-oblique': 'corpo-osseo',
-            
-            // Abdômen - aparelho digestório
-            'abdomen-ap': 'aparelho-digestorio',
-            'abdomen-lat': 'aparelho-digestorio',
-            'abdomen-oblique': 'aparelho-digestorio',
-            
-            // Pelve - aparelho digestório
-            'pelvis-ap': 'aparelho-digestorio',
-            'pelvis-lat': 'aparelho-digestorio',
-            'pelvis-oblique': 'aparelho-digestorio',
-            
-            // Membros superiores - extremidades
-            'shoulder-ap': 'extremidades',
-            'shoulder-ax': 'extremidades',
-            'shoulder-y': 'extremidades',
-            'shoulder-lat': 'extremidades',
-            'humerus-ap': 'extremidades',
-            'humerus-lat': 'extremidades',
-            'elbow-ap': 'extremidades',
-            'elbow-lat': 'extremidades',
-            'forearm-ap': 'extremidades',
-            'forearm-lat': 'extremidades',
-            'wrist-pa': 'extremidades',
-            'wrist-lat': 'extremidades',
-            'wrist-oblique': 'extremidades',
-            'hand-pa': 'extremidades',
-            'hand-lat': 'extremidades',
-            'hand-oblique': 'extremidades',
-            'finger-ap': 'extremidades',
-            'finger-lat': 'extremidades',
-            
-            // Membros inferiores - extremidades
-            'hip-ap': 'extremidades',
-            'hip-lat': 'extremidades',
-            'femur-ap': 'extremidades',
-            'femur-lat': 'extremidades',
-            'knee-ap': 'extremidades',
-            'knee-lat': 'extremidades',
-            'leg-ap': 'extremidades',
-            'leg-lat': 'extremidades',
-            'ankle-ap': 'extremidades',
-            'ankle-lat': 'extremidades',
-            'foot-ap': 'extremidades',
-            'foot-lat': 'extremidades',
-            'foot-oblique': 'extremidades',
-            'calcaneus': 'extremidades'
-        };
-        
-        return structureMapping[this.currentBodyPart] || 'extremidades';
-    }
-
-    // Parâmetros base por idade (mantido para compatibilidade)
-    getAgeParameters() {
-        const ageParams = {
-            newborn: { kv: 40.0, ma: 25.0, weight: 3.5 },
-            '1a5': { kv: 47.0, ma: 45.0, weight: 12.0 },
-            '5a10': { kv: 52.0, ma: 65.0, weight: 25.0 },
-            '10a18': { kv: 57.0, ma: 90.0, weight: 45.0 },
-            adult: { kv: 60.0, ma: 200.0, weight: 70.0 }
-        };
-        return ageParams[this.currentAge] || ageParams.adult;
-    }
-
-    // Parâmetros base por região corporal (valores realistas e atualizados)
-    getBodyPartParameters() {
-        const bodyPartParams = {
-            // Crânio
-            'skull-ap': { kvModifier: 8.0, baseTime: 0.2000, description: 'Crânio AP', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            'skull-lat': { kvModifier: 5.0, baseTime: 0.2000, description: 'Crânio Perfil', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            
-            // Face
-            'face-sinuses': { kvModifier: 10.0, baseTime: 0.1600, description: 'Seios da Face', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            'face-nose-lat': { kvModifier: -18.0, baseTime: 0.0400, description: 'Nariz Perfil', dff: 1.0, equipment: 'MESA' },
-            'face-orbits': { kvModifier: 8.0, baseTime: 0.1600, description: 'Órbitas', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            'face-mandible': { kvModifier: 6.0, baseTime: 0.2000, description: 'Mandíbula', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            
-            // Cavum
-            'cavum': { kvModifier: 8.0, baseTime: 0.2000, description: 'Cavum', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            
-            // Costelas
-            'ribs-ap': { kvModifier: 28.0, baseTime: 0.2500, description: 'Costelas AP', dff: 1.0, equipment: 'MESA-GRADE' },
-            'ribs-lat': { kvModifier: 38.0, baseTime: 0.3500, description: 'Costelas Lat', dff: 1.0, equipment: 'MESA-GRADE' },
-            'ribs-oblique': { kvModifier: 33.0, baseTime: 0.3000, description: 'Costelas Oblíqua', dff: 1.0, equipment: 'MESA-GRADE' },
-            
-            // Tórax
-            'chest': { kvModifier: 32.0, baseTime: 0.0200, description: 'Tórax PA', dff: 1.8, equipment: 'MURAL-BUCKY' },
-            'chest-lat': { kvModifier: 52.0, baseTime: 0.0400, description: 'Tórax Lat', dff: 1.8, equipment: 'MURAL-BUCKY' },
-            'chest-ap': { kvModifier: 37.0, baseTime: 0.0250, description: 'Tórax AP', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            
-            // Úmero
-            'humerus-ap': { kvModifier: -3.0, baseTime: 0.0500, description: 'Úmero AP', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            'humerus-lat': { kvModifier: -3.0, baseTime: 0.0500, description: 'Úmero Lat', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            
-            // Antebraço
-            'forearm-ap': { kvModifier: -12.0, baseTime: 0.0400, description: 'Antebraço AP', dff: 1.0, equipment: 'MESA' },
-            'forearm-lat': { kvModifier: -12.0, baseTime: 0.0400, description: 'Antebraço Lat', dff: 1.0, equipment: 'MESA' },
-            
-            // Ombro
-            'shoulder-ap': { kvModifier: -10.0, baseTime: 0.1600, description: 'Ombro AP', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            'shoulder-ax': { kvModifier: -12.0, baseTime: 0.2000, description: 'Ombro Axilar', dff: 1.0, equipment: 'MESA' },
-            'shoulder-y': { kvModifier: 0.0, baseTime: 0.2000, description: 'Ombro Perfil (Y)', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            'shoulder-lat': { kvModifier: -8.0, baseTime: 0.1600, description: 'Ombro Lat', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            
-            // Mão
-            'hand-pa': { kvModifier: -22.0, baseTime: 0.0320, description: 'Mão PA', dff: 1.0, equipment: 'MESA' },
-            'hand-lat': { kvModifier: -22.0, baseTime: 0.0320, description: 'Mão Lat', dff: 1.0, equipment: 'MESA' },
-            'hand-oblique': { kvModifier: -22.0, baseTime: 0.0320, description: 'Mão Oblíqua', dff: 1.0, equipment: 'MESA' },
-            
-            // Punho
-            'wrist-pa': { kvModifier: -22.0, baseTime: 0.0320, description: 'Punho PA', dff: 1.0, equipment: 'MESA' },
-            'wrist-lat': { kvModifier: -22.0, baseTime: 0.0320, description: 'Punho Lat', dff: 1.0, equipment: 'MESA' },
-            'wrist-oblique': { kvModifier: -21.0, baseTime: 0.0320, description: 'Punho Oblíqua', dff: 1.0, equipment: 'MESA' },
-            
-            // Abdômen
-            'abdomen-ap': { kvModifier: 5.0, baseTime: 0.2800, description: 'Abdômen AP', dff: 1.0, equipment: 'MESA-GRADE' },
-            'abdomen-lat': { kvModifier: 5.0, baseTime: 0.2800, description: 'Abdômen Lat', dff: 1.0, equipment: 'MURAL-BUCKY' },
-            'abdomen-oblique': { kvModifier: 7.0, baseTime: 0.2600, description: 'Abdômen Oblíqua', dff: 1.0, equipment: 'MESA-GRADE' },
-            
-            // Pelve/Bacia
-            'pelvis-ap': { kvModifier: 12.0, baseTime: 0.2800, description: 'Bacia AP', dff: 1.0, equipment: 'MESA-GRADE' },
-            'pelvis-lat': { kvModifier: 17.0, baseTime: 0.3000, description: 'Bacia Lat', dff: 1.0, equipment: 'MESA-GRADE' },
-            'pelvis-oblique': { kvModifier: 14.0, baseTime: 0.2800, description: 'Bacia Oblíqua', dff: 1.0, equipment: 'MESA-GRADE' },
-            
-            // Fêmur
-            'femur-ap': { kvModifier: 12.0, baseTime: 0.0500, description: 'Fêmur AP', dff: 1.0, equipment: 'MESA-GRADE' },
-            'femur-lat': { kvModifier: 12.0, baseTime: 0.0500, description: 'Fêmur Lat', dff: 1.0, equipment: 'MESA-GRADE' },
-            
-            // Perna
-            'leg-ap': { kvModifier: -5.0, baseTime: 0.0400, description: 'Perna AP', dff: 1.0, equipment: 'MESA' },
-            'leg-lat': { kvModifier: -5.0, baseTime: 0.0400, description: 'Perna Lat', dff: 1.0, equipment: 'MESA' },
-            
-            // Pé
-            'foot-ap': { kvModifier: -22.0, baseTime: 0.0400, description: 'Pé AP', dff: 1.0, equipment: 'MESA' },
-            'foot-lat': { kvModifier: -22.0, baseTime: 0.0400, description: 'Pé Lat', dff: 1.0, equipment: 'MESA' },
-            'foot-oblique': { kvModifier: -22.0, baseTime: 0.0400, description: 'Pé Oblíqua', dff: 1.0, equipment: 'MESA' },
-            
-            // Tornozelo
-            'ankle-ap': { kvModifier: -18.0, baseTime: 0.0320, description: 'Tornozelo AP', dff: 1.0, equipment: 'MESA' },
-            'ankle-lat': { kvModifier: -20.0, baseTime: 0.0320, description: 'Tornozelo Lat', dff: 1.0, equipment: 'MESA' },
-            
-            // Outras regiões importantes
-            'elbow-ap': { kvModifier: -12.0, baseTime: 0.0400, description: 'Cotovelo AP', dff: 1.0, equipment: 'MESA' },
-            'elbow-lat': { kvModifier: -12.0, baseTime: 0.0400, description: 'Cotovelo Lat', dff: 1.0, equipment: 'MESA' },
-            'knee-ap': { kvModifier: -3.0, baseTime: 0.0500, description: 'Joelho AP', dff: 1.0, equipment: 'MESA-GRADE' },
-            'knee-lat': { kvModifier: -5.0, baseTime: 0.0500, description: 'Joelho Lat', dff: 1.0, equipment: 'MESA-GRADE' },
-            'hip-ap': { kvModifier: 17.0, baseTime: 0.2000, description: 'Quadril AP', dff: 1.0, equipment: 'MESA-GRADE' },
-            'hip-lat': { kvModifier: 20.0, baseTime: 0.2500, description: 'Quadril Lat', dff: 1.0, equipment: 'MESA-GRADE' },
-            'finger-ap': { kvModifier: -26.0, baseTime: 0.0320, description: 'Dedo AP', dff: 1.0, equipment: 'MESA' },
-            'finger-lat': { kvModifier: -26.0, baseTime: 0.0320, description: 'Dedo Lat', dff: 1.0, equipment: 'MESA' },
-            'calcaneus': { kvModifier: -18.0, baseTime: 0.0320, description: 'Calcâneo Axial', dff: 1.0, equipment: 'MESA' }
-        };
-        
-        return bodyPartParams[this.currentBodyPart] || bodyPartParams.chest;
-    }
-
-    // Modificadores por tipo físico (apenas adultos) - Novo sistema P, M, G, GG, XL
-    getBodyTypeModifiers() {
-        if (this.currentAge !== 'adult') {
-            return { kvModifier: 0.0, timeModifier: 1.0000 };
-        }
-        
-        const bodyModifiers = {
-            'p': { kvModifier: -10.0, timeModifier: 0.6500, weight: 'Pequeno' },
-            'm': { kvModifier: 0.0, timeModifier: 1.0000, weight: 'Médio' },
-            'g': { kvModifier: 8.0, timeModifier: 1.2000, weight: 'Grande' },
-            'gg': { kvModifier: 15.0, timeModifier: 1.4000, weight: 'Muito Grande' },
-            'xl': { kvModifier: 22.0, timeModifier: 1.6000, weight: 'Extra Grande' }
-        };
-        
-        return bodyModifiers[this.currentBodyType] || bodyModifiers.m;
-    }
-
-    // Parâmetros específicos para tórax AP e PA por biotipo
-    getChestSpecificParams() {
-        const chestParams = {
-            'p': { kv: 77, mAs: 18, ma: 200, time: 0.09 },
-            'm': { kv: 82, mAs: 20, ma: 200, time: 0.10 },
-            'g': { kv: 88, mAs: 25, ma: 200, time: 0.125 },
-            'gg': { kv: 94, mAs: 30, ma: 200, time: 0.15 },
-            'xl': { kv: 100, mAs: 40, ma: 200, time: 0.20 }
-        };
-        
-        return chestParams[this.currentBodyType] || chestParams.m;
-    }
-
-    // Exibir resultados
-    displayResults(params) {
-        // Formatar valores com maior precisão
-        const formattedKV = params.kv.toFixed(1);
-        const formattedMA = params.ma.toFixed(1);
-        const formattedMAs = params.mAs.toString();
-        
-        document.getElementById('kvValue').textContent = formattedKV;
-        document.getElementById('maValue').textContent = formattedMA;
-        document.getElementById('mAsValue').textContent = formattedMAs;
-
-        // Mostrar equipamento recomendado se disponível
-        if (params.equipment) {
-            const equipmentInfo = document.createElement('div');
-            equipmentInfo.className = 'result-item equipment-info';
-            equipmentInfo.innerHTML = `
-                <div class="result-label">
-                    <i class="fas fa-cogs"></i>
-                    <span>Equipamento</span>
-                </div>
-                <div class="result-value">${params.equipment}</div>
-            `;
-            
-            // Adicionar após o último resultado
-            const resultsGrid = document.querySelector('.results-grid');
-            const existingEquipment = resultsGrid.querySelector('.equipment-info');
-            if (existingEquipment) {
-                existingEquipment.remove();
-            }
-            resultsGrid.appendChild(equipmentInfo);
-        }
-
-        // Mostrar informações de cálculo se disponíveis
-        if (params.thickness && params.constante && params.fatorMaron) {
-            const calculationInfo = document.createElement('div');
-            calculationInfo.className = 'result-item calculation-info';
-            calculationInfo.innerHTML = `
-                <div class="result-label">
-                    <i class="fas fa-info-circle"></i>
-                    <span>Detalhes do Cálculo</span>
-                </div>
-                <div class="result-value">
-                    <small>Espessura: ${params.thickness}cm | Constante: ${params.constante} | Fator: ${params.fatorMaron}</small>
-                </div>
-            `;
-            
-            const resultsGrid = document.querySelector('.results-grid');
-            const existingCalculation = resultsGrid.querySelector('.calculation-info');
-            if (existingCalculation) {
-                existingCalculation.remove();
-            }
-            resultsGrid.appendChild(calculationInfo);
-        }
-        
-        // Adicionar animação aos resultados
-        this.animateResults();
-    }
-
-    // Animar resultados
-    animateResults() {
-        const resultItems = document.querySelectorAll('.result-item');
-        resultItems.forEach((item, index) => {
-            item.style.animation = 'none';
-            setTimeout(() => {
-                item.style.animation = `fadeIn 0.6s ease-out ${index * 0.1}s both`;
-            }, 10);
-        });
-    }
-
-    // Obter informações do paciente
-    getPatientInfo() {
-        const ageInfo = {
-            newborn: 'Recém-nascido (0-1 mês)',
-            '1a5': 'Criança (1 a 5 anos)',
-            '5a10': 'Criança (5 a 10 anos)',
-            '10a18': 'Criança (10 a 18 anos)',
-            adult: 'Adulto'
-        };
-
-        const bodyTypeInfo = this.currentAge === 'adult' ? 
-            ` - ${this.getBodyTypeDescription()}` : '';
-
-        return ageInfo[this.currentAge] + bodyTypeInfo;
-    }
-
-    // Obter descrição detalhada do tipo físico
-    getBodyTypeDescription() {
-        const bodyModifiers = this.getBodyTypeModifiers();
-        const descriptions = {
-            'p': 'Pequeno',
-            'm': 'Médio',
-            'g': 'Grande',
-            'gg': 'Muito Grande',
-            'xl': 'Extra Grande'
-        };
-        
-        return descriptions[this.currentBodyType] || descriptions.m;
-    }
-
-    // Obter informações da técnica
-    getTechniqueInfo() {
-        const bodyPartInfo = this.getBodyPartParameters();
-        return bodyPartInfo.description;
-    }
-
-
-
-
-
-
-    // Carregar configuração salva
-    loadConfiguration() {
-        const savedConfig = localStorage.getItem('radiologicalCalculatorConfig');
-        if (savedConfig) {
-            try {
-                const config = JSON.parse(savedConfig);
-                
-                // Aplicar configuração
-                this.currentAge = config.age;
-                this.currentBodyType = config.bodyType;
-                this.currentBodyPart = config.bodyPart;
-                
-                // Atualizar interface
-                this.updateUI();
-                this.calculate();
-                
-                this.showNotification('Configuração carregada com sucesso!', 'success');
-            } catch (error) {
-                console.error('Erro ao carregar configuração:', error);
-                this.showNotification('Erro ao carregar configuração', 'error');
-            }
-        }
-    }
-
-    // Atualizar interface baseado na configuração
-    updateUI() {
-        // Atualizar botões ativos
-        document.querySelector(`[data-age="${this.currentAge}"]`).classList.add('active');
-        
-        if (this.currentAge === 'adult') {
-            document.querySelector(`[data-body="${this.currentBodyType}"]`).classList.add('active');
-        }
-        
-        // Determinar região geral baseada na região específica atual
-        const regionMapping = {
-            // Cabeça
-            'skull-ap': 'head',
-            'skull-lat': 'head',
-            'face-sinuses': 'head',
-            'face-nose-lat': 'head',
-            'face-orbits': 'head',
-            'face-mandible': 'head',
-            'cavum': 'head',
-            
-            // Tronco
-            'chest': 'torso',
-            'chest-lat': 'torso',
-            'chest-ap': 'torso',
-            'ribs-ap': 'torso',
-            'ribs-lat': 'torso',
-            'ribs-oblique': 'torso',
-            'abdomen-ap': 'torso',
-            'abdomen-lat': 'torso',
-            'abdomen-oblique': 'torso',
-            'pelvis-ap': 'torso',
-            'pelvis-lat': 'torso',
-            'pelvis-oblique': 'torso',
-            
-            // Membros Superiores
-            'shoulder-ap': 'upper-limbs',
-            'shoulder-ax': 'upper-limbs',
-            'shoulder-y': 'upper-limbs',
-            'shoulder-lat': 'upper-limbs',
-            'humerus-ap': 'upper-limbs',
-            'humerus-lat': 'upper-limbs',
-            'elbow-ap': 'upper-limbs',
-            'elbow-lat': 'upper-limbs',
-            'forearm-ap': 'upper-limbs',
-            'forearm-lat': 'upper-limbs',
-            'wrist-pa': 'upper-limbs',
-            'wrist-lat': 'upper-limbs',
-            'wrist-oblique': 'upper-limbs',
-            'hand-pa': 'upper-limbs',
-            'hand-lat': 'upper-limbs',
-            'hand-oblique': 'upper-limbs',
-            'finger-ap': 'upper-limbs',
-            'finger-lat': 'upper-limbs',
-            
-            // Membros Inferiores
-            'hip-ap': 'lower-limbs',
-            'hip-lat': 'lower-limbs',
-            'femur-ap': 'lower-limbs',
-            'femur-lat': 'lower-limbs',
-            'knee-ap': 'lower-limbs',
-            'knee-lat': 'lower-limbs',
-            'leg-ap': 'lower-limbs',
-            'leg-lat': 'lower-limbs',
-            'ankle-ap': 'lower-limbs',
-            'ankle-lat': 'lower-limbs',
-            'foot-ap': 'lower-limbs',
-            'foot-lat': 'lower-limbs',
-            'foot-oblique': 'lower-limbs',
-            'calcaneus': 'lower-limbs'
-        };
-        
-        const generalRegion = regionMapping[this.currentBodyPart] || 'torso';
-        
-        // Atualizar região geral
-        document.querySelector(`[data-region="${generalRegion}"]`).classList.add('active');
-        
-        // Mostrar regiões específicas se necessário
-        this.showSpecificRegionsInline(generalRegion);
-        
-        // Atualizar região específica
-        document.querySelector(`[data-bodypart="${this.currentBodyPart}"]`).classList.add('active');
-        
-        this.updateBodyTypeSection();
-    }
-
-    // Mostrar regiões específicas inline (na mesma seção)
-    showSpecificRegionsInline(region) {
-        // Ocultar regiões gerais
-        document.getElementById('general-regions').style.display = 'none';
-        
-        // Ocultar todas as regiões específicas
-        document.querySelectorAll('.specific-regions').forEach(el => {
-            el.style.display = 'none';
-        });
-        
-        // Mostrar região específica selecionada
-        const specificRegion = document.getElementById(`${region}-specific`);
-        if (specificRegion) {
-            specificRegion.style.display = 'block';
-            
-            // Adicionar animação de entrada
-            specificRegion.style.animation = 'fadeIn 0.5s ease-out';
-        }
-        
-        // Selecionar primeira opção específica por padrão
-        const firstSpecificBtn = specificRegion?.querySelector('[data-bodypart]');
-        if (firstSpecificBtn) {
-            this.selectButton('[data-bodypart]', firstSpecificBtn);
-            this.currentBodyPart = firstSpecificBtn.dataset.bodypart;
-            this.calculate();
-        }
-    }
-
-    // Mostrar regiões gerais
-    showGeneralRegions() {
-        // Ocultar regiões específicas
-        document.querySelectorAll('.specific-regions').forEach(el => {
-            el.style.display = 'none';
-        });
-        
-        // Mostrar regiões gerais
-        document.getElementById('general-regions').style.display = 'block';
-        
-        // Resetar seleção para tórax (padrão)
-        this.currentBodyPart = 'chest';
-        this.selectButton('[data-region]', document.querySelector('[data-region="torso"]'));
-        this.calculate();
-    }
-
-    // Mostrar notificação
-    showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.textContent = message;
-        
-        // Estilos da notificação
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 500;
-            z-index: 1000;
-            animation: slideIn 0.3s ease-out;
-            background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        `;
-        
-        document.body.appendChild(notification);
-        
-        // Remover após 3 segundos
-        setTimeout(() => {
-            notification.style.animation = 'slideOut 0.3s ease-out';
-            setTimeout(() => {
-                if (document.body.contains(notification)) {
-                    document.body.removeChild(notification);
-                }
-            }, 300);
-        }, 3000);
-    }
-
-    // Mostrar seção de posicionamentos
-    showPositioning() {
-        // Ocultar calculadora
-        document.querySelector('.main-container').style.display = 'none';
-        
-        // Mostrar seção de posicionamentos
-        document.getElementById('positioning-section').style.display = 'block';
-        
-        // Inicializar categorias de posicionamentos
-        this.initializePositioningCategories();
-        
-        // Adicionar event listeners para os botões de posicionamento
-        this.initializePositioningButtons();
-    }
-
-    // Mostrar calculadora
-    showCalculator() {
-        // Ocultar seção de posicionamentos
-        document.getElementById('positioning-section').style.display = 'none';
-        
-        // Mostrar calculadora
-        document.querySelector('.main-container').style.display = 'grid';
-    }
-
-    // Inicializar categorias de posicionamentos
-    initializePositioningCategories() {
-        const categoryTabs = document.querySelectorAll('.category-tab');
-        const categoryContents = document.querySelectorAll('.position-category');
-
-        categoryTabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                const targetCategory = tab.dataset.category;
-                
-                // Atualizar tabs ativas
-                categoryTabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                
-                // Atualizar conteúdo ativo
-                categoryContents.forEach(content => {
-                    content.classList.remove('active');
-                    if (content.id === targetCategory) {
-                        content.classList.add('active');
-                    }
-                });
-            });
-        });
-    }
-
-    // Inicializar botões de posicionamento
-    initializePositioningButtons() {
-        const viewPositionBtns = document.querySelectorAll('.view-position-btn');
-        
-        viewPositionBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const positionCard = btn.closest('.position-card');
-                const position = positionCard.dataset.position;
-                this.showPositionModal(position);
-            });
-        });
-
-        // Também permitir clicar no card inteiro
-        const positionCards = document.querySelectorAll('.position-card');
-        positionCards.forEach(card => {
-            card.addEventListener('click', () => {
-                const position = card.dataset.position;
-                this.showPositionModal(position);
-            });
-        });
-    }
-
-    // Mostrar modal de posicionamento
-    showPositionModal(position) {
-        const modal = document.getElementById('position-modal');
-        const modalTitle = document.getElementById('modal-title');
-        const modalIcon = document.getElementById('modal-icon');
-        const modalInstructions = document.getElementById('modal-instructions');
-        const modalParameters = document.getElementById('modal-parameters');
-        const modalEquipment = document.getElementById('modal-equipment');
-
-        // Obter dados do posicionamento
-        const positionData = this.getPositionData(position);
-        
-        // Preencher modal
-        modalTitle.textContent = positionData.title;
-        modalIcon.className = positionData.icon;
-        modalInstructions.innerHTML = positionData.instructions;
-        modalParameters.innerHTML = positionData.parameters;
-        modalEquipment.innerHTML = positionData.equipment;
-        
-        // Mostrar modal
-        modal.style.display = 'flex';
-        
-        // Fechar modal ao clicar fora
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                this.closePositionModal();
-            }
-        });
-        
-        const imageLarge = document.querySelector('.position-image-large');
-        if (position === 'chest-pa') {
-            imageLarge.innerHTML = '<img src="txpa.jpeg" alt="Tórax PA" style="max-width:100%;max-height:180px;">';
-        } else {
-            imageLarge.innerHTML = '<i class="fas fa-user" id="modal-icon"></i>';
-        }
-    }
-
-    // Fechar modal de posicionamento
-    closePositionModal() {
-        const modal = document.getElementById('position-modal');
-        modal.style.display = 'none';
-    }
-
-    // Obter dados do posicionamento
-    getPositionData(position) {
-        const positionDatabase = {
-            // Cabeça
-            'skull-ap': {
-                title: 'Crânio AP',
-                icon: 'fas fa-brain',
-                instructions: `
-                    <ul>
-                        <li>Paciente em decúbito dorsal</li>
-                        <li>Cabeça centralizada no filme</li>
-                        <li>Linha infraorbitomeatal perpendicular ao filme</li>
-                        <li>Braços ao longo do corpo</li>
-                        <li>Inspiração suave e prender a respiração</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 70-80</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.25s</li>
-                    </ul>
-                `,
-                equipment: 'MURAL-BUCKY'
-            },
-            'skull-lateral': {
-                title: 'Crânio Lateral',
-                icon: 'fas fa-brain',
-                instructions: `
-                    <ul>
-                        <li>Paciente em decúbito lateral</li>
-                        <li>Cabeça em perfil perfeito</li>
-                        <li>Linha infraorbitomeatal paralela ao filme</li>
-                        <li>Braços elevados</li>
-                        <li>Inspiração suave e prender a respiração</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 67-75</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.25s</li>
-                    </ul>
-                `,
-                equipment: 'MURAL-BUCKY'
-            },
-            'face-waters': {
-                title: 'Face - Waters',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente sentado</li>
-                        <li>Queixo elevado</li>
-                        <li>Boca aberta</li>
-                        <li>Linha infraorbitomeatal a 37°</li>
-                        <li>Braços para trás</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 65-75</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.20s</li>
-                    </ul>
-                `,
-                equipment: 'MURAL-BUCKY'
-            },
-            'sinuses-caldwell': {
-                title: 'Seios - Caldwell',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente sentado</li>
-                        <li>Queixo no filme</li>
-                        <li>Linha infraorbitomeatal a 15°</li>
-                        <li>Braços para trás</li>
-                        <li>Inspiração suave</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 70-80</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.20s</li>
-                    </ul>
-                `,
-                equipment: 'MURAL-BUCKY'
-            },
-            // Tórax
-            'chest-pa': {
-                title: 'Tórax PA',
-                icon: 'fas fa-lungs',
-                instructions: `
-                    <ul>
-                        <li>Paciente em posição ortostática</li>
-                        <li>Tórax contra o filme</li>
-                        <li>Braços para trás</li>
-                        <li>Inspiração profunda e prender</li>
-                        <li>Escápulas afastadas</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 95-120</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.025s</li>
-                    </ul>
-                `,
-                equipment: 'MURAL-BUCKY'
-            },
-            'chest-lateral': {
-                title: 'Tórax Lateral',
-                icon: 'fas fa-lungs',
-                instructions: `
-                    <ul>
-                        <li>Paciente em posição ortostática</li>
-                        <li>Lado esquerdo contra o filme</li>
-                        <li>Braços elevados</li>
-                        <li>Inspiração profunda e prender</li>
-                        <li>Escápulas afastadas</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 115-140</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.05s</li>
-                    </ul>
-                `,
-                equipment: 'MURAL-BUCKY'
-            },
-            'chest-ap': {
-                title: 'Tórax AP',
-                icon: 'fas fa-lungs',
-                instructions: `
-                    <ul>
-                        <li>Paciente em decúbito dorsal</li>
-                        <li>Filme atrás das costas</li>
-                        <li>Braços para os lados</li>
-                        <li>Inspiração profunda e prender</li>
-                        <li>Escápulas afastadas</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 100-125</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.03s</li>
-                    </ul>
-                `,
-                equipment: 'MURAL-BUCKY'
-            },
-            'ribs-ap': {
-                title: 'Costelas AP',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente em decúbito dorsal</li>
-                        <li>Braços elevados</li>
-                        <li>Filme centralizado no tórax</li>
-                        <li>Inspiração profunda e prender</li>
-                        <li>Escápulas afastadas</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 90-110</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.30s</li>
-                    </ul>
-                `,
-                equipment: 'MESA-GRADE'
-            },
-            // Coluna
-            'cervical-ap': {
-                title: 'Coluna Cervical AP',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente sentado</li>
-                        <li>Queixo elevado</li>
-                        <li>Linha infraorbitomeatal a 15-20°</li>
-                        <li>Braços para trás</li>
-                        <li>Inspiração suave</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 70-80</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.25s</li>
-                    </ul>
-                `,
-                equipment: 'MURAL-BUCKY'
-            },
-            'cervical-lateral': {
-                title: 'Coluna Cervical Lateral',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente sentado</li>
-                        <li>Perfil da cabeça</li>
-                        <li>Queixo elevado</li>
-                        <li>Braços para trás</li>
-                        <li>Inspiração suave</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 70-80</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.25s</li>
-                    </ul>
-                `,
-                equipment: 'MURAL-BUCKY'
-            },
-            'thoracic-ap': {
-                title: 'Coluna Torácica AP',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente em decúbito dorsal</li>
-                        <li>Joelhos flexionados</li>
-                        <li>Inspiração suave</li>
-                        <li>Escápulas afastadas</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 80-100</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.30s</li>
-                    </ul>
-                `,
-                equipment: 'MESA-GRADE'
-            },
-            'lumbar-ap': {
-                title: 'Coluna Lombar AP',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente em decúbito dorsal</li>
-                        <li>Braços para os lados</li>
-                        <li>Joelhos flexionados</li>
-                        <li>Inspiração suave</li>
-                        <li>Pelve centralizada</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 80-100</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.30s</li>
-                    </ul>
-                `,
-                equipment: 'MESA-GRADE'
-            },
-            // Membros Superiores
-            'shoulder-ap': {
-                title: 'Ombro AP',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente sentado</li>
-                        <li>Braço em rotação neutra</li>
-                        <li>Cotovelo flexionado a 90°</li>
-                        <li>Ombro centralizado no filme</li>
-                        <li>Braço oposto para trás</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 52-65</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.20s</li>
-                    </ul>
-                `,
-                equipment: 'MURAL-BUCKY'
-            },
-            'shoulder-y': {
-                title: 'Ombro Y',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente sentado</li>
-                        <li>Braço em rotação externa</li>
-                        <li>Cotovelo flexionado a 90°</li>
-                        <li>Ombro centralizado no filme</li>
-                        <li>Braço oposto para trás</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 63-75</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.25s</li>
-                    </ul>
-                `,
-                equipment: 'MURAL-BUCKY'
-            },
-            'elbow-ap': {
-                title: 'Cotovelo AP',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente sentado</li>
-                        <li>Braço estendido</li>
-                        <li>Palma para cima</li>
-                        <li>Cotovelo centralizado no filme</li>
-                        <li>Braço oposto para trás</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 52-65</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.05s</li>
-                    </ul>
-                `,
-                equipment: 'MESA'
-            },
-            'hand-pa': {
-                title: 'Mão PA',
-                icon: 'fas fa-hand-paper',
-                instructions: `
-                    <ul>
-                        <li>Paciente sentado</li>
-                        <li>Mão apoiada no filme</li>
-                        <li>Dedos estendidos e separados</li>
-                        <li>Punho em posição neutra</li>
-                        <li>Braço oposto para trás</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 44-55</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.04s</li>
-                    </ul>
-                `,
-                equipment: 'MESA'
-            },
-            // Membros Inferiores
-            'hip-ap': {
-                title: 'Quadril AP',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente em decúbito dorsal</li>
-                        <li>Pernas estendidas</li>
-                        <li>Pés em rotação interna</li>
-                        <li>Pelve centralizada no filme</li>
-                        <li>Braços para os lados</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 75-90</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.25s</li>
-                    </ul>
-                `,
-                equipment: 'MESA-GRADE'
-            },
-            'knee-ap': {
-                title: 'Joelho AP',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente em decúbito dorsal</li>
-                        <li>Perna estendida</li>
-                        <li>Patela centralizada no filme</li>
-                        <li>Pé em posição neutra</li>
-                        <li>Braços para os lados</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 60-75</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.06s</li>
-                    </ul>
-                `,
-                equipment: 'MESA-GRADE'
-            },
-            'ankle-ap': {
-                title: 'Tornozelo AP',
-                icon: 'fas fa-shoe-prints',
-                instructions: `
-                    <ul>
-                        <li>Paciente em decúbito dorsal</li>
-                        <li>Pé em flexão dorsal</li>
-                        <li>Maléolos centralizados no filme</li>
-                        <li>Perna estendida</li>
-                        <li>Braços para os lados</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 47-60</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.04s</li>
-                    </ul>
-                `,
-                equipment: 'MESA'
-            },
-            'foot-ap': {
-                title: 'Pé AP',
-                icon: 'fas fa-shoe-prints',
-                instructions: `
-                    <ul>
-                        <li>Paciente sentado</li>
-                        <li>Pé apoiado no filme</li>
-                        <li>Dedos estendidos</li>
-                        <li>Pé em posição neutra</li>
-                        <li>Braço oposto para trás</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 44-55</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.05s</li>
-                    </ul>
-                `,
-                equipment: 'MESA'
-            },
-            // Abdômen
-            'abdomen-ap': {
-                title: 'Abdômen AP',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente em decúbito dorsal</li>
-                        <li>Braços para os lados</li>
-                        <li>Joelhos flexionados</li>
-                        <li>Abdômen centralizado no filme</li>
-                        <li>Inspiração suave</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 67-80</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.32s</li>
-                    </ul>
-                `,
-                equipment: 'MESA-GRADE'
-            },
-            'abdomen-lateral': {
-                title: 'Abdômen Lateral',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente em decúbito lateral</li>
-                        <li>Braços elevados</li>
-                        <li>Joelhos flexionados</li>
-                        <li>Abdômen centralizado no filme</li>
-                        <li>Inspiração suave</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 67-80</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.32s</li>
-                    </ul>
-                `,
-                equipment: 'MURAL-BUCKY'
-            },
-            'pelvis-ap': {
-                title: 'Pelve AP',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente em decúbito dorsal</li>
-                        <li>Pernas estendidas</li>
-                        <li>Pés em rotação interna</li>
-                        <li>Pelve centralizada no filme</li>
-                        <li>Braços para os lados</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 75-90</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.32s</li>
-                    </ul>
-                `,
-                equipment: 'MESA-GRADE'
-            },
-            'pelvis-lateral': {
-                title: 'Pelve Lateral',
-                icon: 'fas fa-user',
-                instructions: `
-                    <ul>
-                        <li>Paciente em decúbito lateral</li>
-                        <li>Braços elevados</li>
-                        <li>Joelhos flexionados</li>
-                        <li>Pelve centralizada no filme</li>
-                        <li>Inspiração suave</li>
-                    </ul>
-                `,
-                parameters: `
-                    <ul>
-                        <li><strong>KV:</strong> 80-95</li>
-                        <li><strong>mA:</strong> 200-400</li>
-                        <li><strong>Tempo:</strong> 0.35s</li>
-                    </ul>
-                `,
-                equipment: 'MESA-GRADE'
-            }
-        };
-        
-        return positionDatabase[position] || {
-            title: 'Posicionamento',
-            icon: 'fas fa-user',
-            instructions: '<p>Instruções não disponíveis para este posicionamento.</p>',
-            parameters: '<p>Parâmetros não disponíveis para este posicionamento.</p>',
-            equipment: 'Não especificado'
-        };
-    }
-
-    // Abrir modal de KV/mAs
-    openKvMasModal() {
-        document.getElementById('kvmas-modal').style.display = 'flex';
-        document.getElementById('kvmas-result').innerHTML = '';
-        document.getElementById('kvmas-form').reset();
-    }
-
-    // Fechar modal de KV/mAs
-    closeKvMasModal() {
-        document.getElementById('kvmas-modal').style.display = 'none';
-    }
-
-    // Calcular KV/mAs
-    calculateKvMas(event) {
-        event.preventDefault();
-        const thickness = parseFloat(document.getElementById('input-thickness').value);
-        const structure = document.getElementById('input-exam-area').value;
-        const constante = parseFloat(document.getElementById('input-constante').value);
-        const dff = parseFloat(document.getElementById('input-distance').value);
-
-        if (!structure || isNaN(thickness) || isNaN(constante) || isNaN(dff)) {
-            this.showKvMasResultPopup('Preencha todos os campos corretamente.');
-            return;
-        }
-
-        const maronFactors = {
-            'corpo-osseo': 0.5,
-            'extremidades': 0.1,
-            'aparelho-respiratorio': 0.1,
-            'aparelho-digestorio': 0.3,
-            'aparelho-urinario': 0.3,
-            'partes-moles': 0.01
-        };
-        const nomesEstrutura = {
-            'corpo-osseo': 'Corpo Ósseo',
-            'extremidades': 'Extremidades',
-            'aparelho-respiratorio': 'Aparelho Respiratório', 
-            'aparelho-digestorio': 'Aparelho Digestório',
-            'aparelho-urinario': 'Aparelho Urinário',
-            'partes-moles': 'Partes Moles'
-        };
-        const fatorMaron = maronFactors[structure] || 2;
-        const kv = 2 * thickness + constante;
-        let mAs = kv * fatorMaron;
-        const ma1 = 100, ma2 = 200;
-        const tempo1 = mAs / ma1, tempo2 = mAs / ma2;
-        let tempo = 0.1;
-        if (thickness <= 10) tempo = 0.05;
-        else if (thickness <= 20) tempo = 0.10;
-        else if (thickness <= 30) tempo = 0.20;
-        else tempo = 0.30;
-        const mA = mAs / tempo;
-
-        // Mostra resultado no modal pop-up
-        this.showKvMasResultPopup(`
-            <p><strong>Resultado para ${nomesEstrutura[structure] || structure}:</strong></p>
-            <p>kV: <b>${kv.toFixed(1)}</b></p>
-            <p>mAs: <b>${mAs.toFixed(2)}</b></p>
-            <p><strong>Se mA = 100:</strong> tempo = ${tempo1.toFixed(3)} s</p>
-            <p><strong>Se mA = 200:</strong> tempo = ${tempo2.toFixed(3)} s</p>
-            <p><small>Espessura: ${thickness}cm, Constante: ${constante}, DFF: ${dff}cm, Fator Maron: ${fatorMaron}</small></p>
-        `);
-    }
-
-    showKvMasResultPopup(html) {
-        const modal = document.getElementById('kvmas-result-modal');
-        const content = document.getElementById('kvmas-result-popup');
-        content.innerHTML = html;
-        modal.style.display = 'flex';
-        // Fechar ao clicar no X
-        modal.querySelector('.close-kvmas-result').onclick = () => { modal.style.display = 'none'; };
-        // Fechar ao clicar fora do conteúdo
-        modal.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
-// Adicionar estilos para notificações
-const notificationStyles = document.createElement('style');
-notificationStyles.textContent = `
-    @keyframes slideIn {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-    
-    @keyframes slideOut {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(100%); opacity: 0; }
-    }
-`;
-document.head.appendChild(notificationStyles);
-
-// Inicializar calculadora quando a página carregar
-document.addEventListener('DOMContentLoaded', () => {
-    window.calculator = new RadiologicalCalculator();
-    
-    // Carregar configuração salva
-    window.calculator.loadConfiguration();
-    
-    // Adicionar funcionalidade de header shrinking
-    addHeaderScrollEffect();
-});
-
-
-
-// Adicionar efeito de header shrinking no scroll
-function addHeaderScrollEffect() {
-    const header = document.querySelector('.header');
-    let lastScrollTop = 0;
-    
-    // Função para debounce do scroll
-    function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        }
-    }
-    
-    // Função para atualizar header
-    const updateHeader = debounce(() => {
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        
-        if (scrollTop > 50) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
-        }
-        
-        lastScrollTop = scrollTop;
-    }, 10);
-    
-    // Adicionar event listener para scroll
-    window.addEventListener('scroll', updateHeader, { passive: true });
-    
-    // Adicionar event listener para touch move (mobile)
-    window.addEventListener('touchmove', updateHeader, { passive: true });
+.specific-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-primary);
 }
 
-// Cálculo específico (modal)
-document.addEventListener('DOMContentLoaded', function() {
-    const openBtn = document.getElementById('openSpecificCalcBtn');
-    const modal = document.getElementById('specific-calc-modal');
-    const closeBtn = document.getElementById('closeSpecificCalcBtn');
-    const form = document.getElementById('specificCalcForm');
-    const resultDiv = document.getElementById('specificCalcResult');
+.specific-header h4 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--accent-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
 
-    if (openBtn && modal && closeBtn && form && resultDiv) {
-        openBtn.onclick = () => { modal.style.display = 'block'; };
-        closeBtn.onclick = () => { modal.style.display = 'none'; resultDiv.innerHTML = ''; };
-        window.onclick = (e) => { if (e.target == modal) { modal.style.display = 'none'; resultDiv.innerHTML = ''; } };
+.specific-header h4::before {
+    content: '';
+    width: 4px;
+    height: 24px;
+    background: var(--gradient-primary);
+    border-radius: 2px;
+}
 
-        form.onsubmit = function(e) {
-            e.preventDefault();
-            const v1 = parseFloat(document.getElementById('valor1').value);
-            const v2 = parseFloat(document.getElementById('valor2').value);
-            const v3 = parseFloat(document.getElementById('valor3').value);
-            if (v3 === 0) {
-                resultDiv.innerHTML = '<span style="color:red;">Divisão por zero não permitida.</span>';
-                return;
-            }
-            const resultado = (v1 * v2) / v3;
-            resultDiv.innerHTML = `<strong>Resultado:</strong> ${resultado.toFixed(2)}`;
-        };
+.back-btn {
+    background: var(--gradient-secondary);
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 12px;
+    color: var(--primary-bg);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+}
+
+.back-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+}
+
+/* Grid das regiões específicas */
+.specific-regions .button-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Botões de região específica */
+.bodypart-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid var(--border-secondary);
+    border-radius: 16px;
+    padding: 1.2rem 1rem;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    min-height: 100px;
+    justify-content: center;
+}
+
+.bodypart-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-primary);
+    transition: left 0.3s ease;
+    z-index: -1;
+}
+
+.bodypart-btn:hover::before {
+    left: 0;
+}
+
+.bodypart-btn:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent-primary);
+    box-shadow: var(--shadow-primary);
+}
+
+.bodypart-btn.active {
+    background: var(--gradient-primary);
+    border-color: var(--accent-primary);
+    color: var(--primary-bg);
+    box-shadow: var(--shadow-primary);
+}
+
+.bodypart-btn i {
+    font-size: 1.3rem;
+    color: var(--accent-primary);
+    transition: all 0.3s ease;
+}
+
+.bodypart-btn.active i {
+    color: var(--primary-bg);
+}
+
+.bodypart-btn span {
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.bodypart-btn.active span {
+    color: var(--primary-bg);
+}
+
+.bodypart-btn small {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+    transition: all 0.3s ease;
+}
+
+.bodypart-btn.active small {
+    color: var(--primary-bg);
+    opacity: 0.8;
+}
+
+/* Botão calcular */
+.calculate-btn {
+    background: var(--gradient-primary);
+    border: none;
+    padding: 1.2rem 2.5rem;
+    border-radius: 16px;
+    color: var(--primary-bg);
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: block;
+    width: 100%;
+    margin-top: 2rem;
+    box-shadow: var(--shadow-primary);
+    position: relative;
+    overflow: hidden;
+}
+
+.calculate-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #0099cc 0%, #00d4ff 100%);
+    transition: left 0.3s ease;
+    z-index: -1;
+}
+
+.calculate-btn:hover::before {
+    left: 0;
+}
+
+.calculate-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0, 212, 255, 0.4);
+}
+
+/* Resultados */
+.results-section {
+    background: rgba(26, 26, 46, 0.6);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 2.5rem;
+    border: 1px solid var(--border-primary);
+    box-shadow: var(--shadow-secondary);
+    transition: all 0.3s ease;
+}
+
+.results-section:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-primary);
+    border-color: var(--accent-primary);
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.result-item {
+    background: rgba(0, 212, 255, 0.05);
+    border: 1px solid var(--border-primary);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.result-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--gradient-primary);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.result-item:hover::before {
+    transform: scaleX(1);
+}
+
+.result-item:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent-primary);
+    box-shadow: var(--shadow-primary);
+}
+
+.result-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.result-label i {
+    color: var(--accent-primary);
+    font-size: 1.1rem;
+}
+
+.result-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+    text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+.equipment-info {
+    background: rgba(255, 107, 53, 0.05);
+    border: 1px solid rgba(255, 107, 53, 0.2);
+}
+
+.equipment-info .result-label i {
+    color: var(--accent-tertiary);
+}
+
+.equipment-info .result-value {
+    color: var(--accent-tertiary);
+    text-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+}
+
+.calculation-info {
+    background: rgba(0, 212, 255, 0.05);
+    border: 1px solid var(--border-primary);
+}
+
+.calculation-info .result-label i {
+    color: var(--accent-primary);
+}
+
+.calculation-info .result-value {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-shadow: none;
+}
+
+.calculation-info .result-value small {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    line-height: 1.4;
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
     }
-});
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.6s ease-out both;
+}
+
+
+
+/* Footer */
+.footer {
+    background: rgba(26, 26, 46, 0.8);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border-primary);
+    padding: 2rem 0;
+    margin-top: 4rem;
+    text-align: center;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.footer p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.footer .highlight {
+    color: var(--accent-primary);
+    font-weight: 600;
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+    .main-container {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .header-content {
+        padding: 0 1rem;
+    }
+    
+    .app-title h1 {
+        font-size: 2rem;
+    }
+    
+    .radiation-symbol {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+}
+
+/* Melhorias para iPhone e dispositivos móveis */
+@media (max-width: 768px) {
+    .main-container {
+        padding: 0 1rem;
+        margin: 1rem auto;
+        gap: 1.5rem;
+    }
+    
+    .calculator-section,
+    .results-section {
+        padding: 1.5rem;
+        border-radius: 20px;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .age-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 0.8rem;
+    }
+    
+    .body-grid {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 0.8rem;
+    }
+    
+    .button-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .age-btn,
+    .body-btn,
+    .bodypart-general-btn,
+    .bodypart-btn {
+        padding: 1rem 0.8rem;
+        font-size: 0.9rem;
+        border-radius: 14px;
+    }
+    
+    .bodypart-general-btn {
+        min-height: 100px;
+        padding: 1.5rem 1rem;
+    }
+    
+    .results-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+    
+    .result-value {
+        font-size: 2rem;
+    }
+    
+
+    
+    /* Melhorias específicas para iPhone */
+    .header-content {
+        padding: 0 1rem;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    
+    .logo-container {
+        flex-direction: row;
+        gap: 1rem;
+        align-items: center;
+    }
+    
+    .logo {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .app-title h1 {
+        font-size: 1.6rem;
+    }
+    
+    .app-title p {
+        font-size: 0.8rem;
+        line-height: 1.3;
+    }
+    
+    .radiation-symbol {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+}
+
+
+
+@media (max-width: 480px) {
+    .header-content {
+        flex-direction: row;
+        gap: 1rem;
+        text-align: left;
+        justify-content: space-between;
+    }
+    
+    .logo-container {
+        flex-direction: row;
+        gap: 0.8rem;
+        align-items: center;
+    }
+    
+    .logo {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .app-title h1 {
+        font-size: 1.5rem;
+    }
+    
+    .app-title p {
+        font-size: 0.8rem;
+        display: none;
+    }
+    
+    .radiation-symbol {
+        width: 45px;
+        height: 45px;
+        font-size: 1.1rem;
+    }
+    
+    .age-grid {
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        gap: 0.5rem;
+    }
+    
+    .body-grid {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 0.5rem;
+    }
+    
+    .button-grid {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+    }
+    
+    .bodypart-general-btn {
+        min-height: 80px;
+        padding: 1rem 0.8rem;
+    }
+    
+    .results-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .specific-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+}
+
+/* Melhorias específicas para iPhone e Safari */
+@supports (-webkit-touch-callout: none) {
+    .header {
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+    }
+    
+    .calculator-section,
+    .results-section {
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+    }
+    
+    /* Fix para backdrop-filter no Safari */
+    .header,
+    .calculator-section,
+    .results-section {
+        -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(20px);
+    }
+}
+
+/* Melhorias para dispositivos com notch */
+@supports (padding: max(0px)) {
+    .header {
+        padding-top: max(1.5rem, env(safe-area-inset-top));
+        padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+    }
+    
+    .main-container {
+        padding-top: max(2rem, env(safe-area-inset-top));
+        padding-bottom: max(2rem, env(safe-area-inset-bottom));
+    }
+}
+
+/* Estados especiais */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.error {
+    border-color: #ef4444 !important;
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.success {
+    border-color: #10b981 !important;
+    animation: successPulse 0.5s ease-in-out;
+}
+
+@keyframes successPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+/* Melhorias de acessibilidade */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Forçar modo escuro para melhor visibilidade */
+/* Removido o modo claro automático para garantir texto branco em todos os dispositivos */
+
+/* Correção específica para iOS/iPhone - garantir texto branco em todos os botões */
+.age-btn,
+.body-btn,
+.bodypart-general-btn,
+.bodypart-btn,
+.category-tab {
+    color: #fffbfb !important;
+}
+
+.age-btn span,
+.body-btn span,
+.bodypart-general-btn span,
+.bodypart-btn span,
+.category-tab span {
+    color: #fffbfb !important;
+}
+
+/* Garantir que os ícones também sejam visíveis */
+.age-btn i,
+.body-btn i,
+.bodypart-general-btn i,
+.bodypart-btn i,
+.category-tab i {
+    color: var(--accent-primary) !important;
+}
+
+/* Texto secundário em botões */
+.body-btn small,
+.bodypart-btn small {
+    color: #b8c5d6 !important;
+}
+
+/* Correção específica para Safari/iOS */
+@supports (-webkit-touch-callout: none) {
+    .age-btn,
+    .body-btn,
+    .bodypart-general-btn,
+    .bodypart-btn,
+    .category-tab {
+        color: #fffbfb !important;
+        -webkit-text-fill-color: #fffbfb !important;
+    }
+    
+    .age-btn span,
+    .body-btn span,
+    .bodypart-general-btn span,
+    .bodypart-btn span,
+    .category-tab span {
+        color: #fffbfb !important;
+        -webkit-text-fill-color: #fffbfb !important;
+    }
+    
+    .age-btn i,
+    .body-btn i,
+    .bodypart-general-btn i,
+    .bodypart-btn i,
+    .category-tab i {
+        color: var(--accent-primary) !important;
+        -webkit-text-fill-color: var(--accent-primary) !important;
+    }
+}
+
+/* Botão de Posicionamentos */
+.positioning-button-container {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-primary);
+}
+
+.positioning-btn {
+    background: var(--gradient-primary);
+    border: none;
+    padding: 1.2rem 2.5rem;
+    border-radius: 16px;
+    color: var(--primary-bg);
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: var(--shadow-primary);
+    position: relative;
+    overflow: hidden;
+    animation: pulse-blue 2s infinite;
+}
+
+.positioning-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #0099cc 0%, #00d4ff 100%);
+    transition: left 0.3s ease;
+    z-index: -1;
+}
+
+.positioning-btn:hover::before {
+    left: 0;
+}
+
+.positioning-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0, 212, 255, 0.4);
+    animation: none;
+}
+
+@keyframes pulse-blue {
+    0%, 100% { 
+        transform: scale(1);
+        box-shadow: 0 8px 32px rgba(0, 212, 255, 0.15);
+    }
+    50% { 
+        transform: scale(1.05);
+        box-shadow: 0 12px 40px rgba(0, 212, 255, 0.3);
+    }
+}
+
+/* Seção de Posicionamentos */
+.positioning-section {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+    background: rgba(26, 26, 46, 0.6);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    border: 1px solid var(--border-primary);
+    box-shadow: var(--shadow-secondary);
+}
+
+.positioning-header {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding: 2rem 0;
+    border-bottom: 1px solid var(--border-primary);
+    margin-bottom: 2rem;
+}
+
+.back-to-calculator-btn {
+    background: var(--gradient-secondary);
+    border: none;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    color: var(--primary-bg);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+    white-space: nowrap;
+}
+
+.back-to-calculator-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+}
+
+/* Categorias de Posicionamentos */
+.positioning-categories {
+    margin-bottom: 3rem;
+}
+
+.category-tabs {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.category-tab {
+    background: rgba(0, 212, 255, 0.05);
+    border: 2px solid var(--border-primary);
+    border-radius: 16px;
+    padding: 1rem 1.5rem;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+}
+
+.category-tab::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-primary);
+    transition: left 0.3s ease;
+    z-index: -1;
+}
+
+.category-tab:hover::before {
+    left: 0;
+}
+
+.category-tab:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-primary);
+    box-shadow: var(--shadow-primary);
+}
+
+.category-tab.active {
+    background: var(--gradient-primary);
+    border-color: var(--accent-primary);
+    color: var(--primary-bg);
+    box-shadow: var(--shadow-primary);
+}
+
+.category-tab i {
+    font-size: 1.2rem;
+}
+
+/* Conteúdo das Categorias */
+.category-content {
+    position: relative;
+    min-height: 400px;
+}
+
+.position-category {
+    display: none;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.position-category.active {
+    display: block;
+}
+
+.positions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    padding: 1rem 0;
+}
+
+/* Cards de Posicionamento */
+.position-card {
+    background: rgba(0, 212, 255, 0.05);
+    border: 2px solid var(--border-primary);
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.position-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-primary);
+    transition: left 0.3s ease;
+    z-index: -1;
+}
+
+.position-card:hover::before {
+    left: 0;
+}
+
+.position-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-primary);
+    box-shadow: var(--shadow-primary);
+}
+
+.position-card:hover .position-image i,
+.position-card:hover h3,
+.position-card:hover p {
+    color: var(--primary-bg);
+}
+
+.position-image {
+    width: 80px;
+    height: 80px;
+    background: rgba(0, 212, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.position-image i {
+    font-size: 2rem;
+    color: var(--accent-primary);
+    transition: all 0.3s ease;
+}
+
+.position-card h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--accent-primary);
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.position-card p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.view-position-btn {
+    background: var(--gradient-primary);
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 12px;
+    color: var(--primary-bg);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.view-position-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 212, 255, 0.3);
+}
+
+/* Modal de Posicionamento */
+.position-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+    background: #1a1a2e;
+    padding: 24px 32px;
+    border-radius: 10px;
+    min-width: 320px;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 16px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+
+
+/* Botão de fechar do modal de posicionamento igual ao da calculadora */
+.position-modal .close {
+    background: var(--gradient-secondary);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: var(--primary-bg);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+}
+
+.position-modal .close:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+}
+
+.position-details {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+.position-image-large {
+    width: 200px;
+    height: 200px;
+    background: rgba(0, 212, 255, 0.1);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--border-primary);
+}
+
+.position-image-large i {
+    font-size: 4rem;
+    color: var(--accent-primary);
+}
+
+.position-instructions h4 {
+    color: var(--accent-primary);
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    margin-top: 1.5rem;
+}
+
+.position-instructions h4:first-child {
+    margin-top: 0;
+}
+
+.position-instructions div {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: rgba(0, 212, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid var(--border-primary);
+}
+
+/* Modal KV/mAs */
+.kvmas-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease-out;
+}
+
+
+.position-modal .close-modal-btn {
+    background: var(--gradient-secondary);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: var(--primary-bg);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+.position-modal .close-modal-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+}
+
+.kvmas-modal .close-modal-btn {
+    background: var(--gradient-secondary);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: var(--primary-bg);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+.kvmas-modal .close-modal-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+}
+
+.kvmas-modal .modal-body {
+    color: var(--text-primary);
+}
+
+/* Modal Calculadora KV/mAs - Melhor diagramação, mais larga e compacta */
+.kvmas-modal .modal-content {
+    background: var(--secondary-bg, #1a1a2e);
+    color: var(--text-primary, #fff);
+    border-radius: 18px;
+    max-width: 98vw;
+    width: 480px;           /* Mais larga */
+    min-width: 320px;
+    padding: 1.5rem 2.2rem 1.2rem 2.2rem; /* Menos alta, mais espaçamento lateral */
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    position: relative;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.kvmas-modal .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.2rem;
+}
+
+.kvmas-modal .modal-header h3 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.kvmas-modal .close-modal-btn {
+    background: none;
+    border: none;
+    font-size: 1.7rem;
+    color: var(--accent-primary, #00d4ff);
+    cursor: pointer;
+    padding: 0 0.2rem;
+}
+
+.kvmas-modal .modal-body {
+    width: 100%;
+    padding: 0;
+}
+
+#kvmas-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.1rem 1.5rem;
+    margin-bottom: 1.2rem;
+}
+
+#kvmas-form .form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+#kvmas-form label span {
+    font-size: 1rem;
+    color: var(--text-secondary, #b8c5d6);
+    margin-bottom: 0.2rem;
+}
+
+#kvmas-form input,
+#kvmas-form select {
+    padding: 0.5rem 0.7rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-primary, #00d4ff33);
+    background: rgba(0,0,0,0.08);
+    color: var(--text-primary, #fff);
+    font-size: 1rem;
+    outline: none;
+    transition: border 0.2s;
+}
+
+#kvmas-form input:focus,
+#kvmas-form select:focus {
+    border-color: var(--accent-primary, #00d4ff);
+}
+
+.kvmas-modal .calculate-btn {
+    grid-column: 1 / -1;
+    margin-top: 0.5rem;
+    width: 100%;
+    padding: 0.7rem 0;
+    font-size: 1.1rem;
+    border-radius: 10px;
+}
+
+.kvmas-modal .kvmas-result {
+    margin-top: 0.5rem;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+@media (max-width: 600px) {
+    .kvmas-modal .modal-content {
+        width: 99vw;
+        min-width: unset;
+        padding: 1rem 0.5rem 0.7rem 0.5rem;
+    }
+    #kvmas-form {
+        grid-template-columns: 1fr;
+        gap: 0.7rem 0;
+    }
+    .kvmas-modal .modal-header h3 {
+        font-size: 1.1rem;
+    }
+}
+
+/* Melhor contraste ao selecionar texto */
+::selection {
+    background: var(--accent-primary, #00d4ff);
+    color: var(--primary-bg, #0a0a0f);
+}
+::-webkit-selection {
+    background: var(--accent-primary, #00d4ff);
+    color: var(--primary-bg, #0a0a0f);
+}
+
+/* Modal de Resultado KV/mAs */
+.kvmas-result-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.kvmas-result-modal-content {
+    background: var(--secondary-bg, #1a1a2e);
+    color: var(--text-primary, #fff);
+    border-radius: 18px;
+    max-width: 95vw;
+    width: 480px;
+    min-width: 320px;
+    padding: 1.5rem 2.2rem 1.2rem 2.2rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    position: relative;
+    text-align: center;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.kvmas-result-modal .close-kvmas-result {
+    position: absolute;
+    top: 12px; right: 18px;
+    font-size: 2rem;
+    color: var(--accent-primary, #00d4ff);
+    cursor: pointer;
+    font-weight: bold;
+    z-index: 2;
+    background: none;
+    border: none;
+}
+
+@media (max-width: 600px) {
+    .kvmas-result-modal-content {
+        width: 99vw;
+        min-width: unset;
+        padding: 1rem 0.5rem 0.7rem 0.5rem;
+        font-size: 1rem;
+    }
+    .kvmas-result-modal .close-kvmas-result {
+        top: 8px; right: 10px; font-size: 1.7rem;
+    }
+}
