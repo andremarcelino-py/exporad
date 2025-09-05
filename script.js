@@ -1199,11 +1199,10 @@ class RadiologicalCalculator {
         const dff = parseFloat(document.getElementById('input-distance').value);
 
         if (!structure || isNaN(thickness) || isNaN(constante) || isNaN(dff)) {
-            document.getElementById('kvmas-result').innerHTML = 'Preencha todos os campos corretamente.';
+            this.showKvMasResultPopup('Preencha todos os campos corretamente.');
             return;
         }
 
-        // Fatores de Maron por estrutura
         const maronFactors = {
             'corpo-osseo': 0.5,
             'extremidades': 0.1,
@@ -1212,8 +1211,6 @@ class RadiologicalCalculator {
             'aparelho-urinario': 0.3,
             'partes-moles': 0.01
         };
-
-        // Nome amigável
         const nomesEstrutura = {
             'corpo-osseo': 'Corpo Ósseo',
             'extremidades': 'Extremidades',
@@ -1222,45 +1219,38 @@ class RadiologicalCalculator {
             'aparelho-urinario': 'Aparelho Urinário',
             'partes-moles': 'Partes Moles'
         };
-
         const fatorMaron = maronFactors[structure] || 2;
-
-        // Cálculo do kV
         const kv = 2 * thickness + constante;
-
-        // Cálculo do mAs (Maron)
         let mAs = kv * fatorMaron;
-
-        // Cenário 1: mA = 100
-        const ma1 = 100;
-        const tempo1 = mAs / ma1;
-        // Cenário 2: mA = 200
-        const ma2 = 200;
-        const tempo2 = mAs / ma2;
-
-        // mAs para DFF diferente de 100cm (referência)
-        //const dffReferencia = 100;
-        //mAs = mAs * Math.pow(dff / dffReferencia, 2);
-
+        const ma1 = 100, ma2 = 200;
+        const tempo1 = mAs / ma1, tempo2 = mAs / ma2;
         let tempo = 0.1;
         if (thickness <= 10) tempo = 0.05;
         else if (thickness <= 20) tempo = 0.10;
         else if (thickness <= 30) tempo = 0.20;
         else tempo = 0.30;
-
-        
-
-        // Calcular mA a partir do tempo informado
         const mA = mAs / tempo;
 
-        document.getElementById('kvmas-result').innerHTML = `
+        // Mostra resultado no modal pop-up
+        this.showKvMasResultPopup(`
             <p><strong>Resultado para ${nomesEstrutura[structure] || structure}:</strong></p>
             <p>kV: <b>${kv.toFixed(1)}</b></p>
             <p>mAs: <b>${mAs.toFixed(2)}</b></p>
             <p><strong>Se mA = 100:</strong> tempo = ${tempo1.toFixed(3)} s</p>
             <p><strong>Se mA = 200:</strong> tempo = ${tempo2.toFixed(3)} s</p>
             <p><small>Espessura: ${thickness}cm, Constante: ${constante}, DFF: ${dff}cm, Fator Maron: ${fatorMaron}</small></p>
-        `;
+        `);
+    }
+
+    showKvMasResultPopup(html) {
+        const modal = document.getElementById('kvmas-result-modal');
+        const content = document.getElementById('kvmas-result-popup');
+        content.innerHTML = html;
+        modal.style.display = 'flex';
+        // Fechar ao clicar no X
+        modal.querySelector('.close-kvmas-result').onclick = () => { modal.style.display = 'none'; };
+        // Fechar ao clicar fora do conteúdo
+        modal.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
     }
 }
 
