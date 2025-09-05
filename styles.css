@@ -1,1641 +1,859 @@
-/* Reset e configurações base */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-:root {
-    /* Paleta de cores moderna e sofisticada */
-    --primary-bg: #0a0a0f;
-    --secondary-bg: #1a1a2e;
-    --accent-primary: #00d4ff;
-    --accent-secondary: #0099cc;
-    --accent-tertiary: #ff6b35;
-    --text-primary: #fffbfb;
-    --text-secondary: #b8c5d6;
-    --text-muted: #6b7280;
-    --border-primary: rgba(0, 212, 255, 0.2);
-    --border-secondary: rgba(255, 255, 255, 0.1);
-    --shadow-primary: 0 8px 32px rgba(0, 212, 255, 0.15);
-    --shadow-secondary: 0 4px 16px rgba(0, 0, 0, 0.3);
-    --gradient-primary: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
-    --gradient-secondary: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
-    --gradient-bg: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
-}
-
-body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--gradient-bg);
-    color: var(--text-primary);
-    min-height: 100vh;
-    line-height: 1.6;
-    overflow-x: hidden;
-}
-
-/* Scrollbar personalizada */
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--secondary-bg);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--accent-primary);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--accent-secondary);
-}
-
-/* Header */
-.header {
-    background: rgba(26, 26, 46, 0.95);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border-primary);
-    padding: 1.5rem 0;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: var(--shadow-secondary);
-    transition: all 0.3s ease;
-}
-
-.header.scrolled {
-    padding: 0.8rem 0;
-    background: rgba(26, 26, 46, 0.98);
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
-}
-
-.header.scrolled .logo {
-    width: 40px;
-    height: 40px;
-}
-
-.header.scrolled .app-title h1 {
-    font-size: 1.8rem;
-}
-
-.header.scrolled .app-title p {
-    display: none;
-}
-
-.header.scrolled .radiation-symbol {
-    width: 50px;
-    height: 50px;
-    font-size: 1.3rem;
-}
-
-.header-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.logo-container {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 0;
-}
-
-.logo {
-    width: 60px;
-    height: 60px;
-   
-}
-
-.logo img {
-    border: none !important;
-}
-
-.logo:hover {
-    transform: scale(1.05);
-    box-shadow: 0 12px 40px rgba(0, 212, 255, 0.25);
-}
-
-.app-title h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
-}
-
-.app-title p {
-    color: var(--text-secondary);
-    font-size: 1.1rem;
-    font-weight: 400;
-}
-
-.radiation-symbol {
-    width: 80px;
-    height: 80px;
-    background: var(--gradient-primary);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    color: var(--primary-bg);
-    box-shadow: var(--shadow-primary);
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
-
-/* Container principal */
-.main-container {
-    max-width: 1200px;
-    margin: 2rem auto;
-    padding: 0 2rem;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
-    align-items: start;
-}
-
-/* Seções */
-.calculator-section {
-    background: rgba(26, 26, 46, 0.6);
-    backdrop-filter: blur(20px);
-    border-radius: 24px;
-    padding: 2.5rem;
-    border: 1px solid var(--border-primary);
-    box-shadow: var(--shadow-secondary);
-    transition: all 0.3s ease;
-}
-
-.calculator-section:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-primary);
-    border-color: var(--accent-primary);
-}
-
-.section-title {
-    font-size: 1.8rem;
-    font-weight: 600;
-    color: var(--accent-primary);
-    margin-bottom: 2rem;
-    text-align: center;
-    position: relative;
-}
-
-.section-title::after {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 3px;
-    background: var(--gradient-primary);
-    border-radius: 2px;
-}
-
-/* Seleção de idade */
-.age-selection {
-    margin-bottom: 2.5rem;
-}
-
-.age-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 1rem;
-}
-
-.age-btn {
-    background: rgba(0, 212, 255, 0.05);
-    border: 2px solid var(--border-primary);
-    border-radius: 16px;
-    padding: 1.2rem 1rem;
-    color: var(--text-primary);
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    position: relative;
-    overflow: hidden;
-}
-
-.age-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: var(--gradient-primary);
-    transition: left 0.3s ease;
-    z-index: -1;
-}
-
-.age-btn:hover::before {
-    left: 0;
-}
-
-.age-btn:hover {
-    transform: translateY(-3px);
-    border-color: var(--accent-primary);
-    box-shadow: var(--shadow-primary);
-}
-
-.age-btn.active {
-    background: var(--gradient-primary);
-    border-color: var(--accent-primary);
-    color: var(--primary-bg);
-    box-shadow: var(--shadow-primary);
-}
-
-.age-btn i {
-    font-size: 1.5rem;
-    color: var(--accent-primary);
-}
-
-.age-btn.active i {
-    color: var(--primary-bg);
-}
-
-/* Seleção de tipo físico */
-.body-type-section {
-    margin-bottom: 2.5rem;
-    display: none;
-}
-
-.body-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 1rem;
-}
-
-.body-btn {
-    background: rgba(255, 107, 53, 0.05);
-    border: 2px solid rgba(255, 107, 53, 0.2);
-    border-radius: 16px;
-    padding: 1.2rem 1rem;
-    color: var(--text-primary);
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-}
-
-.body-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: var(--gradient-secondary);
-    transition: left 0.3s ease;
-    z-index: -1;
-}
-
-.body-btn:hover::before {
-    left: 0;
-}
-
-.body-btn:hover {
-    transform: translateY(-3px);
-    border-color: var(--accent-tertiary);
-    box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
-}
-
-.body-btn.active {
-    background: var(--gradient-secondary);
-    border-color: var(--accent-tertiary);
-    color: var(--primary-bg);
-    box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
-}
-
-.body-btn i {
-    font-size: 1.3rem;
-    color: var(--accent-tertiary);
-}
-
-.body-btn.active i {
-    color: var(--primary-bg);
-}
-
-.body-btn span {
-    font-size: 1.2rem;
-    font-weight: 700;
-}
-
-.body-btn small {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    font-weight: 400;
-}
-
-.body-btn.active small {
-    color: var(--primary-bg);
-    opacity: 0.8;
-}
-
-/* Seleção de região corporal */
-.bodypart-section {
-    margin-bottom: 2.5rem;
-    position: relative;
-    min-height: 300px;
-}
-
-.selection-group {
-    margin-bottom: 2rem;
-}
-
-.selection-group h3 {
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: var(--accent-primary);
-    margin-bottom: 1.5rem;
-    text-align: center;
-}
-
-.button-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
-}
-
-.bodypart-general-btn {
-    background: rgba(0, 212, 255, 0.08);
-    border: 2px solid var(--border-primary);
-    border-radius: 20px;
-    padding: 2rem 1.5rem;
-    color: var(--text-primary);
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    min-height: 120px;
-    justify-content: center;
-}
-
-.bodypart-general-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: var(--gradient-primary);
-    transition: left 0.3s ease;
-    z-index: -1;
-}
-
-.bodypart-general-btn:hover::before {
-    left: 0;
-}
-
-.bodypart-general-btn:hover {
-    transform: translateY(-5px);
-    border-color: var(--accent-primary);
-    box-shadow: var(--shadow-primary);
-}
-
-.bodypart-general-btn.active {
-    background: var(--gradient-primary);
-    border-color: var(--accent-primary);
-    color: var(--primary-bg);
-    box-shadow: var(--shadow-primary);
-}
-
-.bodypart-general-btn i {
-    font-size: 2.2rem;
-    color: var(--accent-primary);
-}
-
-.bodypart-general-btn.active i {
-    color: var(--primary-bg);
-}
-
-.bodypart-general-btn span {
-    font-size: 1.1rem;
-    font-weight: 600;
-    line-height: 1.3;
-}
-
-/* Regiões específicas inline */
-.specific-regions {
-    background: rgba(0, 212, 255, 0.03);
-    border-radius: 20px;
-    padding: 2rem;
-    border: 1px solid var(--border-primary);
-    margin-top: 1rem;
-    animation: slideDown 0.5s ease-out;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.specific-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border-primary);
-}
-
-.specific-header h4 {
-    font-size: 1.6rem;
-    font-weight: 600;
-    color: var(--accent-primary);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.specific-header h4::before {
-    content: '';
-    width: 4px;
-    height: 24px;
-    background: var(--gradient-primary);
-    border-radius: 2px;
-}
-
-.back-btn {
-    background: var(--gradient-secondary);
-    border: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 12px;
-    color: var(--primary-bg);
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
-}
-
-.back-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
-}
-
-/* Grid das regiões específicas */
-.specific-regions .button-grid {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-}
-
-/* Botões de região específica */
-.bodypart-btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 2px solid var(--border-secondary);
-    border-radius: 16px;
-    padding: 1.2rem 1rem;
-    color: var(--text-primary);
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    min-height: 100px;
-    justify-content: center;
-}
-
-.bodypart-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: var(--gradient-primary);
-    transition: left 0.3s ease;
-    z-index: -1;
-}
-
-.bodypart-btn:hover::before {
-    left: 0;
-}
-
-.bodypart-btn:hover {
-    transform: translateY(-3px);
-    border-color: var(--accent-primary);
-    box-shadow: var(--shadow-primary);
-}
-
-.bodypart-btn.active {
-    background: var(--gradient-primary);
-    border-color: var(--accent-primary);
-    color: var(--primary-bg);
-    box-shadow: var(--shadow-primary);
-}
-
-.bodypart-btn i {
-    font-size: 1.3rem;
-    color: var(--accent-primary);
-    transition: all 0.3s ease;
-}
-
-.bodypart-btn.active i {
-    color: var(--primary-bg);
-}
-
-.bodypart-btn span {
-    font-size: 0.9rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.bodypart-btn.active span {
-    color: var(--primary-bg);
-}
-
-.bodypart-btn small {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    font-weight: 400;
-    transition: all 0.3s ease;
-}
-
-.bodypart-btn.active small {
-    color: var(--primary-bg);
-    opacity: 0.8;
-}
-
-/* Botão calcular */
-.calculate-btn {
-    background: var(--gradient-primary);
-    border: none;
-    padding: 1.2rem 2.5rem;
-    border-radius: 16px;
-    color: var(--primary-bg);
-    font-size: 1.2rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: block;
-    width: 100%;
-    margin-top: 2rem;
-    box-shadow: var(--shadow-primary);
-    position: relative;
-    overflow: hidden;
-}
-
-.calculate-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #0099cc 0%, #00d4ff 100%);
-    transition: left 0.3s ease;
-    z-index: -1;
-}
-
-.calculate-btn:hover::before {
-    left: 0;
-}
-
-.calculate-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 30px rgba(0, 212, 255, 0.4);
-}
-
-/* Resultados */
-.results-section {
-    background: rgba(26, 26, 46, 0.6);
-    backdrop-filter: blur(20px);
-    border-radius: 24px;
-    padding: 2.5rem;
-    border: 1px solid var(--border-primary);
-    box-shadow: var(--shadow-secondary);
-    transition: all 0.3s ease;
-}
-
-.results-section:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-primary);
-    border-color: var(--accent-primary);
-}
-
-.results-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-    margin-top: 2rem;
-}
-
-.result-item {
-    background: rgba(0, 212, 255, 0.05);
-    border: 1px solid var(--border-primary);
-    border-radius: 16px;
-    padding: 1.5rem;
-    text-align: center;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.result-item::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--gradient-primary);
-    transform: scaleX(0);
-    transition: transform 0.3s ease;
-}
-
-.result-item:hover::before {
-    transform: scaleX(1);
-}
-
-.result-item:hover {
-    transform: translateY(-3px);
-    border-color: var(--accent-primary);
-    box-shadow: var(--shadow-primary);
-}
-
-.result-label {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-
-.result-label i {
-    color: var(--accent-primary);
-    font-size: 1.1rem;
-}
-
-.result-value {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: var(--accent-primary);
-    text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
-}
-
-.equipment-info {
-    background: rgba(255, 107, 53, 0.05);
-    border: 1px solid rgba(255, 107, 53, 0.2);
-}
-
-.equipment-info .result-label i {
-    color: var(--accent-tertiary);
-}
-
-.equipment-info .result-value {
-    color: var(--accent-tertiary);
-    text-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
-}
-
-/* Animações */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes slideIn {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-@keyframes slideOut {
-    from {
-        transform: translateX(0);
-        opacity: 1;
-    }
-    to {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-}
-
-.fade-in {
-    animation: fadeIn 0.6s ease-out both;
-}
-
-
-
-/* Footer */
-.footer {
-    background: rgba(26, 26, 46, 0.8);
-    backdrop-filter: blur(20px);
-    border-top: 1px solid var(--border-primary);
-    padding: 2rem 0;
-    margin-top: 4rem;
-    text-align: center;
-}
-
-.footer-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 2rem;
-}
-
-.footer p {
-    color: var(--text-secondary);
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-}
-
-.footer .highlight {
-    color: var(--accent-primary);
-    font-weight: 600;
-}
-
-/* Responsividade */
-@media (max-width: 1024px) {
-    .main-container {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-    }
-    
-    .header-content {
-        padding: 0 1rem;
-    }
-    
-    .app-title h1 {
-        font-size: 2rem;
-    }
-    
-    .radiation-symbol {
-        width: 60px;
-        height: 60px;
-        font-size: 1.5rem;
-    }
-}
-
-/* Melhorias para iPhone e dispositivos móveis */
-@media (max-width: 768px) {
-    .main-container {
-        padding: 0 1rem;
-        margin: 1rem auto;
-        gap: 1.5rem;
-    }
-    
-    .calculator-section,
-    .results-section {
-        padding: 1.5rem;
-        border-radius: 20px;
-    }
-    
-    .section-title {
-        font-size: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-    
-    .age-grid {
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-        gap: 0.8rem;
-    }
-    
-    .body-grid {
-        grid-template-columns: repeat(5, 1fr);
-        gap: 0.8rem;
-    }
-    
-    .button-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-    
-    .age-btn,
-    .body-btn,
-    .bodypart-general-btn,
-    .bodypart-btn {
-        padding: 1rem 0.8rem;
-        font-size: 0.9rem;
-        border-radius: 14px;
-    }
-    
-    .bodypart-general-btn {
-        min-height: 100px;
-        padding: 1.5rem 1rem;
-    }
-    
-    .results-grid {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 1rem;
-    }
-    
-    .result-value {
-        font-size: 2rem;
-    }
-    
-
-    
-    /* Melhorias específicas para iPhone */
-    .header-content {
-        padding: 0 1rem;
-        flex-direction: row;
-        justify-content: space-between;
-    }
-    
-    .logo-container {
-        flex-direction: row;
-        gap: 1rem;
-        align-items: center;
-    }
-    
-    .logo {
-        width: 45px;
-        height: 45px;
-    }
-    
-    .app-title h1 {
-        font-size: 1.6rem;
-    }
-    
-    .app-title p {
-        font-size: 0.8rem;
-        line-height: 1.3;
-    }
-    
-    .radiation-symbol {
-        width: 50px;
-        height: 50px;
-        font-size: 1.2rem;
-    }
-}
-
-
-
-@media (max-width: 480px) {
-    .header-content {
-        flex-direction: row;
-        gap: 1rem;
-        text-align: left;
-        justify-content: space-between;
-    }
-    
-    .logo-container {
-        flex-direction: row;
-        gap: 0.8rem;
-        align-items: center;
-    }
-    
-    .logo {
-        width: 40px;
-        height: 40px;
-    }
-    
-    .app-title h1 {
-        font-size: 1.5rem;
-    }
-    
-    .app-title p {
-        font-size: 0.8rem;
-        display: none;
-    }
-    
-    .radiation-symbol {
-        width: 45px;
-        height: 45px;
-        font-size: 1.1rem;
-    }
-    
-    .age-grid {
-        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-        gap: 0.5rem;
-    }
-    
-    .body-grid {
-        grid-template-columns: repeat(5, 1fr);
-        gap: 0.5rem;
-    }
-    
-    .button-grid {
-        grid-template-columns: 1fr;
-        gap: 0.8rem;
-    }
-    
-    .bodypart-general-btn {
-        min-height: 80px;
-        padding: 1rem 0.8rem;
-    }
-    
-    .results-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .specific-header {
-        flex-direction: column;
-        gap: 1rem;
-        text-align: center;
-    }
-}
-
-/* Melhorias específicas para iPhone e Safari */
-@supports (-webkit-touch-callout: none) {
-    .header {
-        -webkit-transform: translateZ(0);
-        transform: translateZ(0);
-    }
-    
-    .calculator-section,
-    .results-section {
-        -webkit-transform: translateZ(0);
-        transform: translateZ(0);
-    }
-    
-    /* Fix para backdrop-filter no Safari */
-    .header,
-    .calculator-section,
-    .results-section {
-        -webkit-backdrop-filter: blur(20px);
-        backdrop-filter: blur(20px);
-    }
-}
-
-/* Melhorias para dispositivos com notch */
-@supports (padding: max(0px)) {
-    .header {
-        padding-top: max(1.5rem, env(safe-area-inset-top));
-        padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
-    }
-    
-    .main-container {
-        padding-top: max(2rem, env(safe-area-inset-top));
-        padding-bottom: max(2rem, env(safe-area-inset-bottom));
-    }
-}
-
-/* Estados especiais */
-.loading {
-    opacity: 0.7;
-    pointer-events: none;
-}
-
-.error {
-    border-color: #ef4444 !important;
-    animation: shake 0.5s ease-in-out;
-}
-
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
-}
-
-.success {
-    border-color: #10b981 !important;
-    animation: successPulse 0.5s ease-in-out;
-}
-
-@keyframes successPulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.02); }
-    100% { transform: scale(1); }
-}
-
-/* Melhorias de acessibilidade */
-@media (prefers-reduced-motion: reduce) {
-    * {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-}
-
-/* Modo escuro/claro automático */
-@media (prefers-color-scheme: light) {
-    :root {
-        --primary-bg: #ffffff;
-        --secondary-bg: #f8fafc;
-        --text-primary: #1e293b;
-        --text-secondary: #475569;
-        --text-muted: #64748b;
-        --border-primary: rgba(0, 212, 255, 0.3);
-        --border-secondary: rgba(0, 0, 0, 0.1);
-    }
-}
-
-/* Botão de Posicionamentos */
-.positioning-button-container {
-    text-align: center;
-    margin-top: 2rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--border-primary);
-}
-
-.positioning-btn {
-    background: var(--gradient-primary);
-    border: none;
-    padding: 1.2rem 2.5rem;
-    border-radius: 16px;
-    color: var(--primary-bg);
-    font-size: 1.2rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 1rem;
-    box-shadow: var(--shadow-primary);
-    position: relative;
-    overflow: hidden;
-    animation: pulse-blue 2s infinite;
-}
-
-.positioning-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #0099cc 0%, #00d4ff 100%);
-    transition: left 0.3s ease;
-    z-index: -1;
-}
-
-.positioning-btn:hover::before {
-    left: 0;
-}
-
-.positioning-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 30px rgba(0, 212, 255, 0.4);
-    animation: none;
-}
-
-@keyframes pulse-blue {
-    0%, 100% { 
-        transform: scale(1);
-        box-shadow: 0 8px 32px rgba(0, 212, 255, 0.15);
-    }
-    50% { 
-        transform: scale(1.05);
-        box-shadow: 0 12px 40px rgba(0, 212, 255, 0.3);
-    }
-}
-
-/* Seção de Posicionamentos */
-.positioning-section {
-    max-width: 1200px;
-    margin: 2rem auto;
-    padding: 0 2rem;
-    background: rgba(26, 26, 46, 0.6);
-    backdrop-filter: blur(20px);
-    border-radius: 24px;
-    border: 1px solid var(--border-primary);
-    box-shadow: var(--shadow-secondary);
-}
-
-.positioning-header {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    padding: 2rem 0;
-    border-bottom: 1px solid var(--border-primary);
-    margin-bottom: 2rem;
-}
-
-.back-to-calculator-btn {
-    background: var(--gradient-secondary);
-    border: none;
-    padding: 1rem 1.5rem;
-    border-radius: 12px;
-    color: var(--primary-bg);
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
-    white-space: nowrap;
-}
-
-.back-to-calculator-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
-}
-
-/* Categorias de Posicionamentos */
-.positioning-categories {
-    margin-bottom: 3rem;
-}
-
-.category-tabs {
-    display: flex;
-    gap: 1rem;
-    overflow-x: auto;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border-primary);
-}
-
-.category-tab {
-    background: rgba(0, 212, 255, 0.05);
-    border: 2px solid var(--border-primary);
-    border-radius: 16px;
-    padding: 1rem 1.5rem;
-    color: var(--text-primary);
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    white-space: nowrap;
-    position: relative;
-    overflow: hidden;
-}
-
-.category-tab::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: var(--gradient-primary);
-    transition: left 0.3s ease;
-    z-index: -1;
-}
-
-.category-tab:hover::before {
-    left: 0;
-}
-
-.category-tab:hover {
-    transform: translateY(-2px);
-    border-color: var(--accent-primary);
-    box-shadow: var(--shadow-primary);
-}
-
-.category-tab.active {
-    background: var(--gradient-primary);
-    border-color: var(--accent-primary);
-    color: var(--primary-bg);
-    box-shadow: var(--shadow-primary);
-}
-
-.category-tab i {
-    font-size: 1.2rem;
-}
-
-/* Conteúdo das Categorias */
-.category-content {
-    position: relative;
-    min-height: 400px;
-}
-
-.position-category {
-    display: none;
-    animation: fadeIn 0.5s ease-out;
-}
-
-.position-category.active {
-    display: block;
-}
-
-.positions-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
-    padding: 1rem 0;
-}
-
-/* Cards de Posicionamento */
-.position-card {
-    background: rgba(0, 212, 255, 0.05);
-    border: 2px solid var(--border-primary);
-    border-radius: 20px;
-    padding: 2rem;
-    text-align: center;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-}
-
-.position-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: var(--gradient-primary);
-    transition: left 0.3s ease;
-    z-index: -1;
-}
-
-.position-card:hover::before {
-    left: 0;
-}
-
-.position-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--accent-primary);
-    box-shadow: var(--shadow-primary);
-}
-
-.position-card:hover .position-image i,
-.position-card:hover h3,
-.position-card:hover p {
-    color: var(--primary-bg);
-}
-
-.position-image {
-    width: 80px;
-    height: 80px;
-    background: rgba(0, 212, 255, 0.1);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1.5rem;
-    transition: all 0.3s ease;
-}
-
-.position-image i {
-    font-size: 2rem;
-    color: var(--accent-primary);
-    transition: all 0.3s ease;
-}
-
-.position-card h3 {
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: var(--accent-primary);
-    margin-bottom: 1rem;
-    transition: all 0.3s ease;
-}
-
-.position-card p {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    line-height: 1.5;
-    margin-bottom: 1.5rem;
-    transition: all 0.3s ease;
-}
-
-.view-position-btn {
-    background: var(--gradient-primary);
-    border: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 12px;
-    color: var(--primary-bg);
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    width: 100%;
-}
-
-.view-position-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 212, 255, 0.3);
-}
-
-/* Modal de Posicionamento */
-.position-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(10px);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: fadeIn 0.3s ease-out;
-}
-
-.modal-content {
-    background: #1a1a2e;
-    padding: 24px 32px;
-    border-radius: 10px;
-    min-width: 320px;
-    position: relative;
-}
-
-.close {
-    position: absolute;
-    top: 10px;
-    right: 16px;
-    font-size: 24px;
-    cursor: pointer;
-}
-
-
-
-/* Botão de fechar do modal de posicionamento igual ao da calculadora */
-.position-modal .close {
-    background: var(--gradient-secondary);
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    color: var(--primary-bg);
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    z-index: 10;
-}
-
-.position-modal .close:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
-}
-
-.position-details {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 2rem;
-    align-items: start;
-}
-
-.position-image-large {
-    width: 200px;
-    height: 200px;
-    background: rgba(0, 212, 255, 0.1);
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid var(--border-primary);
-}
-
-.position-image-large i {
-    font-size: 4rem;
-    color: var(--accent-primary);
-}
-
-.position-instructions h4 {
-    color: var(--accent-primary);
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    margin-top: 1.5rem;
-}
-
-.position-instructions h4:first-child {
-    margin-top: 0;
-}
-
-.position-instructions div {
-    color: var(--text-secondary);
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
-    padding: 1rem;
-    background: rgba(0, 212, 255, 0.05);
-    border-radius: 12px;
-    border: 1px solid var(--border-primary);
-}
-
-/* Modal KV/mAs */
-.kvmas-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    animation: fadeIn 0.3s ease-out;
-}
-
-
-.position-modal .close-modal-btn {
-    background: var(--gradient-secondary);
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    color: var(--primary-bg);
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-}
-
-.position-modal .close-modal-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
-}
-
-.kvmas-modal .close-modal-btn {
-    background: var(--gradient-secondary);
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    color: var(--primary-bg);
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-}
-
-.kvmas-modal .close-modal-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
-}
-
-.kvmas-modal .modal-body {
-    color: var(--text-primary);
-}
-
-/* Modal Calculadora KV/mAs - Melhor diagramação, mais larga e compacta */
-.kvmas-modal .modal-content {
-    background: var(--secondary-bg, #1a1a2e);
-    color: var(--text-primary, #fff);
-    border-radius: 18px;
-    max-width: 98vw;
-    width: 480px;           /* Mais larga */
-    min-width: 320px;
-    padding: 1.5rem 2.2rem 1.2rem 2.2rem; /* Menos alta, mais espaçamento lateral */
-    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
-    position: relative;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-}
-
-.kvmas-modal .modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1.2rem;
-}
-
-.kvmas-modal .modal-header h3 {
-    font-size: 1.4rem;
-    font-weight: 600;
-    margin: 0;
-}
-
-.kvmas-modal .close-modal-btn {
-    background: none;
-    border: none;
-    font-size: 1.7rem;
-    color: var(--accent-primary, #00d4ff);
-    cursor: pointer;
-    padding: 0 0.2rem;
-}
-
-.kvmas-modal .modal-body {
-    width: 100%;
-    padding: 0;
-}
-
-#kvmas-form {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.1rem 1.5rem;
-    margin-bottom: 1.2rem;
-}
-
-#kvmas-form .form-row {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-}
-
-#kvmas-form label span {
-    font-size: 1rem;
-    color: var(--text-secondary, #b8c5d6);
-    margin-bottom: 0.2rem;
-}
-
-#kvmas-form input,
-#kvmas-form select {
-    padding: 0.5rem 0.7rem;
-    border-radius: 8px;
-    border: 1px solid var(--border-primary, #00d4ff33);
-    background: rgba(0,0,0,0.08);
-    color: var(--text-primary, #fff);
-    font-size: 1rem;
-    outline: none;
-    transition: border 0.2s;
-}
-
-#kvmas-form input:focus,
-#kvmas-form select:focus {
-    border-color: var(--accent-primary, #00d4ff);
-}
-
-.kvmas-modal .calculate-btn {
-    grid-column: 1 / -1;
-    margin-top: 0.5rem;
-    width: 100%;
-    padding: 0.7rem 0;
-    font-size: 1.1rem;
-    border-radius: 10px;
-}
-
-.kvmas-modal .kvmas-result {
-    margin-top: 0.5rem;
-    text-align: center;
-    font-size: 1.1rem;
-}
-
-@media (max-width: 600px) {
-    .kvmas-modal .modal-content {
-        width: 99vw;
-        min-width: unset;
-        padding: 1rem 0.5rem 0.7rem 0.5rem;
-    }
-    #kvmas-form {
-        grid-template-columns: 1fr;
-        gap: 0.7rem 0;
-    }
-    .kvmas-modal .modal-header h3 {
-        font-size: 1.1rem;
-    }
-}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExpoRad - Calculadora Radiológica</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="app-title">
+                <div class="logo-container">
+                    <img src="logo.jpeg" alt="ExpoRad Logo" class="logo">
+                    <h1>ExpoRad</h1>
+                </div>
+                <p>Calculadora Radiológica - KV, mAs e Tempo para Diferentes Faixas Etárias e Tipos Físicos</p>
+            </div>
+            <div class="radiation-symbol" onclick="window.calculator.openKvMasModal()">
+                <i class="fas fa-atom"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Container Principal -->
+    <div class="main-container">
+        <!-- Seção da Calculadora -->
+        <div class="calculator-section">
+            <h2 class="section-title">🎯 Seleção do Paciente</h2>
+            
+            <!-- Seleção de Idade -->
+            <div class="age-selection">
+                <h3>Faixa Etária</h3>
+                <div class="age-grid">
+                    <button class="age-btn active" data-age="newborn">
+                        <i class="fas fa-baby"></i>
+                        <span>Recém-nascido</span>
+                    </button>
+                    <button class="age-btn" data-age="1a5">
+                        <i class="fas fa-child"></i>
+                        <span>1 a 5 anos</span>
+                    </button>
+                    <button class="age-btn" data-age="5a10">
+                        <i class="fas fa-child"></i>
+                        <span>5 a 10 anos</span>
+                    </button>
+                    <button class="age-btn" data-age="10a18">
+                        <i class="fas fa-child"></i>
+                        <span>10 a 18 anos</span>
+                    </button>
+                    <button class="age-btn" data-age="adult">
+                        <i class="fas fa-user"></i>
+                        <span>Adulto</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Seleção de Tipo Físico (apenas para adultos) -->
+            <div class="body-type-section" id="body-type-section">
+                <h3>Tipo Físico</h3>
+                <div class="body-grid">
+                    <button class="body-btn active" data-body="p">
+                        <i class="fas fa-user"></i>
+                        <span>P</span>
+                    </button>
+                    <button class="body-btn" data-body="m">
+                        <i class="fas fa-user"></i>
+                        <span>M</span>
+                    </button>
+                    <button class="body-btn" data-body="g">
+                        <i class="fas fa-user"></i>
+                        <span>G</span>
+                    </button>
+                    <button class="body-btn" data-body="gg">
+                        <i class="fas fa-user"></i>
+                        <span>GG</span>
+                    </button>
+                    <button class="body-btn" data-body="xl">
+                        <i class="fas fa-user"></i>
+                        <span>XL</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Seleção de Região Corporal -->
+            <div class="bodypart-section">
+                <!-- Regiões Gerais -->
+                <div class="selection-group" id="general-regions">
+                    <h3>Região Corporal</h3>
+                    <div class="button-grid">
+                        <button class="bodypart-general-btn" data-region="head">
+                            <i class="fas fa-brain"></i>
+                            <span>Cabeça</span>
+                        </button>
+                        <button class="bodypart-general-btn" data-region="torso">
+                            <i class="fas fa-user"></i>
+                            <span>Tronco</span>
+                        </button>
+                        <button class="bodypart-general-btn" data-region="upper-limbs">
+                            <i class="fas fa-hand-paper"></i>
+                            <span>Membros Superiores</span>
+                        </button>
+                        <button class="bodypart-general-btn" data-region="lower-limbs">
+                            <i class="fas fa-shoe-prints"></i>
+                            <span>Membros Inferiores</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Regiões Específicas - Cabeça -->
+                <div id="head-specific" class="specific-regions" style="display: none;">
+                    <div class="specific-header">
+                        <h4>Cabeça</h4>
+                        <button class="back-btn" onclick="window.calculator.showGeneralRegions()">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                    </div>
+                    <div class="button-grid">
+                        <button class="bodypart-btn" data-bodypart="skull-ap">
+                            <i class="fas fa-brain"></i>
+                            <span>Crânio AP</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="skull-lat">
+                            <i class="fas fa-brain"></i>
+                            <span>Crânio Perfil</span>
+                            <small></small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="face-sinuses">
+                            <i class="fas fa-user"></i>
+                            <span>Seios da Face</span>
+                            <small></small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="face-nose-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Nariz Perfil</span>
+                            <small></small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="face-orbits">
+                            <i class="fas fa-eye"></i>
+                            <span>Órbitas</span>
+                            <small></small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="face-mandible">
+                            <i class="fas fa-user"></i>
+                            <span>Mandíbula</span>
+                            <small></small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="cavum">
+                            <i class="fas fa-user"></i>
+                            <span>Cavum</span>
+                            <small></small>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Regiões Específicas - Tronco -->
+                <div id="torso-specific" class="specific-regions" style="display: none;">
+                    <div class="specific-header">
+                        <h4>Tronco</h4>
+                        <button class="back-btn" onclick="window.calculator.showGeneralRegions()">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                    </div>
+                    <div class="button-grid">
+                        <button class="bodypart-btn" data-bodypart="chest">
+                            <i class="fas fa-lungs"></i>
+                            <span>Tórax PA</span>
+                            <small></small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="chest-lat">
+                            <i class="fas fa-lungs"></i>
+                            <span>Tórax Lateral</span>
+                            <small></small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="chest-ap">
+                            <i class="fas fa-lungs"></i>
+                            <span>Tórax AP</span>
+                            <small></small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="ribs-ap">
+                            <i class="fas fa-user"></i>
+                            <span>Costelas AP</span>
+                            <small></small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="ribs-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Costelas Lateral</span>
+                            <small></small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="ribs-oblique">
+                            <i class="fas fa-user"></i>
+                            <span>Costelas Oblíqua</span>
+                            <small></small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="abdomen-ap">
+                            <i class="fas fa-user"></i>
+                            <span>Abdômen AP</span>
+                            <small></small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="abdomen-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Abdômen Lateral</span>
+                            <small></small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="abdomen-oblique">
+                            <i class="fas fa-user"></i>
+                            <span>Abdômen Oblíqua</span>
+                            <small></small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="pelvis-ap">
+                            <i class="fas fa-user"></i>
+                            <span>Pelve AP</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="pelvis-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Pelve Lateral</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="pelvis-oblique">
+                            <i class="fas fa-user"></i>
+                            <span>Pelve Oblíqua</span>
+                            <small> </small>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Regiões Específicas - Membros Superiores -->
+                <div id="upper-limbs-specific" class="specific-regions" style="display: none;">
+                    <div class="specific-header">
+                        <h4>Membros Superiores</h4>
+                        <button class="back-btn" onclick="window.calculator.showGeneralRegions()">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                    </div>
+                    <div class="button-grid">
+                        <button class="bodypart-btn" data-bodypart="shoulder-ap">
+                            <i class="fas fa-user"></i>
+                            <span>Ombro AP</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="shoulder-ax">
+                            <i class="fas fa-user"></i>
+                            <span>Ombro Axilar</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="shoulder-y">
+                            <i class="fas fa-user"></i>
+                            <span>Ombro Perfil (Y)</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="shoulder-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Ombro Lateral</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="humerus-ap">
+                            <i class="fas fa-user"></i>
+                            <span>Úmero AP</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="humerus-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Úmero Lateral</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="elbow-ap">
+                            <i class="fas fa-user"></i>
+                            <span>Cotovelo AP</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="elbow-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Cotovelo Lateral</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="forearm-ap">
+                            <i class="fas fa-user"></i>
+                            <span>Antebraço AP</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="forearm-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Antebraço Lateral</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="wrist-pa">
+                            <i class="fas fa-user"></i>
+                            <span>Punho PA</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="wrist-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Punho Lateral</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="wrist-oblique">
+                            <i class="fas fa-user"></i>
+                            <span>Punho Oblíqua</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="hand-pa">
+                            <i class="fas fa-hand-paper"></i>
+                            <span>Mão PA</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="hand-lat">
+                            <i class="fas fa-hand-paper"></i>
+                            <span>Mão Lateral</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="hand-oblique">
+                            <i class="fas fa-hand-paper"></i>
+                            <span>Mão Oblíqua</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="finger-ap">
+                            <i class="fas fa-user"></i>
+                            <span>Dedo AP</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="finger-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Dedo Lateral</span>
+                            <small> </small>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Regiões Específicas - Membros Inferiores -->
+                <div id="lower-limbs-specific" class="specific-regions" style="display: none;">
+                    <div class="specific-header">
+                        <h4>Membros Inferiores</h4>
+                        <button class="back-btn" onclick="window.calculator.showGeneralRegions()">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                    </div>
+                    <div class="button-grid">
+                        <button class="bodypart-btn" data-bodypart="hip-ap">
+                            <i class="fas fa-user"></i>
+                            <span>Quadril AP</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="hip-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Quadril Lateral</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="femur-ap">
+                            <i class="fas fa-user"></i>
+                            <span>Fêmur AP</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="femur-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Fêmur Lateral</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="knee-ap">
+                            <i class="fas fa-user"></i>
+                            <span>Joelho AP</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="knee-lat">
+                            <i class="fas fa-user"></i>
+                            <span>Joelho Lateral</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="leg-ap">
+                            <i class="fas fa-shoe-prints"></i>
+                            <span>Perna AP</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="leg-lat">
+                            <i class="fas fa-shoe-prints"></i>
+                            <span>Perna Lateral</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="ankle-ap">
+                            <i class="fas fa-shoe-prints"></i>
+                            <span>Tornozelo AP</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="ankle-lat">
+                            <i class="fas fa-shoe-prints"></i>
+                            <span>Tornozelo Lateral</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="foot-ap">
+                            <i class="fas fa-shoe-prints"></i>
+                            <span>Pé AP</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="foot-lat">
+                            <i class="fas fa-shoe-prints"></i>
+                            <span>Pé Lateral</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="foot-oblique">
+                            <i class="fas fa-shoe-prints"></i>
+                            <span>Pé Oblíqua</span>
+                            <small> </small>
+                        </button>
+                        <button class="bodypart-btn" data-bodypart="calcaneus">
+                            <i class="fas fa-shoe-prints"></i>
+                            <span>Calcâneo Axial</span>
+                            <small> </small>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botão Calcular -->
+            <button id="calculateBtn" class="calculate-btn">
+                <i class="fas fa-calculator"></i>
+                CALCULAR PARÂMETROS
+            </button>
+        </div>
+
+        <!-- Seção de Resultados -->
+        <div class="results-section">
+            <h2 class="section-title">📊 Resultados</h2>
+            <div class="results-grid">
+                <div class="result-item">
+                    <div class="result-label">
+                        <i class="fas fa-bolt"></i>
+                        <span>KV</span>
+                    </div>
+                    <div class="result-value" id="kvValue">--</div>
+                </div>
+                
+                <div class="result-item">
+                    <div class="result-label">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>mA</span>
+                    </div>
+                    <div class="result-value" id="maValue">--</div>
+                </div>
+                
+                <div class="result-item">
+                    <div class="result-label">
+                        <i class="fas fa-calculator"></i>
+                        <span>mAs</span>
+                    </div>
+                    <div class="result-value" id="mAsValue">--</div>
+                </div>
+            </div>
+            
+            <!-- Botão de Posicionamentos -->
+            <div class="positioning-button-container">
+                <button class="positioning-btn" onclick="window.calculator.showPositioning()">
+                    <i class="fas fa-camera"></i>
+                    <span>Ver Posicionamentos</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seção de Posicionamentos -->
+    <div class="positioning-section" id="positioning-section" style="display: none;">
+        <div class="positioning-header">
+            <button class="back-to-calculator-btn" onclick="window.calculator.showCalculator()">
+                <i class="fas fa-arrow-left"></i>
+                Voltar à Calculadora
+            </button>
+            <h2 class="section-title">📐 Posicionamentos Radiológicos</h2>
+        </div>
+        
+        <!-- Categorias de Posicionamentos -->
+        <div class="positioning-categories">
+            <div class="category-tabs">
+                <button class="category-tab active" data-category="head-positions">
+                    <i class="fas fa-brain"></i>
+                    Cabeça
+                </button>
+                <button class="category-tab" data-category="chest-positions">
+                    <i class="fas fa-lungs"></i>
+                    Tórax
+                </button>
+                <button class="category-tab" data-category="spine-positions">
+                    <i class="fas fa-user"></i>
+                    Coluna
+                </button>
+                <button class="category-tab" data-category="upper-limb-positions">
+                    <i class="fas fa-hand-paper"></i>
+                    Membros Superiores
+                </button>
+                <button class="category-tab" data-category="lower-limb-positions">
+                    <i class="fas fa-shoe-prints"></i>
+                    Membros Inferiores
+                </button>
+                <button class="category-tab" data-category="abdomen-positions">
+                    <i class="fas fa-user"></i>
+                    Abdômen
+                </button>
+            </div>
+        </div>
+
+        <!-- Conteúdo das Categorias -->
+        <div class="category-content">
+            <!-- Posicionamentos de Cabeça -->
+            <div id="head-positions" class="position-category active">
+                <div class="positions-grid">
+                    <div class="position-card" data-position="skull-ap">
+                        <div class="position-image">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3>Crânio AP</h3>
+                        <p>Paciente em decúbito dorsal, cabeça centralizada, linha infraorbitomeatal perpendicular ao filme</p>
+                        <button class="view-position-btn">Ver Posicionamento</button>
+                    </div>
+                    
+                    <div class="position-card" data-position="skull-lateral">
+                        <div class="position-image">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3>Crânio Lateral</h3>
+                        <p>Paciente em decúbito lateral, cabeça em perfil, linha infraorbitomeatal paralela ao filme</p>
+                        <button class="view-position-btn">Ver Posicionamento</button>
+                    </div>
+                    
+                    <div class="position-card" data-position="face-waters">
+                        <div class="position-image">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3>Face - Waters</h3>
+                        <p>Paciente sentado, queixo elevado, boca aberta, linha infraorbitomeatal a 37°</p>
+                        <button class="view-position-btn">Ver Posicionamento</button>
+                    </div>
+                    
+                    <div class="position-card" data-position="sinuses-caldwell">
+                        <div class="position-image">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3>Seios - Caldwell</h3>
+                        <p>Paciente sentado, queixo no filme, linha infraorbitomeatal a 15°</p>
+                        <button class="view-position-btn">Ver Posicionamento</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Posicionamentos de Tórax -->
+            <div id="chest-positions" class="position-category">
+                <div class="positions-grid">
+                    <div class="position-card" data-position="chest-pa">
+                        <div class="position-image">
+                            <i class="fas fa-lungs"></i>
+                        </div>
+                        <h3>Tórax PA</h3>
+                        <p>Paciente em posição ortostática, tórax contra o filme, braços para trás, inspiração profunda</p>
+                        <button class="view-position-btn">Ver Posicionamento</button>
+                    </div>
+                    
+                    <div class="position-card" data-position="chest-lateral">
+                        <div class="position-image">
+                            <i class="fas fa-lungs"></i>
+                        </div>
+                        <h3>Tórax Lateral</h3>
+                        <p>Paciente em posição ortostática, lado esquerdo contra o filme, braços elevados</p>
+                        <button class="view-position-btn">Ver Posicionamento</button>
+                    </div>
+                    
+                    <div class="position-card" data-position="chest-ap">
+                        <div class="position-image">
+                            <i class="fas fa-lungs"></i>
+                        </div>
+                        <h3>Tórax AP</h3>
+                        <p>Paciente em decúbito dorsal, filme atrás das costas, braços para os lados</p>
+                        <button class="view-position-btn">Ver Posicionamento</button>
+                    </div>
+                    
+                    <div class="position-card" data-position="ribs-ap">
+                        <div class="position-image">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3>Costelas AP</h3>
+                        <p>Paciente em decúbito dorsal, braços elevados, filme centralizado no tórax</p>
+                        <button class="view-position-btn">Ver Posicionamento</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Posicionamentos de Coluna -->
+            <div id="spine-positions" class="position-category">
+                <div class="positions-grid">
+                    <div class="position-card" data-position="cervical-ap">
+                        <div class="position-image">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3>Coluna Cervical AP</h3>
+                        <p>Paciente sentado, queixo elevado, linha infraorbitomeatal a 15-20°</p>
+                        <button class="view-position-btn">Ver Posicionamento</button>
+                    </div>
+                    
+                    <div class="position-card" data-position="cervical-lateral">
+                        <div class="position-image">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3>Coluna Cervical Lateral</h3>
+                        <p>Paciente sentado, perfil da cabeça, queixo elevado, braços para trás</p>
+                        <button class="view-position-btn">Ver Posicionamento</button>
+                    </div>
+                    
+                    <div class="position-card" data-position="thoracic-ap">
+                        <div class="position-image">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3>Coluna Torácica AP</h3>
+                        <p>Paciente em decúbito dorsal, braços para os lados, joelhos flexionados</p>
+                        <button class="view-position-btn">Ver Posicionamento</button>
+                    </div>
+                    
+                    <div class="position-card" data-position="lumbar-ap">
+                        <div class="position-image">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3>Coluna Lombar AP</h3>
+                        <p>Paciente em decúbito dorsal, braços para os lados, joelhos flexionados</p>
+                        <button class="view-position-btn">Ver Posicionamento</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Posicionamentos de Membros Superiores -->
+            <div id="upper-limb-positions" class="position-category">
+                <div class="positions-grid">
+                    <div class="position-card" data-position="shoulder-ap">
+                        <div class="position-image">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3>Ombro AP</h3>
+                        <p>Paciente sentado, braço em rotação neutra, cotovelo flexionado a 90°</p>
+                        <button class="view-position-btn">Ver Posicionamento</button>
+                    </div>
+                    
+                    <div class="position-card" data-position="shoulder-y">
+                        <div class="position-image">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3>Ombro Y</h3>
+                        <p>Paciente sentado, braço em rotação externa, cotovelo flexionado a 90°</p>
+                        <button class="view-position-btn">Ver Posicionamento</button>
+                    </div>
+                    
+                    <div class="position-card" data-position="elbow-ap">
+                        <div class="position-image">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3>Cotovelo AP</h3>
+                        <p>Paciente sentado, braço estendido, palma para cima, cotovelo centralizado</p>
+                        <button class="view-position-btn">Ver Posicionamento</button>
+                    </div>
+                    
+                    <div class="position-card" data-position="hand-pa">
+                        <div class="position-image">
+                            <i class="fas fa-hand-paper"></i>
+                        </div>
+                        <h3>Mão PA</h3>
+                        <p>Paciente sentado, mão apoiada no filme, dedos estendidos e separados</p>
+                        <button class="view-position-btn">Ver Posicionamento</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Posicionamentos de Membros Inferiores -->
+            <div id="lower-limb-positions" class="position-category">
+                <div class="positions-grid">
+                    <div class="position-card" data-position="hip-ap">
+                        <div class="position-image">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3>Quadril AP</h3>
+                        <p>Paciente em decúbito dorsal, pernas estendidas, pés em rotação interna</p>
+                        <button class="view-position-btn">Ver Posicionamento</button>
+                    </div>
+                    
+                    <div class="position-card" data-position="knee-ap">
+                        <div class="position-image">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3>Joelho AP</h3>
+                        <p>Paciente em decúbito dorsal, perna estendida, patela centralizada</p>
+                        <button class="view-position-btn">Ver Posicionamento</button>
+                    </div>
+                    
+                    <div class="position-card" data-position="ankle-ap">
+                        <div class="position-image">
+                            <i class="fas fa-shoe-prints"></i>
+                        </div>
+                        <h3>Tornozelo AP</h3>
+                        <p>Paciente em decúbito dorsal, pé em flexão dorsal, maléolos centralizados</p>
+                        <button class="view-position-btn">Ver Posicionamento</button>
+                    </div>
+                    
+                    <div class="position-card" data-position="foot-ap">
+                        <div class="position-image">
+                            <i class="fas fa-shoe-prints"></i>
+                        </div>
+                        <h3>Pé AP</h3>
+                        <p>Paciente sentado, pé apoiado no filme, dedos estendidos</p>
+                        <button class="view-position-btn">Ver Posicionamento</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Posicionamentos de Abdômen -->
+            <div id="abdomen-positions" class="position-category">
+                <div class="positions-grid">
+                    <div class="position-card" data-position="abdomen-ap">
+                        <div class="position-image">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3>Abdômen AP</h3>
+                        <p>Paciente em decúbito dorsal, braços para os lados, joelhos flexionados</p>
+                        <button class="view-position-btn">Ver Posicionamento</button>
+                    </div>
+                    
+                    <div class="position-card" data-position="abdomen-lateral">
+                        <div class="position-image">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3>Abdômen Lateral</h3>
+                        <p>Paciente em decúbito lateral, braços elevados, joelhos flexionados</p>
+                        <button class="view-position-btn">Ver Posicionamento</button>
+                    </div>
+                    
+                    <div class="position-card" data-position="pelvis-ap">
+                        <div class="position-image">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3>Pelve AP</h3>
+                        <p>Paciente em decúbito dorsal, pernas estendidas, pés em rotação interna</p>
+                        <button class="view-position-btn">Ver Posicionamento</button>
+                    </div>
+                    
+                    <div class="position-card" data-position="pelvis-lateral">
+                        <div class="position-image">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3>Pelve Lateral</h3>
+                        <p>Paciente em decúbito lateral, braços elevados, joelhos flexionados</p>
+                        <button class="view-position-btn">Ver Posicionamento</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Posicionamento Detalhado -->
+    <div id="position-modal" class="position-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Posicionamento</h3>
+                <button class="close-modal-btn" onclick="window.calculator.closePositionModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="position-details">
+                    <div class="position-image-large">
+                        <i class="fas fa-user" id="modal-icon"></i>
+                    </div>
+                    <div class="position-instructions">
+                        <h4>Instruções de Posicionamento:</h4>
+                        <div id="modal-instructions"></div>
+                        
+                                                <h4>Parâmetros Técnicos:</h4>
+                        <div id="modal-parameters"></div>
+
+                        <!-- Parâmetros técnicos específicos por projeção -->
+                        
+                        <h4>Equipamento:</h4>
+                        <div id="modal-equipment"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Calculadora KV/mAs -->
+    <div id="kvmas-modal" class="kvmas-modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Calculadora de KV e mAs</h3>
+                <button class="close-modal-btn" onclick="window.calculator.closeKvMasModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="kvmas-form" onsubmit="window.calculator.calculateKvMas(event)">
+                    <div class="form-row">
+                        <label>
+                            <span>Espessura (cm):</span>
+                            <input type="number" id="input-thickness" required min="1" max="50" step="0.1" placeholder="Ex: 20">
+                        </label>
+                    </div>
+                    <div class="form-row">
+                        <label>
+                            <span>Estrutura/Região:</span>
+                            <select id="input-exam-area" required>
+                                <option value="">Selecione...</option>
+                                <option value="corpo-osseo">Corpo Ósseo</option>
+                                <option value="extremidades">Extremidades</option>
+                                <option value="aparelho-respiratorio">Aparelho Respiratório</option>
+                                <option value="aparelho-digestorio">Aparelho Digestório</option>
+                                <option value="aparelho-urinario">Aparelho Urinário</option>
+                                <option value="partes-moles">Somente Partes Moles</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="form-row">
+                        <label>
+                            <span>Constante do Equipamento:</span>
+                            <input type="number" id="input-constante" required min="20" max="60" step="0.1" placeholder="Ex: 40">
+                        </label>
+                    </div>
+                    <div class="form-row">
+                        <label>
+                            <span>DFF (cm):</span>
+                            <input type="number" id="input-distance" required min="80" max="200" step="1" placeholder="Ex: 100">
+                        </label>
+                    </div>
+                    <button type="submit" class="calculate-btn">
+                        <i class="fas fa-calculator"></i> Calcular
+                    </button>
+                </form>
+                <div id="kvmas-result" class="kvmas-result"></div>
+            </div>
+        </div>
+    </div>
+    <!-- Fim Modal Calculadora KV/mAs -->
+
+    <!-- Modal de Resultado KV/mAs -->
+    <div id="kvmas-result-modal" class="kvmas-result-modal">
+      <div class="kvmas-result-modal-content">
+        <span class="close-kvmas-result">&times;</span>
+        <div id="kvmas-result-popup"></div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p><span class="highlight">ExpoRad</span> - Calculadora Radiológica desenvolvida para técnicos e tecnólogos de radiologia</p>
+            <p> </p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
