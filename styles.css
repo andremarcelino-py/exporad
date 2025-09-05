@@ -1060,16 +1060,68 @@ body {
     }
 }
 
-/* Modo escuro/claro automático */
-@media (prefers-color-scheme: light) {
-    :root {
-        --primary-bg: #ffffff;
-        --secondary-bg: #f8fafc;
-        --text-primary: #1e293b;
-        --text-secondary: #475569;
-        --text-muted: #64748b;
-        --border-primary: rgba(0, 212, 255, 0.3);
-        --border-secondary: rgba(0, 0, 0, 0.1);
+/* Forçar modo escuro para melhor visibilidade */
+/* Removido o modo claro automático para garantir texto branco em todos os dispositivos */
+
+/* Correção específica para iOS/iPhone - garantir texto branco em todos os botões */
+.age-btn,
+.body-btn,
+.bodypart-general-btn,
+.bodypart-btn,
+.category-tab {
+    color: #fffbfb !important;
+}
+
+.age-btn span,
+.body-btn span,
+.bodypart-general-btn span,
+.bodypart-btn span,
+.category-tab span {
+    color: #fffbfb !important;
+}
+
+/* Garantir que os ícones também sejam visíveis */
+.age-btn i,
+.body-btn i,
+.bodypart-general-btn i,
+.bodypart-btn i,
+.category-tab i {
+    color: var(--accent-primary) !important;
+}
+
+/* Texto secundário em botões */
+.body-btn small,
+.bodypart-btn small {
+    color: #b8c5d6 !important;
+}
+
+/* Correção específica para Safari/iOS */
+@supports (-webkit-touch-callout: none) {
+    .age-btn,
+    .body-btn,
+    .bodypart-general-btn,
+    .bodypart-btn,
+    .category-tab {
+        color: #fffbfb !important;
+        -webkit-text-fill-color: #fffbfb !important;
+    }
+    
+    .age-btn span,
+    .body-btn span,
+    .bodypart-general-btn span,
+    .bodypart-btn span,
+    .category-tab span {
+        color: #fffbfb !important;
+        -webkit-text-fill-color: #fffbfb !important;
+    }
+    
+    .age-btn i,
+    .body-btn i,
+    .bodypart-general-btn i,
+    .bodypart-btn i,
+    .category-tab i {
+        color: var(--accent-primary) !important;
+        -webkit-text-fill-color: var(--accent-primary) !important;
     }
 }
 
