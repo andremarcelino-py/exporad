@@ -52,6 +52,11 @@ class RadiologicalCalculator {
         document.getElementById('calculateBtn').addEventListener('click', () => {
             this.calculate();
         });
+
+        // Constante do aparelho
+        document.getElementById('equipment-constant').addEventListener('input', () => {
+            this.calculate();
+        });
     }
 
     // Selecionar botão ativo
@@ -79,60 +84,166 @@ class RadiologicalCalculator {
         this.displayResults(params);
     }
 
-    // Calcular parâmetros baseados na seleção
+    // Calcular parâmetros baseados na seleção usando a fórmula da modal
     calculateParameters() {
-        // 1) Base por região/projeção
+        // 1) Obter constante do aparelho
+        const constante = parseFloat(document.getElementById('equipment-constant').value) || 40;
+        
+        // 2) Calcular espessura baseada na idade e tipo físico
+        const thickness = this.calculateThickness();
+        
+        // 3) Determinar estrutura/região baseada na seleção
+        const structure = this.getStructureFromBodyPart();
+        
+        // 4) Obter fatores de Maron
+        const maronFactors = {
+            'corpo-osseo': 0.5,
+            'extremidades': 0.1,
+            'aparelho-respiratorio': 0.1,
+            'aparelho-digestorio': 0.3,
+            'aparelho-urinario': 0.3,
+            'partes-moles': 0.01
+        };
+        
+        const fatorMaron = maronFactors[structure] || 0.1;
+        
+        // 5) Calcular KV usando a fórmula: KV = 2 * espessura + constante
+        const kv = 2 * thickness + constante;
+        
+        // 6) Calcular mAs: mAs = KV * fatorMaron
+        let mAs = kv * fatorMaron;
+        
+        // 7) Calcular tempo baseado na espessura
+        let tempo = 0.1;
+        if (thickness <= 10) tempo = 0.05;
+        else if (thickness <= 20) tempo = 0.10;
+        else if (thickness <= 30) tempo = 0.20;
+        else tempo = 0.30;
+        
+        // 8) Calcular mA: mA = mAs / tempo
+        const mA = mAs / tempo;
+        
+        // 9) Obter informações do equipamento
         const bodyPartParams = this.getBodyPartParameters();
         
-        // 2) Verificar se é tórax AP ou PA para aplicar valores específicos por biotipo
-        if (this.currentAge === 'adult' && (this.currentBodyPart === 'chest' || this.currentBodyPart === 'chest-ap')) {
-            const chestParams = this.getChestSpecificParams();
-            return {
-                kv: chestParams.kv,
-                ma: chestParams.ma,
-                mAs: chestParams.mAs,
-                time: chestParams.time,
-                equipment: bodyPartParams.equipment || 'MURAL-BUCKY'
-            };
-        }
-        
-        // 3) Cálculo padrão para outras projeções
-        const kvBase = 60.0 + (bodyPartParams.kvModifier || 0.0);
-        const maBase = 200.0;
-        const timeBase = bodyPartParams.baseTime;
-        
-        // 4) Correções por idade
-        const ageParams = this.getAgeParameters();
-        const kvAgeDelta = (ageParams.kv - 60.0);
-        let kvCorrected = kvBase + kvAgeDelta;
-        let maCorrected = ageParams.ma;
-        let timeCorrected = timeBase;
-        
-        // 5) Correções por biotipo (apenas adultos)
-        if (this.currentAge === 'adult') {
-            const bodyModifiers = this.getBodyTypeModifiers();
-            kvCorrected += bodyModifiers.kvModifier;
-            timeCorrected *= bodyModifiers.timeModifier;
-        }
-        
-        // 6) Cálculo de mAs
-        let mAs = maCorrected * timeCorrected;
-        
-        // 7) Sanitização e retorno
-        const finalKV = Math.max(40, Math.min(150, Math.round(kvCorrected * 10) / 10));
-        const finalMA = Math.max(25, Math.min(800, Math.round(maCorrected * 10) / 10));
-        const finalTime = Math.max(0.001, Math.min(5.0, Math.round(timeCorrected * 10000) / 10000));
+        // 10) Sanitização e retorno
+        const finalKV = Math.max(40, Math.min(150, Math.round(kv * 10) / 10));
+        const finalMA = Math.max(25, Math.min(800, Math.round(mA * 10) / 10));
+        const finalTime = Math.max(0.001, Math.min(5.0, Math.round(tempo * 10000) / 10000));
+        const finalMAs = Math.round(mAs * 1000) / 1000;
         
         return {
             kv: finalKV,
             ma: finalMA,
-            mAs: Math.round(mAs * 1000) / 1000,
+            mAs: finalMAs,
             time: finalTime,
-            equipment: bodyPartParams.equipment || 'MESA'
+            equipment: bodyPartParams.equipment || 'MESA',
+            thickness: thickness,
+            constante: constante,
+            fatorMaron: fatorMaron
         };
     }
 
-    // Parâmetros base por idade
+    // Calcular espessura baseada na idade e tipo físico
+    calculateThickness() {
+        // Espessura base por idade (em cm)
+        const ageThickness = {
+            newborn: 8,
+            '1a5': 12,
+            '5a10': 15,
+            '10a18': 18,
+            adult: 20
+        };
+        
+        let baseThickness = ageThickness[this.currentAge] || 20;
+        
+        // Ajustar espessura baseada no tipo físico (apenas adultos)
+        if (this.currentAge === 'adult') {
+            const bodyThicknessModifiers = {
+                'p': -3,  // Pequeno: -3cm
+                'm': 0,   // Médio: sem alteração
+                'g': 3,   // Grande: +3cm
+                'gg': 6,  // Muito Grande: +6cm
+                'xl': 9   // Extra Grande: +9cm
+            };
+            
+            baseThickness += bodyThicknessModifiers[this.currentBodyType] || 0;
+        }
+        
+        return Math.max(5, baseThickness); // Mínimo de 5cm
+    }
+    
+    // Determinar estrutura baseada na região corporal selecionada
+    getStructureFromBodyPart() {
+        const structureMapping = {
+            // Cabeça - corpo ósseo
+            'skull-ap': 'corpo-osseo',
+            'skull-lat': 'corpo-osseo',
+            'face-sinuses': 'corpo-osseo',
+            'face-nose-lat': 'corpo-osseo',
+            'face-orbits': 'corpo-osseo',
+            'face-mandible': 'corpo-osseo',
+            'cavum': 'corpo-osseo',
+            
+            // Tórax - aparelho respiratório
+            'chest': 'aparelho-respiratorio',
+            'chest-lat': 'aparelho-respiratorio',
+            'chest-ap': 'aparelho-respiratorio',
+            'ribs-ap': 'corpo-osseo',
+            'ribs-lat': 'corpo-osseo',
+            'ribs-oblique': 'corpo-osseo',
+            
+            // Abdômen - aparelho digestório
+            'abdomen-ap': 'aparelho-digestorio',
+            'abdomen-lat': 'aparelho-digestorio',
+            'abdomen-oblique': 'aparelho-digestorio',
+            
+            // Pelve - aparelho digestório
+            'pelvis-ap': 'aparelho-digestorio',
+            'pelvis-lat': 'aparelho-digestorio',
+            'pelvis-oblique': 'aparelho-digestorio',
+            
+            // Membros superiores - extremidades
+            'shoulder-ap': 'extremidades',
+            'shoulder-ax': 'extremidades',
+            'shoulder-y': 'extremidades',
+            'shoulder-lat': 'extremidades',
+            'humerus-ap': 'extremidades',
+            'humerus-lat': 'extremidades',
+            'elbow-ap': 'extremidades',
+            'elbow-lat': 'extremidades',
+            'forearm-ap': 'extremidades',
+            'forearm-lat': 'extremidades',
+            'wrist-pa': 'extremidades',
+            'wrist-lat': 'extremidades',
+            'wrist-oblique': 'extremidades',
+            'hand-pa': 'extremidades',
+            'hand-lat': 'extremidades',
+            'hand-oblique': 'extremidades',
+            'finger-ap': 'extremidades',
+            'finger-lat': 'extremidades',
+            
+            // Membros inferiores - extremidades
+            'hip-ap': 'extremidades',
+            'hip-lat': 'extremidades',
+            'femur-ap': 'extremidades',
+            'femur-lat': 'extremidades',
+            'knee-ap': 'extremidades',
+            'knee-lat': 'extremidades',
+            'leg-ap': 'extremidades',
+            'leg-lat': 'extremidades',
+            'ankle-ap': 'extremidades',
+            'ankle-lat': 'extremidades',
+            'foot-ap': 'extremidades',
+            'foot-lat': 'extremidades',
+            'foot-oblique': 'extremidades',
+            'calcaneus': 'extremidades'
+        };
+        
+        return structureMapping[this.currentBodyPart] || 'extremidades';
+    }
+
+    // Parâmetros base por idade (mantido para compatibilidade)
     getAgeParameters() {
         const ageParams = {
             newborn: { kv: 40.0, ma: 25.0, weight: 3.5 },
@@ -296,6 +407,28 @@ class RadiologicalCalculator {
                 existingEquipment.remove();
             }
             resultsGrid.appendChild(equipmentInfo);
+        }
+
+        // Mostrar informações de cálculo se disponíveis
+        if (params.thickness && params.constante && params.fatorMaron) {
+            const calculationInfo = document.createElement('div');
+            calculationInfo.className = 'result-item calculation-info';
+            calculationInfo.innerHTML = `
+                <div class="result-label">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Detalhes do Cálculo</span>
+                </div>
+                <div class="result-value">
+                    <small>Espessura: ${params.thickness}cm | Constante: ${params.constante} | Fator: ${params.fatorMaron}</small>
+                </div>
+            `;
+            
+            const resultsGrid = document.querySelector('.results-grid');
+            const existingCalculation = resultsGrid.querySelector('.calculation-info');
+            if (existingCalculation) {
+                existingCalculation.remove();
+            }
+            resultsGrid.appendChild(calculationInfo);
         }
         
         // Adicionar animação aos resultados
