@@ -87,7 +87,7 @@ class RadiologicalCalculator {
     // Calcular parâmetros baseados na seleção usando a fórmula da modal
     calculateParameters() {
         // 1) Obter constante do aparelho
-        const constante = parseFloat(document.getElementById('equipment-constant').value) || 40;
+        const constante = parseFloat(document.getElementById('equipment-constant').value) || 30;
         
         // 2) Calcular espessura baseada na idade e tipo físico
         const thickness = this.calculateThickness();
