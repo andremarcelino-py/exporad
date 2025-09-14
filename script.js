@@ -1,12 +1,11 @@
 // Calculadora Radiológica - KV, mAs e Tempo
 class RadiologicalCalculator {
     constructor() {
-        this.currentAge = 'newborn';
-        this.currentBodyType = 'm';
-        this.currentBodyPart = 'chest';
+        this.currentAge = null;
+        this.currentBodyType = null;
+        this.currentBodyPart = null;
         
         this.initializeEventListeners();
-        this.updateBodyTypeSection();
     }
 
     // Inicializar event listeners
@@ -72,22 +71,97 @@ class RadiologicalCalculator {
         const bodyTypeSection = document.getElementById('body-type-section');
         if (this.currentAge === 'adult') {
             bodyTypeSection.style.display = 'block';
+            // Scroll para tipo físico quando selecionar adulto
+            setTimeout(() => {
+                this.scrollToBodyType();
+            }, 100);
         } else {
             bodyTypeSection.style.display = 'none';
-            this.currentBodyType = 'm'; // Reset para padrão
+            this.currentBodyType = null; // Limpar seleção
         }
     }
 
     // Calcular parâmetros radiológicos
     calculate() {
+        // Verificar se todas as seleções necessárias foram feitas
+        if (!this.currentAge || !this.currentBodyPart) {
+            this.clearResults();
+            return;
+        }
+        
+        // Para adultos, verificar se o tipo físico foi selecionado
+        if (this.currentAge === 'adult' && !this.currentBodyType) {
+            this.clearResults();
+            return;
+        }
+        
         const params = this.calculateParameters();
         this.displayResults(params);
+    }
+
+    // Limpar resultados
+    clearResults() {
+        document.getElementById('kvValue').textContent = '--';
+        document.getElementById('maValue').textContent = '--';
+        document.getElementById('mAsValue').textContent = '--';
+        
+        // Remover informações adicionais se existirem
+        const existingEquipment = document.querySelector('.equipment-info');
+        if (existingEquipment) {
+            existingEquipment.remove();
+        }
+        
+        const existingCalculation = document.querySelector('.calculation-info');
+        if (existingCalculation) {
+            existingCalculation.remove();
+        }
+    }
+
+    // Funções de scroll para diferentes seções
+    scrollToAgeSelection() {
+        const ageSection = document.getElementById('age-selection');
+        if (ageSection) {
+            ageSection.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }
+    }
+
+    scrollToBodyType() {
+        const bodyTypeSection = document.getElementById('body-type-section');
+        if (bodyTypeSection) {
+            bodyTypeSection.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }
+    }
+
+    scrollToBodyRegion() {
+        const bodyRegionSection = document.getElementById('bodypart-section');
+        if (bodyRegionSection) {
+            bodyRegionSection.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }
+    }
+
+    scrollToResults() {
+        const resultsSection = document.getElementById('results-section');
+        if (resultsSection) {
+            resultsSection.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }
     }
 
     // Calcular parâmetros baseados na seleção usando a fórmula da modal
     calculateParameters() {
         // 1) Obter constante do aparelho
-        const constante = parseFloat(document.getElementById('equipment-constant').value) || 20;
+        const constante = parseFloat(document.getElementById('equipment-constant').value) || 40;
         
         // 2) Calcular espessura baseada na idade e tipo físico
         const thickness = this.calculateThickness();
@@ -507,6 +581,11 @@ class RadiologicalCalculator {
         
         // Adicionar animação aos resultados
         this.animateResults();
+        
+        // Scroll automático para os resultados
+        setTimeout(() => {
+            this.scrollToResults();
+        }, 200);
     }
 
     // Animar resultados
@@ -561,37 +640,22 @@ class RadiologicalCalculator {
 
 
 
-    // Carregar configuração salva
-    loadConfiguration() {
-        const savedConfig = localStorage.getItem('radiologicalCalculatorConfig');
-        if (savedConfig) {
-            try {
-                const config = JSON.parse(savedConfig);
-                
-                // Aplicar configuração
-                this.currentAge = config.age;
-                this.currentBodyType = config.bodyType;
-                this.currentBodyPart = config.bodyPart;
-                
-                // Atualizar interface
-                this.updateUI();
-                this.calculate();
-                
-                this.showNotification('Configuração carregada com sucesso!', 'success');
-            } catch (error) {
-                console.error('Erro ao carregar configuração:', error);
-                this.showNotification('Erro ao carregar configuração', 'error');
+
+    // Atualizar interface
+    updateUI() {
+        // Atualizar botões ativos apenas se os valores existirem
+        if (this.currentAge) {
+            const ageButton = document.querySelector(`[data-age="${this.currentAge}"]`);
+            if (ageButton) {
+                ageButton.classList.add('active');
             }
         }
-    }
-
-    // Atualizar interface baseado na configuração
-    updateUI() {
-        // Atualizar botões ativos
-        document.querySelector(`[data-age="${this.currentAge}"]`).classList.add('active');
         
-        if (this.currentAge === 'adult') {
-            document.querySelector(`[data-body="${this.currentBodyType}"]`).classList.add('active');
+        if (this.currentAge === 'adult' && this.currentBodyType) {
+            const bodyButton = document.querySelector(`[data-body="${this.currentBodyType}"]`);
+            if (bodyButton) {
+                bodyButton.classList.add('active');
+            }
         }
         
         // Determinar região geral baseada na região específica atual
@@ -656,16 +720,23 @@ class RadiologicalCalculator {
             'calcaneus': 'lower-limbs'
         };
         
-        const generalRegion = regionMapping[this.currentBodyPart] || 'torso';
+        // Só atualizar região geral se houver uma região específica selecionada
+        if (this.currentBodyPart) {
+            const generalRegion = regionMapping[this.currentBodyPart];
+            if (generalRegion) {
+                document.querySelector(`[data-region="${generalRegion}"]`).classList.add('active');
+                // Mostrar regiões específicas se necessário
+                this.showSpecificRegionsInline(generalRegion);
+            }
+        }
         
-        // Atualizar região geral
-        document.querySelector(`[data-region="${generalRegion}"]`).classList.add('active');
-        
-        // Mostrar regiões específicas se necessário
-        this.showSpecificRegionsInline(generalRegion);
-        
-        // Atualizar região específica
-        document.querySelector(`[data-bodypart="${this.currentBodyPart}"]`).classList.add('active');
+        // Atualizar região específica se existir
+        if (this.currentBodyPart) {
+            const specificButton = document.querySelector(`[data-bodypart="${this.currentBodyPart}"]`);
+            if (specificButton) {
+                specificButton.classList.add('active');
+            }
+        }
         
         this.updateBodyTypeSection();
     }
@@ -687,15 +758,15 @@ class RadiologicalCalculator {
             
             // Adicionar animação de entrada
             specificRegion.style.animation = 'fadeIn 0.5s ease-out';
+            
+            // Scroll para a região corporal
+            setTimeout(() => {
+                this.scrollToBodyRegion();
+            }, 100);
         }
         
-        // Selecionar primeira opção específica por padrão
-        const firstSpecificBtn = specificRegion?.querySelector('[data-bodypart]');
-        if (firstSpecificBtn) {
-            this.selectButton('[data-bodypart]', firstSpecificBtn);
-            this.currentBodyPart = firstSpecificBtn.dataset.bodypart;
-            this.calculate();
-        }
+        // Não selecionar automaticamente nenhuma opção específica
+        // O usuário deve escolher manualmente
     }
 
     // Mostrar regiões gerais
@@ -708,10 +779,16 @@ class RadiologicalCalculator {
         // Mostrar regiões gerais
         document.getElementById('general-regions').style.display = 'block';
         
-        // Resetar seleção para tórax (padrão)
-        this.currentBodyPart = 'chest';
-        this.selectButton('[data-region]', document.querySelector('[data-region="torso"]'));
-        this.calculate();
+        // Limpar seleção de região corporal
+        this.currentBodyPart = null;
+        
+        // Limpar seleções ativas
+        document.querySelectorAll('[data-region]').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Limpar resultados
+        this.clearResults();
     }
 
     // Mostrar notificação
@@ -761,6 +838,17 @@ class RadiologicalCalculator {
         
         // Adicionar event listeners para os botões de posicionamento
         this.initializePositioningButtons();
+        
+        // Scroll automático para o título
+        setTimeout(() => {
+            const positioningTitle = document.getElementById('positioning-title');
+            if (positioningTitle) {
+                positioningTitle.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+            }
+        }, 100);
     }
 
     // Mostrar calculadora
@@ -1480,52 +1568,11 @@ document.head.appendChild(notificationStyles);
 document.addEventListener('DOMContentLoaded', () => {
     window.calculator = new RadiologicalCalculator();
     
-    // Carregar configuração salva
-    window.calculator.loadConfiguration();
     
-    // Adicionar funcionalidade de header shrinking
-    addHeaderScrollEffect();
 });
 
 
 
-// Adicionar efeito de header shrinking no scroll
-function addHeaderScrollEffect() {
-    const header = document.querySelector('.header');
-    let lastScrollTop = 0;
-    
-    // Função para debounce do scroll
-    function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        }
-    }
-    
-    // Função para atualizar header
-    const updateHeader = debounce(() => {
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        
-        if (scrollTop > 50) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
-        }
-        
-        lastScrollTop = scrollTop;
-    }, 10);
-    
-    // Adicionar event listener para scroll
-    window.addEventListener('scroll', updateHeader, { passive: true });
-    
-    // Adicionar event listener para touch move (mobile)
-    window.addEventListener('touchmove', updateHeader, { passive: true });
-}
 
 // Cálculo específico (modal)
 document.addEventListener('DOMContentLoaded', function() {
