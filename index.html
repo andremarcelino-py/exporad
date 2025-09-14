@@ -35,10 +35,10 @@
             <h2 class="section-title">🎯 Seleção do Paciente</h2>
             
             <!-- Seleção de Idade -->
-            <div class="age-selection">
+            <div class="age-selection" id="age-selection">
                 <h3>Faixa Etária</h3>
                 <div class="age-grid">
-                    <button class="age-btn active" data-age="newborn">
+                    <button class="age-btn" data-age="newborn">
                         <i class="fas fa-baby"></i>
                         <span>Recém-nascido</span>
                     </button>
@@ -65,7 +65,7 @@
             <div class="body-type-section" id="body-type-section">
                 <h3>Tipo Físico</h3>
                 <div class="body-grid">
-                    <button class="body-btn active" data-body="p">
+                    <button class="body-btn" data-body="p">
                         <i class="fas fa-user"></i>
                         <span>P</span>
                     </button>
@@ -92,13 +92,13 @@
             <div class="equipment-constant-section">
                 <h3>Constante do Aparelho</h3>
                 <div class="constant-input-container">
-                    <input type="number" id="equipment-constant" min="10" max="60" step="0.1" value="20" placeholder="Ex: 20">
-                    <small>Valor típico: 20 (ajuste conforme seu equipamento)</small>
+                    <input type="number" id="equipment-constant" min="20" max="60" step="0.1" value="40" placeholder="Ex: 40">
+                    <small>Valor típico: 40 (ajuste conforme seu equipamento)</small>
                 </div>
             </div>
 
             <!-- Seleção de Região Corporal -->
-            <div class="bodypart-section">
+            <div class="bodypart-section" id="bodypart-section">
                 <!-- Regiões Gerais -->
                 <div class="selection-group" id="general-regions">
                     <h3>Região Corporal</h3>
@@ -438,7 +438,7 @@
         </div>
 
         <!-- Seção de Resultados -->
-        <div class="results-section">
+        <div class="results-section" id="results-section">
             <h2 class="section-title">📊 Resultados</h2>
             <div class="results-grid">
                 <div class="result-item">
@@ -483,7 +483,7 @@
                 <i class="fas fa-arrow-left"></i>
                 Voltar à Calculadora
             </button>
-            <h2 class="section-title">📐 Posicionamentos Radiológicos</h2>
+            <h2 class="section-title" id="positioning-title">📐 Posicionamentos Radiológicos</h2>
         </div>
         
         <!-- Categorias de Posicionamentos -->
