@@ -911,9 +911,7 @@ class RadiologicalCalculator {
     showPositionModal(position) {
         const modal = document.getElementById('position-modal');
         const modalTitle = document.getElementById('modal-title');
-        const modalIcon = document.getElementById('modal-icon');
         const modalInstructions = document.getElementById('modal-instructions');
-        const modalParameters = document.getElementById('modal-parameters');
         const modalEquipment = document.getElementById('modal-equipment');
 
         // Obter dados do posicionamento
@@ -921,9 +919,7 @@ class RadiologicalCalculator {
         
         // Preencher modal
         modalTitle.textContent = positionData.title;
-        modalIcon.className = positionData.icon;
         modalInstructions.innerHTML = positionData.instructions;
-        modalParameters.innerHTML = positionData.parameters;
         modalEquipment.innerHTML = positionData.equipment;
         
         // Mostrar modal
@@ -938,9 +934,16 @@ class RadiologicalCalculator {
         
         const imageLarge = document.querySelector('.position-image-large');
         if (position === 'chest-pa') {
-            imageLarge.innerHTML = '<img src="txpa.jpeg" alt="Tórax PA" style="max-width:100%;max-height:180px;">';
+            imageLarge.innerHTML = '<img src="txpa.jpeg" alt="Tórax PA" style="max-width:100%;height:auto;">';
         } else {
-            imageLarge.innerHTML = '<i class="fas fa-user" id="modal-icon"></i>';
+            let iconEl = imageLarge.querySelector('#modal-icon');
+            if (!iconEl) {
+                iconEl = document.createElement('i');
+                iconEl.id = 'modal-icon';
+                imageLarge.innerHTML = '';
+                imageLarge.appendChild(iconEl);
+            }
+            iconEl.className = positionData.icon;
         }
     }
 

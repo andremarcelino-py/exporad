@@ -1567,6 +1567,10 @@ body {
     padding: 24px 32px;
     border-radius: 10px;
     min-width: 320px;
+    width: min(800px, 90vw);
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
     position: relative;
 }
 
@@ -1649,6 +1653,35 @@ body {
     background: rgba(0, 212, 255, 0.05);
     border-radius: 12px;
     border: 1px solid var(--border-primary);
+}
+
+@media (max-width: 768px) {
+    .position-details {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .modal-content {
+        width: 95vw;
+        max-width: 95vw;
+        padding: 16px;
+    }
+
+    .position-image-large {
+        width: 100%;
+        max-width: 420px;
+        height: auto;
+        aspect-ratio: 1 / 1;
+        margin: 0 auto 1rem;
+    }
+
+    .position-image-large i {
+        font-size: 3rem;
+    }
+
+    .position-instructions h4 {
+        margin-top: 0.5rem;
+    }
 }
 
 /* Modal KV/mAs */
