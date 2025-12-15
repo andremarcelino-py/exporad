@@ -175,8 +175,7 @@ class RadiologicalCalculator {
             'extremidades': 0.1,
             'aparelho-respiratorio': 0.1,
             'aparelho-digestorio': 0.3,
-            'aparelho-urinario': 0.3,
-            'partes-moles': 0.01
+            'aparelho-urinario': 0.3
         };
         
         const fatorMaron = maronFactors[structure] || 0.1;
@@ -913,28 +912,18 @@ class RadiologicalCalculator {
         const modalTitle = document.getElementById('modal-title');
         const modalInstructions = document.getElementById('modal-instructions');
         const modalEquipment = document.getElementById('modal-equipment');
+        const imageLarge = document.querySelector('.position-image-large');
 
         // Obter dados do posicionamento
         const positionData = this.getPositionData(position);
+        const imageSrc = this.getPositionImage(position, positionData.title);
         
         // Preencher modal
         modalTitle.textContent = positionData.title;
         modalInstructions.innerHTML = positionData.instructions;
         modalEquipment.innerHTML = positionData.equipment;
-        
-        // Mostrar modal
-        modal.style.display = 'flex';
-        
-        // Fechar modal ao clicar fora
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                this.closePositionModal();
-            }
-        });
-        
-        const imageLarge = document.querySelector('.position-image-large');
-        if (position === 'chest-pa') {
-            imageLarge.innerHTML = '<img src="txpa.jpeg" alt="Tórax PA" style="max-width:100%;height:auto;">';
+        if (imageSrc) {
+            imageLarge.innerHTML = `<img class="position-photo" src="${imageSrc}" alt="${positionData.title}">`;
         } else {
             let iconEl = imageLarge.querySelector('#modal-icon');
             if (!iconEl) {
@@ -945,12 +934,69 @@ class RadiologicalCalculator {
             }
             iconEl.className = positionData.icon;
         }
+        
+        // Mostrar modal
+        modal.style.display = 'flex';
+        
+        // Fechar modal ao clicar fora
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                this.closePositionModal();
+            }
+        });
     }
 
     // Fechar modal de posicionamento
     closePositionModal() {
         const modal = document.getElementById('position-modal');
         modal.style.display = 'none';
+    }
+
+    // Obter imagem dedicada (com fallback)
+    getPositionImage(position, title = '') {
+        const imageMap = {
+            // Cabeça / Face
+            'skull-ap': 'images/CRÂNIO PERFIL .JPG',
+            'skull-lateral': 'images/CRÂNIO PERFIL .JPG',
+            'face-waters': 'images/CRÂNIO PERFIL .JPG',
+            'sinuses-caldwell': 'images/CRÂNIO PERFIL .JPG',
+
+            // Tórax
+            'chest-pa': 'images/TÓRAX PA.JPG',
+            'chest-lateral': 'images/TÓRAX PERFIL.JPG',
+            'chest-ap': 'images/TÓRAX PA 2.JPG',
+            'ribs-ap': 'images/TÓRAX LAWRELL.JPG',
+
+            // Coluna
+            'cervical-ap': 'images/CERVICAL AP.JPG',
+            'cervical-lateral': 'images/CERVICAL PERFIL .JPG',
+            'thoracic-ap': 'images/COLUNA TORÁCICA AP.JPG',
+            'lumbar-ap': 'images/LOMBAR AP.JPG',
+
+            // Membros superiores
+            'shoulder-ap': 'images/OMBRO AP.JPG',
+            'shoulder-y': 'images/OMBRO PERFIL .JPG',
+            'elbow-ap': 'images/COTOVELO AP E PERFIL .JPG',
+            'hand-pa': 'images/MÃO PA E PERFIL.JPG',
+
+            // Membros inferiores
+            'hip-ap': 'images/COXOFEMORAL AP.JPG',
+            'knee-ap': 'images/JOELHO AP.JPG',
+            'ankle-ap': 'images/TÍBIA E FÍBULA AP.JPG',
+            'foot-ap': 'images/PÉ PA E OBL.JPG',
+
+            // Abdômen / Pelve
+            'abdomen-ap': 'images/ABDÔMEN .JPG',
+            'abdomen-lateral': 'images/ABDÔMEN .JPG',
+            'pelvis-ap': 'images/PELVE .JPG',
+            'pelvis-lateral': 'images/PELVE .JPG'
+        };
+
+        const rawPath = imageMap[position];
+        if (rawPath) return rawPath;
+
+        const label = title || position;
+        return `https://placehold.co/480x360?text=${encodeURIComponent(label)}`;
     }
 
     // Obter dados do posicionamento
@@ -976,7 +1022,14 @@ class RadiologicalCalculator {
                         <li><strong>Tempo:</strong> 0.25s</li>
                     </ul>
                 `,
-                equipment: 'MURAL-BUCKY'
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 18×24 ou 24×30 cm, grade, mural</li>
+                        <li><strong>SID:</strong> 100–115 cm</li>
+                        <li><strong>Projeção:</strong> AP axial/PA para crânio, rotina</li>
+                        <li><strong>Notas:</strong> Usado para avaliação geral do crânio, fraturas e lesões ósseas; alinhar OML/IOML conforme técnica escolhida.</li>
+                    </ul>
+                `
             },
             'skull-lateral': {
                 title: 'Crânio Lateral',
@@ -997,7 +1050,14 @@ class RadiologicalCalculator {
                         <li><strong>Tempo:</strong> 0.25s</li>
                     </ul>
                 `,
-                equipment: 'MURAL-BUCKY'
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 18×24 ou 24×30 cm, grade, mural</li>
+                        <li><strong>SID:</strong> 100–115 cm</li>
+                        <li><strong>Projeção:</strong> Lateral verdadeira de crânio</li>
+                        <li><strong>Notas:</strong> Excelente para visualizar abóbada craniana, sela túrcica e paredes dos seios; importante manter superposição exata das hemimandíbulas.</li>
+                    </ul>
+                `
             },
             'face-waters': {
                 title: 'Face - Waters',
@@ -1018,7 +1078,14 @@ class RadiologicalCalculator {
                         <li><strong>Tempo:</strong> 0.20s</li>
                     </ul>
                 `,
-                equipment: 'MURAL-BUCKY'
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 18×24 cm, grade, mural</li>
+                        <li><strong>SID:</strong> 100–115 cm</li>
+                        <li><strong>Projeção:</strong> Parietoacantial (Waters) para face/seios</li>
+                        <li><strong>Notas:</strong> Ideal para avaliação dos seios maxilares, órbitas e paredes da face média; ajustar queixo para manter MML adequada.</li>
+                    </ul>
+                `
             },
             'sinuses-caldwell': {
                 title: 'Seios - Caldwell',
@@ -1039,7 +1106,14 @@ class RadiologicalCalculator {
                         <li><strong>Tempo:</strong> 0.20s</li>
                     </ul>
                 `,
-                equipment: 'MURAL-BUCKY'
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 18×24 cm, grade, mural</li>
+                        <li><strong>SID:</strong> 100–115 cm</li>
+                        <li><strong>Projeção:</strong> PA axial (Caldwell) para seios</li>
+                        <li><strong>Notas:</strong> Demonstra bem seios frontais e etmoidais anteriores; inclinar a cabeça para manter o ângulo de 15° com OML.</li>
+                    </ul>
+                `
             },
             // Tórax
             'chest-pa': {
@@ -1047,42 +1121,56 @@ class RadiologicalCalculator {
                 icon: 'fas fa-lungs',
                 instructions: `
                     <ul>
-                        <li>Paciente em posição ortostática</li>
-                        <li>Tórax contra o filme</li>
-                        <li>Braços para trás</li>
+                        <li>Erigido, queixo elevado, ombros projetados para frente</li>
+                        <li>Tórax contra o IR, sem rotação; escápulas afastadas</li>
+                        <li>SID 72" (183 cm) para menor magnificação</li>
+                        <li>CR ⟂ ao IR em T7 (≈18-20 cm abaixo da vértebra proeminente)</li>
                         <li>Inspiração profunda e prender</li>
-                        <li>Escápulas afastadas</li>
                     </ul>
                 `,
                 parameters: `
                     <ul>
-                        <li><strong>KV:</strong> 95-120</li>
+                        <li><strong>KV:</strong> 110-125</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.025s</li>
                     </ul>
                 `,
-                equipment: 'MURAL-BUCKY'
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 35×43 cm, grade, retrato</li>
+                        <li><strong>SID:</strong> 72" (183 cm)</li>
+                        <li><strong>Projeção:</strong> PA ereto, rotina</li>
+                        <li><strong>Notas:</strong> Inspirar profundamente e manter; usar alta kV para menor dose e melhor penetração pulmonar.</li>
+                    </ul>
+                `
             },
             'chest-lateral': {
                 title: 'Tórax Lateral',
                 icon: 'fas fa-lungs',
                 instructions: `
                     <ul>
-                        <li>Paciente em posição ortostática</li>
-                        <li>Lado esquerdo contra o filme</li>
-                        <li>Braços elevados</li>
+                        <li>Erigido, lado esquerdo contra o IR, verdadeiro lateral</li>
+                        <li>Braços elevados e cruzados acima da cabeça</li>
+                        <li>SID 72" (183 cm); sem rotação</li>
+                        <li>CR ⟂ ao nível de T7, centrado no tórax médio</li>
                         <li>Inspiração profunda e prender</li>
-                        <li>Escápulas afastadas</li>
                     </ul>
                 `,
                 parameters: `
                     <ul>
-                        <li><strong>KV:</strong> 115-140</li>
+                        <li><strong>KV:</strong> 110-125</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.05s</li>
                     </ul>
                 `,
-                equipment: 'MURAL-BUCKY'
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 35×43 cm, grade, retrato</li>
+                        <li><strong>SID:</strong> 72" (183 cm)</li>
+                        <li><strong>Projeção:</strong> Lateral esquerda ereta, rotina</li>
+                        <li><strong>Notas:</strong> Ombros e quadris alinhados; importante para avaliação de lesões retroesternais e retrocardíacas.</li>
+                    </ul>
+                `
             },
             'chest-ap': {
                 title: 'Tórax AP',
@@ -1103,7 +1191,14 @@ class RadiologicalCalculator {
                         <li><strong>Tempo:</strong> 0.03s</li>
                     </ul>
                 `,
-                equipment: 'MURAL-BUCKY'
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 35×43 cm, grade, retrato</li>
+                        <li><strong>SID:</strong> 72" sempre que possível (leito) ou ≥100 cm</li>
+                        <li><strong>Projeção:</strong> AP supino ou semi-ereto (pacientes graves)</li>
+                        <li><strong>Notas:</strong> Avaliar ampliação cardíaca; ideal para UTI, pós-operatório e controle de tubos.</li>
+                    </ul>
+                `
             },
             'ribs-ap': {
                 title: 'Costelas AP',
@@ -1124,7 +1219,14 @@ class RadiologicalCalculator {
                         <li><strong>Tempo:</strong> 0.30s</li>
                     </ul>
                 `,
-                equipment: 'MESA-GRADE'
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 35×43 cm, grade, mesa ou mural</li>
+                        <li><strong>SID:</strong> 100–115 cm</li>
+                        <li><strong>Projeção:</strong> AP costelas, geralmente por hemi-tórax (acima ou abaixo do diafragma)</li>
+                        <li><strong>Notas:</strong> Utilizado para pesquisa de fraturas costais; pode exigir respiração em inspiração (costelas superiores) ou expiração (inferiores).</li>
+                    </ul>
+                `
             },
             // Coluna
             'cervical-ap': {
@@ -1146,7 +1248,14 @@ class RadiologicalCalculator {
                         <li><strong>Tempo:</strong> 0.25s</li>
                     </ul>
                 `,
-                equipment: 'MURAL-BUCKY'
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 24×30 cm, grade, mural</li>
+                        <li><strong>SID:</strong> 100–115 cm</li>
+                        <li><strong>Projeção:</strong> AP axial cervical (C3–C7)</li>
+                        <li><strong>Notas:</strong> Demonstra corpos vertebrais e espaços discais; pequena angulação cefálica é frequentemente necessária.</li>
+                    </ul>
+                `
             },
             'cervical-lateral': {
                 title: 'Coluna Cervical Lateral',
@@ -1167,7 +1276,14 @@ class RadiologicalCalculator {
                         <li><strong>Tempo:</strong> 0.25s</li>
                     </ul>
                 `,
-                equipment: 'MURAL-BUCKY'
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 24×30 cm, grade, mural</li>
+                        <li><strong>SID:</strong> 150–180 cm (SID longo para ombros mais baixos)</li>
+                        <li><strong>Projeção:</strong> Lateral verdadeira de coluna cervical</li>
+                        <li><strong>Notas:</strong> Projeção de rotina para trauma cervical; incluir de C1 a C7/T1 quando possível.</li>
+                    </ul>
+                `
             },
             'thoracic-ap': {
                 title: 'Coluna Torácica AP',
@@ -1187,7 +1303,14 @@ class RadiologicalCalculator {
                         <li><strong>Tempo:</strong> 0.30s</li>
                     </ul>
                 `,
-                equipment: 'MESA-GRADE'
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 35×43 cm, grade, mesa</li>
+                        <li><strong>SID:</strong> 100–115 cm</li>
+                        <li><strong>Projeção:</strong> AP coluna torácica</li>
+                        <li><strong>Notas:</strong> Joelhos flexionados para reduzir a curvatura lombar; colimação estreita para reduzir dose à mama.</li>
+                    </ul>
+                `
             },
             'lumbar-ap': {
                 title: 'Coluna Lombar AP',
@@ -1208,7 +1331,120 @@ class RadiologicalCalculator {
                         <li><strong>Tempo:</strong> 0.30s</li>
                     </ul>
                 `,
-                equipment: 'MESA-GRADE'
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 35×43 cm, grade, mesa</li>
+                        <li><strong>SID:</strong> 100–115 cm</li>
+                        <li><strong>Projeção:</strong> AP coluna lombar</li>
+                        <li><strong>Notas:</strong> Joelhos flexionados para reduzir lordose; útil na avaliação de corpos vertebrais, espaços discais e alinhamento.</li>
+                    </ul>
+                `
+            },
+            'lumbar-oblique': {
+                title: 'Coluna Lombar Oblíqua',
+                icon: 'fas fa-user',
+                instructions: `
+                    <ul>
+                        <li>Corpo girado 45° (50° para L1-L2; 30° para L5-S1)</li>
+                        <li>Lateroposterior apoiado, mantendo a coluna alinhada</li>
+                        <li>CR em L3 (≈2,5 cm acima da crista)</li>
+                        <li>Expiração leve ou suspensão</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 80-95</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.30s</li>
+                    </ul>
+                `,
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 30×40 ou 35×43 cm, grade, mesa</li>
+                        <li><strong>SID:</strong> 100–115 cm</li>
+                        <li><strong>Projeção:</strong> Oblíqua posterior/anterior lombar (≈45° médio)</li>
+                        <li><strong>Notas:</strong> Demonstra articulações zigapofisárias ("cachorro Scottie"); ajustar ângulo de rotação conforme nível lombar.</li>
+                    </ul>
+                `
+            },
+            'lumbar-l5s1': {
+                title: 'Coluna Lombar Lateral L5-S1',
+                icon: 'fas fa-user',
+                instructions: `
+                    <ul>
+                        <li>Decúbito lateral verdadeiro; suporte sob a cintura para paralelismo</li>
+                        <li>CR 4 cm (1,5") inferior à crista ilíaca</li>
+                        <li>Angulação 5°-8° caudal se a coluna não estiver paralela</li>
+                        <li>Respiração suspensa na expiração</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 90-100</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.30s</li>
+                    </ul>
+                `,
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 24×30 cm, grade, mesa</li>
+                        <li><strong>SID:</strong> 100–115 cm</li>
+                        <li><strong>Projeção:</strong> Lateral localizada L5-S1</li>
+                        <li><strong>Notas:</strong> Essencial para avaliação de espondilolistese e articulação lombo-sacra; pode exigir angulação caudal adicional.</li>
+                    </ul>
+                `
+            },
+            'thoracic-oblique': {
+                title: 'Coluna Torácica Oblíqua',
+                icon: 'fas fa-user',
+                instructions: `
+                    <ul>
+                        <li>Paciente em perfil e rodar posteriormente ~20° (a partir do lateral verdadeiro)</li>
+                        <li>CR em T7</li>
+                        <li>Respiração: expiração (ou ortostática leve para desfocar costelas)</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 80-95</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.30s</li>
+                    </ul>
+                `,
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 35×43 cm, grade, mesa/mural</li>
+                        <li><strong>SID:</strong> 100–115 cm</li>
+                        <li><strong>Projeção:</strong> Oblíqua torácica (RAO/LAO ou RPO/LPO)</li>
+                        <li><strong>Notas:</strong> Melhora visualização das articulações zigapofisárias torácicas; frequentemente exame complementar.</li>
+                    </ul>
+                `
+            },
+            'sternum-oblique': {
+                title: 'Esterno Oblíquo (RAO 15°-20°)',
+                icon: 'fas fa-user',
+                instructions: `
+                    <ul>
+                        <li>RAO 15°-20°, projetando esterno sobre a sombra do coração</li>
+                        <li>Respiração ortostática suave para desfocar costelas OU expiração suspensa</li>
+                        <li>CR no meio do esterno</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 70-80</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.40s</li>
+                    </ul>
+                `,
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 24×30 cm, grade, mural</li>
+                        <li><strong>SID:</strong> 75–100 cm (para magnificar e desfocar costelas)</li>
+                        <li><strong>Projeção:</strong> RAO 15°–20° do esterno</li>
+                        <li><strong>Notas:</strong> Técnica com respiração ortostática ajuda a desfocar costelas; usada em suspeita de fraturas esternais.</li>
+                    </ul>
+                `
             },
             // Membros Superiores
             'shoulder-ap': {
@@ -1230,7 +1466,14 @@ class RadiologicalCalculator {
                         <li><strong>Tempo:</strong> 0.20s</li>
                     </ul>
                 `,
-                equipment: 'MURAL-BUCKY'
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 24×30 cm, grade, mural</li>
+                        <li><strong>SID:</strong> 100–115 cm</li>
+                        <li><strong>Projeção:</strong> AP ombro (rotação neutra ou interna/externa)</li>
+                        <li><strong>Notas:</strong> Útil para luxações, fraturas da cabeça umeral e avaliação geral da articulação glenoumeral.</li>
+                    </ul>
+                `
             },
             'shoulder-y': {
                 title: 'Ombro Y',
@@ -1251,7 +1494,14 @@ class RadiologicalCalculator {
                         <li><strong>Tempo:</strong> 0.25s</li>
                     </ul>
                 `,
-                equipment: 'MURAL-BUCKY'
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 24×30 cm, grade, mural</li>
+                        <li><strong>SID:</strong> 100–115 cm</li>
+                        <li><strong>Projeção:</strong> Lateral escapular "Y" para ombro</li>
+                        <li><strong>Notas:</strong> Excelente para demonstrar luxações anteriores/posteriores do ombro; corpo e acrômio formam o "Y".</li>
+                    </ul>
+                `
             },
             'elbow-ap': {
                 title: 'Cotovelo AP',
@@ -1272,7 +1522,14 @@ class RadiologicalCalculator {
                         <li><strong>Tempo:</strong> 0.05s</li>
                     </ul>
                 `,
-                equipment: 'MESA'
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 18×24 cm, sem grade, mesa</li>
+                        <li><strong>SID:</strong> 100–115 cm</li>
+                        <li><strong>Projeção:</strong> AP cotovelo</li>
+                        <li><strong>Notas:</strong> Projeção de rotina para fraturas da cabeça do rádio, olécrano e úmero distal.</li>
+                    </ul>
+                `
             },
             'hand-pa': {
                 title: 'Mão PA',
@@ -1293,7 +1550,14 @@ class RadiologicalCalculator {
                         <li><strong>Tempo:</strong> 0.04s</li>
                     </ul>
                 `,
-                equipment: 'MESA'
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 18×24 cm, sem grade, mesa</li>
+                        <li><strong>SID:</strong> 100–115 cm</li>
+                        <li><strong>Projeção:</strong> PA mão (rotina)</li>
+                        <li><strong>Notas:</strong> Demonstra metacarpos, falanges e articulações interfalângicas; base para estudos de artrite e trauma.</li>
+                    </ul>
+                `
             },
             // Membros Inferiores
             'hip-ap': {
@@ -1315,7 +1579,42 @@ class RadiologicalCalculator {
                         <li><strong>Tempo:</strong> 0.25s</li>
                     </ul>
                 `,
-                equipment: 'MESA-GRADE'
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 24×30 ou 30×35 cm, grade</li>
+                        <li><strong>SID:</strong> 100–115 cm</li>
+                        <li><strong>Projeção:</strong> AP bacia/quadril, rotina</li>
+                        <li><strong>Notas:</strong> Excelente para trauma de bacia e avaliação de quadril; incluir articulações sacroilíacas quando indicado.</li>
+                    </ul>
+                `
+            },
+            'hip-lat': {
+                title: 'Quadril Lateral (Mod. Cleaves - Não Trauma)',
+                icon: 'fas fa-user',
+                instructions: `
+                    <ul>
+                        <li>Paciente em decúbito dorsal</li>
+                        <li>Flexionar joelho e quadril afetados</li>
+                        <li>Abduzir o fêmur ≈45° da vertical</li>
+                        <li>Não realizar se houver suspeita de fratura de quadril</li>
+                        <li>CR ⟂ ao quadril, no meio do fêmur proximal</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 75-90</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.25s</li>
+                    </ul>
+                `,
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 24×30 cm, grade</li>
+                        <li><strong>SID:</strong> 100–115 cm</li>
+                        <li><strong>Projeção:</strong> Lateral modificada de Cleaves (frog-leg) – não trauma</li>
+                        <li><strong>Notas:</strong> Contraindicado em fraturas suspeitas; ótimo para avaliar cabeça e colo femoral.</li>
+                    </ul>
+                `
             },
             'knee-ap': {
                 title: 'Joelho AP',
@@ -1336,49 +1635,150 @@ class RadiologicalCalculator {
                         <li><strong>Tempo:</strong> 0.06s</li>
                     </ul>
                 `,
-                equipment: 'MESA-GRADE'
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 24×30 cm, grade (adulto)</li>
+                        <li><strong>SID:</strong> 100–115 cm</li>
+                        <li><strong>Projeção:</strong> AP joelho, rotina</li>
+                        <li><strong>Notas:</strong> Pode exigir pequena angulação cefálica/caudal conforme biotipo; útil para alinhamento articular.</li>
+                    </ul>
+                `
             },
-            'ankle-ap': {
-                title: 'Tornozelo AP',
-                icon: 'fas fa-shoe-prints',
+            'patella-axial': {
+                title: 'Patela Tangencial/Axial (Settegast/Hughston)',
+                icon: 'fas fa-user',
                 instructions: `
                     <ul>
-                        <li>Paciente em decúbito dorsal</li>
-                        <li>Pé em flexão dorsal</li>
-                        <li>Maléolos centralizados no filme</li>
-                        <li>Perna estendida</li>
-                        <li>Braços para os lados</li>
+                        <li>Settegast: joelho flexionado 90° em prono</li>
+                        <li>Hughston: joelho flexionado 50°-60° a partir da extensão completa</li>
+                        <li>CR centrado no meio da patela (tangencial)</li>
                     </ul>
                 `,
                 parameters: `
                     <ul>
-                        <li><strong>KV:</strong> 47-60</li>
+                        <li><strong>KV:</strong> 60-70</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.04s</li>
                     </ul>
                 `,
-                equipment: 'MESA'
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 18×24 cm, sem grade</li>
+                        <li><strong>SID:</strong> 100–115 cm</li>
+                        <li><strong>Projeção:</strong> Tangencial axial (Settegast/Hughston)</li>
+                        <li><strong>Notas:</strong> Indicado para avaliação de articulação femoropatelar e fraturas de patela; atenção ao conforto do paciente.</li>
+                    </ul>
+                `
             },
-            'foot-ap': {
-                title: 'Pé AP',
+            'ankle-ap': {
+                title: 'Tornozelo AP Mortise',
                 icon: 'fas fa-shoe-prints',
                 instructions: `
                     <ul>
-                        <li>Paciente sentado</li>
-                        <li>Pé apoiado no filme</li>
-                        <li>Dedos estendidos</li>
-                        <li>Pé em posição neutra</li>
-                        <li>Braço oposto para trás</li>
+                        <li>Paciente em decúbito dorsal</li>
+                        <li>Rotacionar perna e pé 15°-20° internamente (linha intermaleolar paralela ao filme)</li>
+                        <li>Maléolos centralizados no filme</li>
+                        <li>Pé em flexão dorsal suave</li>
+                        <li>CR ⟂, a meio caminho entre os maléolos</li>
                     </ul>
                 `,
                 parameters: `
                     <ul>
-                        <li><strong>KV:</strong> 44-55</li>
+                        <li><strong>KV:</strong> 55-65</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.04s</li>
+                    </ul>
+                `,
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 18×24 cm, sem grade</li>
+                        <li><strong>SID:</strong> 100–115 cm</li>
+                        <li><strong>Projeção:</strong> AP mortise, rotina para avaliação espaço tibiotalar</li>
+                        <li><strong>Notas:</strong> Rotação correta mostra espaço articular uniforme; útil em entorses e fraturas maleolares.</li>
+                    </ul>
+                `
+            },
+            'foot-ap': {
+                title: 'Pé Pediátrico AP (Método Kite)',
+                icon: 'fas fa-shoe-prints',
+                instructions: `
+                    <ul>
+                        <li>Pé pediátrico imobilizado; não tentar endireitar o pé</li>
+                        <li>Realizar AP com o pé apoiado e colimação justa</li>
+                        <li>Ambos os pés geralmente radiografados para comparação</li>
+                        <li>Para lateral, manter a imobilização a 90°</li>
+                        <li>CR ⟂ ao meio do pé</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 48-55</li>
                         <li><strong>mA:</strong> 200-400</li>
                         <li><strong>Tempo:</strong> 0.05s</li>
                     </ul>
                 `,
-                equipment: 'MESA'
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 18×24 cm, sem grade</li>
+                        <li><strong>SID:</strong> 100–115 cm</li>
+                        <li><strong>Projeção:</strong> AP pediátrico, método Kite</li>
+                        <li><strong>Notas:</strong> Usado para pé torto congênito; sempre comparar com lado oposto quando possível.</li>
+                    </ul>
+                `
+            },
+            'femur-lat': {
+                title: 'Fêmur Lateral',
+                icon: 'fas fa-user',
+                instructions: `
+                    <ul>
+                        <li>Decúbito lateral verdadeiro</li>
+                        <li>Flexionar o joelho afetado ~45°</li>
+                        <li>Alinhar a linha média do fêmur ao centro do IR</li>
+                        <li>CR no ponto médio do fêmur e do receptor</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 70-80</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.05s</li>
+                    </ul>
+                `,
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 24×30 ou 35×43 cm, grade, mesa</li>
+                        <li><strong>SID:</strong> 100–115 cm</li>
+                        <li><strong>Projeção:</strong> Lateral verdadeiro de fêmur</li>
+                        <li><strong>Notas:</strong> Cobrir tanto o quadril quanto o joelho em duas incidências, se necessário; importante em suspeita de fraturas diafisárias.</li>
+                    </ul>
+                `
+            },
+            'femur-lat-trauma': {
+                title: 'Fêmur Lateral Trauma (Feixe Horizontal)',
+                icon: 'fas fa-user',
+                instructions: `
+                    <ul>
+                        <li>Paciente supino, manter membro sem movimento</li>
+                        <li>IR vertical entre as pernas, próximo ao fêmur afetado</li>
+                        <li>Feixe horizontal ⟂ ao ponto médio do fêmur e do IR</li>
+                        <li>Imobilizar e evitar rotação</li>
+                    </ul>
+                `,
+                parameters: `
+                    <ul>
+                        <li><strong>KV:</strong> 75-85</li>
+                        <li><strong>mA:</strong> 200-400</li>
+                        <li><strong>Tempo:</strong> 0.05s</li>
+                    </ul>
+                `,
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 24×30 ou 35×43 cm, grade, vertical</li>
+                        <li><strong>SID:</strong> 100–115 cm</li>
+                        <li><strong>Projeção:</strong> Lateral de fêmur com feixe horizontal (trauma)</li>
+                        <li><strong>Notas:</strong> Permite avaliação sem movimentar o membro; indicado em politraumatizados.</li>
+                    </ul>
+                `
             },
             // Abdômen
             'abdomen-ap': {
@@ -1400,7 +1800,14 @@ class RadiologicalCalculator {
                         <li><strong>Tempo:</strong> 0.32s</li>
                     </ul>
                 `,
-                equipment: 'MESA-GRADE'
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 35×43 cm, grade</li>
+                        <li><strong>SID:</strong> 100–115 cm</li>
+                        <li><strong>Projeção:</strong> AP supino – rotina de abdômen agudo</li>
+                        <li><strong>Notas:</strong> Usado em pesquisa de abdome agudo, obstruções e massas; incluir desde o diafragma até a sínfise púbica.</li>
+                    </ul>
+                `
             },
             'abdomen-lateral': {
                 title: 'Abdômen Lateral',
@@ -1421,7 +1828,14 @@ class RadiologicalCalculator {
                         <li><strong>Tempo:</strong> 0.32s</li>
                     </ul>
                 `,
-                equipment: 'MURAL-BUCKY'
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 35×43 cm, grade</li>
+                        <li><strong>SID:</strong> 100–115 cm</li>
+                        <li><strong>Projeção:</strong> Lateral de abdômen</li>
+                        <li><strong>Notas:</strong> Complementar ao AP em quadros de abdome agudo; pode ajudar na detecção de níveis hidroaéreos.</li>
+                    </ul>
+                `
             },
             'pelvis-ap': {
                 title: 'Pelve AP',
@@ -1442,7 +1856,14 @@ class RadiologicalCalculator {
                         <li><strong>Tempo:</strong> 0.32s</li>
                     </ul>
                 `,
-                equipment: 'MESA-GRADE'
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 35×43 cm, grade</li>
+                        <li><strong>SID:</strong> 100–115 cm</li>
+                        <li><strong>Projeção:</strong> AP pelve</li>
+                        <li><strong>Notas:</strong> Rotina para trauma de bacia, artroses e avaliação de anel pélvico.</li>
+                    </ul>
+                `
             },
             'pelvis-lateral': {
                 title: 'Pelve Lateral',
@@ -1463,7 +1884,14 @@ class RadiologicalCalculator {
                         <li><strong>Tempo:</strong> 0.35s</li>
                     </ul>
                 `,
-                equipment: 'MESA-GRADE'
+                equipment: `
+                    <ul>
+                        <li><strong>IR/Grade/Tamanho:</strong> 35×43 cm, grade</li>
+                        <li><strong>SID:</strong> 100–115 cm</li>
+                        <li><strong>Projeção:</strong> Lateral de pelve</li>
+                        <li><strong>Notas:</strong> Usada menos frequentemente; pode auxiliar na avaliação de fraturas complexas do anel pélvico.</li>
+                    </ul>
+                `
             }
         };
         
@@ -1494,9 +1922,8 @@ class RadiologicalCalculator {
         const thickness = parseFloat(document.getElementById('input-thickness').value);
         const structure = document.getElementById('input-exam-area').value;
         const constante = parseFloat(document.getElementById('input-constante').value);
-        const dff = parseFloat(document.getElementById('input-distance').value);
 
-        if (!structure || isNaN(thickness) || isNaN(constante) || isNaN(dff)) {
+        if (!structure || isNaN(thickness) || isNaN(constante)) {
             this.showKvMasResultPopup('Preencha todos os campos corretamente.');
             return;
         }
@@ -1536,7 +1963,7 @@ class RadiologicalCalculator {
             <p>mAs: <b>${mAs.toFixed(2)}</b></p>
             <p><strong>Se mA = 100:</strong> tempo = ${tempo1.toFixed(3)} s</p>
             <p><strong>Se mA = 200:</strong> tempo = ${tempo2.toFixed(3)} s</p>
-            <p><small>Espessura: ${thickness}cm, Constante: ${constante}, DFF: ${dff}cm, Fator Maron: ${fatorMaron}</small></p>
+            <p><small>Espessura: ${thickness}cm, Constante: ${constante}, Fator Maron: ${fatorMaron}</small></p>
         `);
     }
 

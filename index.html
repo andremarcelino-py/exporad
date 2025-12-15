@@ -28,6 +28,14 @@
         </div>
     </header>
 
+    <!-- Call to action principal: botão para calculadora KV/mAs -->
+    <div class="hero-cta-container">
+        <button class="hero-cta-btn" onclick="window.calculator.openKvMasModal()">
+            <i class="fas fa-calculator"></i>
+            <span>Faça seu cálculo exato</span>
+        </button>
+    </div>
+
     <!-- Container Principal -->
     <div class="main-container">
         <!-- Seção da Calculadora -->
@@ -783,7 +791,7 @@
                     <div class="position-instructions">
                         <h4>Instruções de Posicionamento:</h4>
                         <div id="modal-instructions"></div>
-                        <h4>Equipamento:</h4>
+                        <h4>Detalhes:</h4>
                         <div id="modal-equipment"></div>
                     </div>
                 </div>
@@ -813,12 +821,11 @@
                             <span>Estrutura/Região:</span>
                             <select id="input-exam-area" required>
                                 <option value="">Selecione...</option>
-                                <option value="corpo-osseo">Corpo Ósseo</option>
-                                <option value="extremidades">Extremidades</option>
-                                <option value="aparelho-respiratorio">Aparelho Respiratório</option>
-                                <option value="aparelho-digestorio">Aparelho Digestório</option>
-                                <option value="aparelho-urinario">Aparelho Urinário</option>
-                                <option value="partes-moles">Somente Partes Moles</option>
+                                <option value="corpo-osseo">Crânio</option>
+                                <option value="extremidades">Membros</option>
+                                <option value="aparelho-respiratorio">Tórax</option>
+                                <option value="aparelho-digestorio">Abdome</option>
+                                <option value="aparelho-urinario">Pelve</option>
                             </select>
                         </label>
                     </div>
@@ -829,10 +836,7 @@
                         </label>
                     </div>
                     <div class="form-row">
-                        <label>
-                            <span>DFF (cm):</span>
-                            <input type="number" id="input-distance" required min="80" max="200" step="1" placeholder="Ex: 100">
-                        </label>
+                        <!-- Campo DFF removido a pedido do usuário -->
                     </div>
                     <button type="submit" class="calculate-btn">
                         <i class="fas fa-calculator"></i> Calcular

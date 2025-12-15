@@ -73,6 +73,45 @@ body {
     justify-content: center;
 }
 
+/* CTA principal abaixo do header */
+.hero-cta-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.hero-cta-btn {
+    background: var(--gradient-primary);
+    border: none;
+    padding: 0.9rem 2.5rem;
+    border-radius: 999px;
+    color: var(--primary-bg);
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    box-shadow: var(--shadow-primary);
+    transition: all 0.25s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.hero-cta-btn i {
+    font-size: 1.1rem;
+}
+
+.hero-cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0, 212, 255, 0.4);
+}
+
+.hero-cta-btn span {
+    white-space: nowrap;
+}
+
 
 .header-content {
     max-width: 1200px;
@@ -1618,14 +1657,23 @@ body {
 }
 
 .position-image-large {
-    width: 200px;
-    height: 200px;
+    width: 100%;
+    max-width: 320px;
+    aspect-ratio: 3 / 4;
     background: rgba(0, 212, 255, 0.1);
     border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
     border: 2px solid var(--border-primary);
+}
+
+.position-image-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 18px;
+    display: block;
 }
 
 .position-image-large i {
@@ -1655,6 +1703,17 @@ body {
     border: 1px solid var(--border-primary);
 }
 
+/* Remover marcadores (bolinhas) das listas de instruções e detalhes do modal */
+.position-instructions ul {
+    list-style: none;
+    padding-left: 0;
+    margin-left: 0;
+}
+
+.position-instructions li {
+    margin-bottom: 0.25rem;
+}
+
 @media (max-width: 768px) {
     .position-details {
         grid-template-columns: 1fr;
@@ -1669,9 +1728,8 @@ body {
 
     .position-image-large {
         width: 100%;
-        max-width: 420px;
-        height: auto;
-        aspect-ratio: 1 / 1;
+        max-width: 280px;
+        aspect-ratio: 3 / 4;
         margin: 0 auto 1rem;
     }
 
